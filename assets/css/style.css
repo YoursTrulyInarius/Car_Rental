@@ -1,0 +1,238 @@
+/* Google Fonts */
+@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap');
+
+:root {
+    --primary-color: #0d6efd;
+    --primary-dark: #0a58ca;
+    --secondary-color: #f8f9fa;
+    --text-color: #2c3e50;
+    --glass-bg: rgba(255, 255, 255, 0.95);
+}
+
+html {
+    overflow-y: constant;
+    overflow-y: scroll;
+    /* Force scrollbar to prevent layout shift */
+}
+
+body {
+    font-family: 'Outfit', sans-serif;
+    /* Switched to Outfit for a more modern geometry */
+    background-color: var(--secondary-color);
+    color: var(--text-color);
+    margin: 0;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    overflow-x: hidden;
+    /* Prevent horizontal scroll only */
+}
+
+/* Navbar */
+.navbar {
+    background-color: white !important;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.03);
+    padding: 1rem 0;
+    backdrop-filter: blur(10px);
+}
+
+.navbar-brand {
+    font-weight: 700;
+    color: var(--primary-color) !important;
+    font-size: 1.5rem;
+    letter-spacing: -0.5px;
+}
+
+/* Cards */
+.card {
+    border: none;
+    border-radius: 16px;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.05);
+    transition: transform 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
+    background: white;
+    overflow: hidden;
+}
+
+.card:hover {
+    transform: translateY(-5px);
+}
+
+/* Forms - Floating Labels Override */
+.form-floating>.form-control {
+    border-radius: 12px;
+    border: 2px solid #f1f3f5;
+    padding-right: 2.5rem;
+    /* Space for eye icon */
+}
+
+.form-floating>.form-control:focus {
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 4px rgba(13, 110, 253, 0.1);
+}
+
+.form-floating>label {
+    padding-left: 1rem;
+    color: #95a5a6;
+}
+
+/* Eye Toggle in Floating Label */
+.password-wrapper {
+    position: relative;
+}
+
+.eye-toggle {
+    position: absolute;
+    right: 15px;
+    top: 50%;
+    transform: translateY(-50%);
+    z-index: 5;
+    cursor: pointer;
+    color: #adb5bd;
+    font-size: 1.2rem;
+    transition: color 0.3s;
+}
+
+.eye-toggle:hover {
+    color: var(--primary-color);
+}
+
+/* Animations included in Auth Left Panel */
+@keyframes float {
+    0% {
+        transform: translateY(0px);
+    }
+
+    50% {
+        transform: translateY(-15px);
+    }
+
+    100% {
+        transform: translateY(0px);
+    }
+}
+
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translate3d(0, 40px, 0);
+    }
+
+    to {
+        opacity: 1;
+        transform: translate3d(0, 0, 0);
+    }
+}
+
+.animate-float {
+    animation: float 6s ease-in-out infinite;
+}
+
+.animate-fade-up {
+    animation: fadeInUp 1s ease-out forwards;
+}
+
+.delay-100 {
+    animation-delay: 0.1s;
+}
+
+.delay-200 {
+    animation-delay: 0.2s;
+}
+
+.delay-300 {
+    animation-delay: 0.3s;
+}
+
+/* Auth Container specific */
+.auth-container {
+    flex: 1;
+    /* Take remaining space */
+    display: flex;
+    flex-direction: column;
+}
+
+.auth-container>.row {
+    flex: 1;
+}
+
+/* Ensure Login/Register footer behavior */
+/* When in auth pages, we want footer to essentially just exist at bottom or overlay if needed, 
+   but since we moved to flex col body, 'mt-auto' on footer handles it. */
+
+.auth-left-panel {
+    background: linear-gradient(135deg, #0d6efd 0%, #0043a8 100%);
+    position: relative;
+    overflow: hidden;
+    height: 100%;
+    /* Ensure full height */
+}
+
+/* Abstract shapes for background */
+.circle-shape {
+    position: absolute;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(5px);
+}
+
+.shape-1 {
+    width: 300px;
+    height: 300px;
+    top: -50px;
+    left: -50px;
+    animation: float 8s infinite reverse;
+}
+
+.shape-2 {
+    width: 400px;
+    height: 400px;
+    bottom: -100px;
+    right: -50px;
+    animation: float 10s infinite;
+}
+
+.shape-3 {
+    width: 100px;
+    height: 100px;
+    top: 40%;
+    right: 20%;
+    background: rgba(255, 255, 255, 0.05);
+    animation: float 5s infinite;
+}
+
+
+/* Buttons */
+.btn-primary {
+    font-weight: 600;
+    padding: 12px 24px;
+    border-radius: 12px;
+    letter-spacing: 0.3px;
+    background: linear-gradient(to right, #0d6efd, #0b5ed7);
+    border: none;
+    box-shadow: 0 4px 15px rgba(13, 110, 253, 0.3);
+    transition: all 0.3s cubic-bezier(0.165, 0.84, 0.44, 1);
+}
+
+.btn-primary:hover {
+    background: linear-gradient(to right, #0b5ed7, #0a58ca);
+    box-shadow: 0 8px 25px rgba(13, 110, 253, 0.4);
+}
+
+.hover-float:hover {
+    transform: translateY(-3px);
+}
+
+/* Footer Fix */
+footer {
+    width: 100%;
+    text-align: center !important;
+    padding: 1.5rem 0;
+    background-color: var(--secondary-color);
+    color: #6c757d;
+    margin-top: auto;
+    /* Pushes footer to bottom */
+}
+
+footer .container {
+    text-align: center;
+}
