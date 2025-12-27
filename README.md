@@ -49,4 +49,4 @@ The system utilizes a **Premium Deep Blue & Light Gray** theme focusing on:
 - **Visual Hierarchy**: Clear typography and color-coded status badges.
 
 ---
-*Created with ❤️ by JEBWINE'S Development Team.*
+*Created with ❤️ by Sonjeb.
