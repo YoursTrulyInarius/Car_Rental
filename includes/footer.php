@@ -1,6 +1,6 @@
 <footer class="mt-auto">
     <div class="container">
-        <p class="mb-0 text-muted">&copy; <?php echo date('Y'); ?> JEBWINE'S CAR RENTAL. All rights reserved.</p>
+        <p class="mb-0 text-muted">&copy; <?php echo date('Y'); ?> VEGAS CAR RENTAL. All rights reserved.</p>
     </div>
 </footer>
 

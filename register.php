@@ -92,7 +92,7 @@ require_once 'includes/header.php';
                 <div class="mb-4 animate-fade-up">
                     <i class="bi bi-stars display-1"></i>
                 </div>
-                <h1 class="display-1 fw-bold mb-0 animate-fade-up delay-100">JEBWINE'S</h1>
+                <h1 class="display-1 fw-bold mb-0 animate-fade-up delay-100">VEGA'S</h1>
                 <h2 class="display-4 fw-light animate-fade-up delay-200">CAR RENTAL</h2>
                 <div class="mt-4 border-top border-white border-opacity-25 pt-4 animate-fade-up delay-300" style="max-width: 400px; margin: 0 auto;">
                     <p class="lead fs-5 text-white-50">Join the exclusive club today.</p>

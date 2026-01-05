@@ -5,7 +5,7 @@ $current_page = basename($_SERVER['PHP_SELF']);
 <nav class="navbar navbar-expand-lg sticky-top">
     <div class="container">
         <span class="navbar-brand mb-0 h1" style="cursor: default;">
-            <i class="bi bi-car-front-fill me-2"></i>JEBWINE'S
+            <i class="bi bi-car-front-fill me-2"></i>VEGA'S CAR RENTAL
         </span>
         <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
             <span class="navbar-toggler-icon"></span>

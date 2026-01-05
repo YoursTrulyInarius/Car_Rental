@@ -17,6 +17,7 @@ CREATE TABLE IF NOT EXISTS cars (
     price_per_day DECIMAL(10, 2) NOT NULL,
     description TEXT,
     image VARCHAR(255),
+    quantity INT DEFAULT 1,
     status ENUM('available', 'rented', 'maintenance') DEFAULT 'available',
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
