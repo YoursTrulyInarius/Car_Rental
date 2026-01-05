@@ -1,4 +1,4 @@
-# 🚗 JEBWINE'S PREMIUM CAR RENTAL
+# 🚗 VEGA'S PREMIUM CAR RENTAL
 
 A modern, full-stack car rental management platform built with **Vanilla PHP**, **MySQL**, and **Bootstrap 5**. Designed with a premium aesthetic and enterprise-level features including real-time notifications and automated email automation.
 
