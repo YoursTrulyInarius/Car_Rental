@@ -5,30 +5,54 @@
 
 A modern, full-stack multi-owner car rental platform built with **Vanilla PHP**, **MySQL**, and **Bootstrap 5**. This version refactors the traditional system into a collaborative marketplace where multiple administrators can manage their own distinct fleets within a unified customer portal.
 
-## 📊 System Flowchart
+## 📊 System Flowchart & Data Architecture
 
 ```mermaid
 graph TD
-    A[Welcome Page] --> B{Authentication}
-    B -- Admin (Owner) --> C[Admin Dashboard]
-    B -- Customer (Renter) --> D[Customer Dashboard]
+    %% Entry Point
+    Start((User Entrance)) --> Reg[Registration / Login]
+    Reg --> DB_Users[(Database: Users)]
     
-    subgraph "Admin Ecosystem"
-        C --> E[Owner Management]
-        E --> F[Individual Owner Dashboard]
-        F --> G[Fleet Control - CRUD]
+    %% Role Redirection
+    DB_Users --> RoleCheck{Role Check}
+    RoleCheck -- "Admin" --> AdminDash[Admin Dashboard]
+    RoleCheck -- "Customer" --> CustDash[Customer Dashboard]
+    
+    %% Admin Workflows
+    subgraph "Admin Data Operations"
+        AdminDash --> AddOwner[Create New Owner]
+        AddOwner -.->|INSERT| DB_Users
+        AdminDash --> ViewFleet[Fleet Management]
+        ViewFleet -.->|SELECT| DB_Cars
+        AdminDash --> OwnerDash[Individual Owner Dashboard]
+        OwnerDash --> ManageCars[CRUD: Add/Edit/Delete Cars]
+        ManageCars -.->|INSERT/UPDATE/DELETE| DB_Cars[(Database: Cars)]
     end
     
-    subgraph "Customer Journey"
-        D --> H[Browse Car Owners]
-        H --> I[Explore Specific Fleet]
-        I --> J[Booking Request]
+    %% Customer Workflows
+    subgraph "Customer Data Operations"
+        CustDash --> BrowseOwners[Browse Owners Grid]
+        BrowseOwners -.->|SELECT| DB_Users
+        CustDash --> SelectOwner[Select Owner]
+        SelectOwner --> BrowseFleet[Browse Fleet]
+        BrowseFleet -.->|SELECT| DB_Cars
+        BrowseFleet --> Booking[Create Booking Request]
+        Booking -.->|INSERT| DB_Rentals[(Database: Rentals)]
     end
     
-    J --> K{Admin Review}
-    K -- Approved --> L[Auto-Email & Confirmation]
-    K -- Rejected --> M[Status Update]
+    %% Business Logic Loop
+    AdminDash --> ReviewRentals[Review Rental Requests]
+    ReviewRentals -.->|SELECT| DB_Rentals
+    ReviewRentals --> Decision{Approve / Reject}
+    Decision -.->|UPDATE| DB_Rentals
+    Decision --> Mail[JSON/SMTP: Email Notification]
+    Mail --> Customer((Customer Notified))
 ```
+
+## 🏦 Database Architecture
+- **Users Table**: Stores accounts with `role` (Admin/Customer). Admins function as Owners.
+- **Cars Table**: Keyed by `owner_id` (foreign key to Users). Stores model, year, and **stock quantity**.
+- **Rentals Table**: Acts as a junction between Customers and Cars, tracking `start_date`, `end_date`, and `total_price`.
 
 ## ✨ Major Architectural Changes
 
