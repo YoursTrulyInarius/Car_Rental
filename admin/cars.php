@@ -10,6 +10,13 @@ if(!isset($_SESSION['user_id']) || $_SESSION['role'] !== 'admin'){
 $message = '';
 $error = '';
 
+$owner_id_filter = $_GET['owner_id'] ?? null;
+$owner_name = "";
+if($owner_id_filter){
+    $res = $mysqli->query("SELECT name FROM users WHERE id = $owner_id_filter");
+    if($res->num_rows > 0) $owner_name = $res->fetch_assoc()['name'];
+}
+
 // Handle Delete
 if(isset($_GET['delete'])){
     $id = $_GET['delete'];
@@ -26,6 +33,7 @@ if($_SERVER['REQUEST_METHOD'] == 'POST'){
     $desc = $_POST['description'];
     $status = $_POST['status'];
     $car_id = $_POST['car_id'] ?? null;
+    $owner_id = $_POST['owner_id'] ?? null;
 
     // Image Upload
     $image = $_POST['current_image'] ?? '';
@@ -40,12 +48,12 @@ if($_SERVER['REQUEST_METHOD'] == 'POST'){
 
     if($car_id){
         // Update
-        $stmt = $mysqli->prepare("UPDATE cars SET model=?, year=?, price_per_day=?, description=?, image=?, status=?, quantity=? WHERE id=?");
-        $stmt->bind_param("sidsssii", $model, $year, $price, $desc, $image, $status, $_POST['quantity'], $car_id);
+        $stmt = $mysqli->prepare("UPDATE cars SET model=?, year=?, price_per_day=?, description=?, image=?, status=?, quantity=?, owner_id=? WHERE id=?");
+        $stmt->bind_param("sidsssiii", $model, $year, $price, $desc, $image, $status, $_POST['quantity'], $owner_id, $car_id);
     } else {
         // Insert
-        $stmt = $mysqli->prepare("INSERT INTO cars (model, year, price_per_day, description, image, status, quantity) VALUES (?, ?, ?, ?, ?, ?, ?)");
-        $stmt->bind_param("sidsssi", $model, $year, $price, $desc, $image, $status, $_POST['quantity']);
+        $stmt = $mysqli->prepare("INSERT INTO cars (model, year, price_per_day, description, image, status, quantity, owner_id) VALUES (?, ?, ?, ?, ?, ?, ?, ?)");
+        $stmt->bind_param("sidsssii", $model, $year, $price, $desc, $image, $status, $_POST['quantity'], $owner_id);
     }
     
     if($stmt->execute()){
@@ -59,18 +67,43 @@ if($_SERVER['REQUEST_METHOD'] == 'POST'){
 require_once '../includes/header.php';
 require_once '../includes/navbar.php';
 
-$cars = $mysqli->query("SELECT * FROM cars ORDER BY created_at DESC");
+$query = "SELECT c.*, u.name as owner_name FROM cars c LEFT JOIN users u ON c.owner_id = u.id";
+if($owner_id_filter){
+    $query .= " WHERE c.owner_id = $owner_id_filter";
+}
+$query .= " ORDER BY c.created_at DESC";
+$cars = $mysqli->query($query);
+
+$all_owners = $mysqli->query("SELECT id, name FROM users WHERE role = 'admin'");
 ?>
 
 <div class="container py-5">
-    <div class="d-flex justify-content-between align-items-center mb-5">
+    <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3 mb-5">
         <div>
-            <h2 class="fw-bold mb-1">Fleet Management</h2>
-            <p class="text-muted mb-0">Add, edit, and manage your vehicle inventory.</p>
+            <h2 class="fw-bold mb-1">Fleet Management <?php echo $owner_name ? " - " . htmlspecialchars($owner_name) : ""; ?></h2>
+            <p class="text-muted mb-0">Add, edit, and manage vehicle inventory.</p>
         </div>
-        <button class="btn btn-primary rounded-pill px-4 shadow-sm d-flex align-items-center" data-bs-toggle="modal" data-bs-target="#carModal" onclick="resetForm()">
-            <i class="bi bi-plus-lg me-2"></i>Add New Car
-        </button>
+        
+        <div class="d-flex flex-wrap align-items-center gap-2">
+            <!-- Owner Filter -->
+            <form action="cars.php" method="GET" class="d-flex align-items-center gap-2 me-md-3">
+                <select name="owner_id" class="form-select rounded-pill border-primary border-opacity-25 shadow-sm px-4" onchange="this.form.submit()" style="min-width: 200px;">
+                    <option value="">All Owners (Filter)</option>
+                    <?php 
+                    $all_owners->data_seek(0);
+                    while($owner = $all_owners->fetch_assoc()): 
+                    ?>
+                        <option value="<?php echo $owner['id']; ?>" <?php echo ($owner_id_filter == $owner['id']) ? 'selected' : ''; ?>>
+                            <?php echo htmlspecialchars($owner['name']); ?>
+                        </option>
+                    <?php endwhile; ?>
+                </select>
+            </form>
+
+            <?php if($owner_id_filter): ?>
+                <a href="cars.php" class="btn btn-outline-secondary rounded-pill px-4">Clear</a>
+            <?php endif; ?>
+        </div>
     </div>
 
     <div class="card border-0 shadow-sm rounded-4 overflow-hidden">
@@ -99,7 +132,10 @@ $cars = $mysqli->query("SELECT * FROM cars ORDER BY created_at DESC");
                                     <?php endif; ?>
                                 </td>
                                 <td>
-                                    <span class="fw-bold text-dark"><?php echo htmlspecialchars($row['model']); ?></span>
+                                    <div class="d-flex flex-column">
+                                        <span class="fw-bold text-dark"><?php echo htmlspecialchars($row['model']); ?></span>
+                                        <small class="text-muted">Owner: <?php echo htmlspecialchars($row['owner_name'] ?? 'System'); ?></small>
+                                    </div>
                                 </td>
                                 <td class="text-muted"><?php echo $row['year']; ?></td>
                                 <td class="fw-bold text-primary">₱<?php echo number_format($row['price_per_day'], 2); ?></td>
@@ -195,6 +231,18 @@ $cars = $mysqli->query("SELECT * FROM cars ORDER BY created_at DESC");
                         <input type="file" name="image" class="form-control">
                         <small class="text-muted">Leave empty to keep current image (if editing).</small>
                     </div>
+                    <div class="mb-3">
+                        <label class="form-label">Assign Owner</label>
+                        <select name="owner_id" id="owner_id" class="form-select">
+                            <option value="">System / No Owner</option>
+                            <?php 
+                            $all_owners->data_seek(0);
+                            while($o = $all_owners->fetch_assoc()): 
+                            ?>
+                                <option value="<?php echo $o['id']; ?>"><?php echo htmlspecialchars($o['name']); ?></option>
+                            <?php endwhile; ?>
+                        </select>
+                    </div>
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
@@ -221,11 +269,12 @@ function editCar(car){
     myModal.show();
 }
 
-function resetForm(){
+function resetForm(ownerId = null){
     document.getElementById('modalTitle').innerText = 'Add New Car';
     document.getElementById('car_id').value = '';
     document.getElementById('quantity').value = '1';
     document.querySelector('form').reset();
+    if(ownerId) document.getElementById('owner_id').value = ownerId;
 }
 </script>
 

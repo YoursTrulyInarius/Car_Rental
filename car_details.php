@@ -13,7 +13,7 @@ if(!isset($_GET['id'])){
 }
 
 $id = $_GET['id'];
-$stmt = $mysqli->prepare("SELECT * FROM cars WHERE id = ?");
+$stmt = $mysqli->prepare("SELECT c.*, u.name as owner_name FROM cars c LEFT JOIN users u ON c.owner_id = u.id WHERE c.id = ?");
 $stmt->bind_param("i", $id);
 $stmt->execute();
 $car = $stmt->get_result()->fetch_assoc();
@@ -39,7 +39,13 @@ require_once 'includes/navbar.php';
             
             <div class="mt-4">
                 <h2 class="fw-bold"><?php echo htmlspecialchars($car['model']); ?></h2>
-                <span class="badge bg-primary px-3 py-2"><?php echo $car['year']; ?> Model</span>
+                <div class="mb-3">
+                    <span class="badge bg-primary px-3 py-2"><?php echo $car['year']; ?> Model</span>
+                    <span class="badge bg-light text-dark border px-3 py-2 ms-2">
+                        <i class="bi bi-person-circle me-1 text-primary"></i>
+                        Manager: <?php echo htmlspecialchars($car['owner_name'] ?? 'System'); ?>
+                    </span>
+                </div>
                 <p class="mt-3 text-muted lead"><?php echo nl2br(htmlspecialchars($car['description'])); ?></p>
             </div>
         </div>

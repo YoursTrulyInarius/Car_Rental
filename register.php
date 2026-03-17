@@ -7,7 +7,7 @@ $success = '';
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $name = trim($_POST['name']);
     $email = trim($_POST['email']);
-    $role = $_POST['role'] ?? 'user'; // Capture Role
+    $role = $_POST['role'] ?? 'customer'; // role is customer or admin
     $password = trim($_POST['password']);
     $confirm_password = trim($_POST['confirm_password']);
 
@@ -30,8 +30,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                     $stmt->close();
                     
                     // Sanitize role
-                    $allowed_roles = ['user', 'admin'];
-                    if(!in_array($role, $allowed_roles)) $role = 'user';
+                    $allowed_roles = ['customer', 'admin'];
+                    if(!in_array($role, $allowed_roles)) $role = 'customer';
 
                     // Insert new user
                     $sql = "INSERT INTO users (name, email, password, role) VALUES (?, ?, ?, ?)";
@@ -144,8 +144,8 @@ require_once 'includes/header.php';
 
                     <div class="form-floating mb-4">
                         <select name="role" class="form-select" id="floatingRole">
-                            <option value="user">User (Customer)</option>
-                            <option value="admin">Admin (Manager)</option>
+                            <option value="customer">Customer (Renter)</option>
+                            <option value="admin">Admin (Car Owner)</option>
                         </select>
                         <label for="floatingRole">Select Role</label>
                     </div>

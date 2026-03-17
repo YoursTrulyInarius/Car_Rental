@@ -22,18 +22,47 @@ $recent_rentals = $mysqli->query("SELECT r.*, u.name as user_name, c.model, c.ye
                                   JOIN users u ON r.user_id = u.id 
                                   JOIN cars c ON r.car_id = c.id 
                                   ORDER BY r.created_at DESC LIMIT 5");
+
+// Fetch Owners (Admins are now the owners)
+$owners = $mysqli->query("SELECT id, name, email FROM users WHERE role = 'admin'");
+
+// Handle Add New Admin (Owner)
+if($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['add_admin'])){
+    $name = trim($_POST['name']);
+    $email = trim($_POST['email']);
+    $password = password_hash(trim($_POST['password']), PASSWORD_DEFAULT);
+    $role = 'admin';
+
+    $stmt = $mysqli->prepare("INSERT INTO users (name, email, password, role) VALUES (?, ?, ?, ?)");
+    $stmt->bind_param("ssss", $name, $email, $password, $role);
+    
+    if($stmt->execute()){
+        header("Location: dashboard.php?success=1");
+        exit;
+    } else {
+        $error_msg = "Error: " . $mysqli->error;
+    }
+}
 ?>
 
 <div class="container py-5">
+    <?php if(isset($_GET['success'])): ?>
+        <div class="alert alert-success border-0 shadow-sm rounded-4 mb-4" role="alert">
+            <i class="bi bi-check-circle-fill me-2"></i>New owner (admin) account created successfully!
+        </div>
+    <?php endif; ?>
+
     <!-- Header -->
     <div class="d-flex justify-content-between align-items-center mb-5">
         <div>
             <h2 class="fw-bold mb-1">Dashboard</h2>
             <p class="text-muted mb-0">Overview of your rental business performance.</p>
         </div>
-        <a href="cars.php" class="btn btn-primary d-flex align-items-center shadow-sm">
-            <i class="bi bi-plus-lg me-2"></i>Add New Car
-        </a>
+        <div class="d-flex gap-2">
+            <button class="btn btn-outline-primary d-flex align-items-center rounded-pill px-4" data-bs-toggle="modal" data-bs-target="#ownerModal">
+                <i class="bi bi-person-plus me-2"></i>Add New Owner
+            </button>
+        </div>
     </div>
 
     <!-- Stats Grid -->
@@ -98,6 +127,82 @@ $recent_rentals = $mysqli->query("SELECT r.*, u.name as user_name, c.model, c.ye
             </div>
         </div>
     </div>
+
+    <!-- Owners Grid -->
+    <div class="mb-5">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h4 class="fw-bold mb-0">Car Owners</h4>
+        </div>
+        <div class="row g-4">
+            <?php if($owners->num_rows > 0): ?>
+                <?php while($owner = $owners->fetch_assoc()): ?>
+                    <?php 
+                        $owner_id = $owner['id'];
+                        $car_count = $mysqli->query("SELECT SUM(quantity) FROM cars WHERE owner_id = $owner_id")->fetch_row()[0] ?? 0;
+                    ?>
+                    <div class="col-md-3">
+                        <a href="owner_dashboard.php?id=<?php echo $owner_id; ?>" class="text-decoration-none">
+                            <div class="card h-100 border-0 shadow-sm rounded-4 hover-lift transition-all">
+                                <div class="card-body p-4 text-center">
+                                    <div class="avatar-lg bg-primary bg-opacity-10 text-primary rounded-circle d-flex align-items-center justify-content-center mx-auto mb-3" style="width: 64px; height: 64px;">
+                                        <i class="bi bi-person-badge fs-2"></i>
+                                    </div>
+                                    <h5 class="fw-bold text-dark mb-1"><?php echo htmlspecialchars($owner['name']); ?></h5>
+                                    <p class="text-muted small mb-3"><?php echo htmlspecialchars($owner['email']); ?></p>
+                                    <div class="d-flex justify-content-center align-items-center gap-2">
+                                        <span class="badge bg-light text-dark border rounded-pill px-3 py-2">
+                                            <i class="bi bi-car-front-fill me-1 text-primary"></i>
+                                            <?php echo $car_count; ?> Cars
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+                        </a>
+                    </div>
+                <?php endwhile; ?>
+            <?php else: ?>
+                <div class="col-12">
+                    <div class="alert alert-light border-0 shadow-sm rounded-4 p-4 text-center">
+                        <i class="bi bi-people-fill display-4 text-muted mb-3 d-block"></i>
+                        <p class="text-muted mb-0">No car owners registered yet.</p>
+                    </div>
+                </div>
+            <?php endif; ?>
+        </div>
+    </div>
+
+<!-- Add Owner Modal -->
+<div class="modal fade" id="ownerModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content border-0 shadow-lg rounded-4">
+            <form method="POST">
+                <div class="modal-header border-0 pb-0">
+                    <h5 class="modal-title fw-bold">Add New Car Owner</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body p-4">
+                    <input type="hidden" name="add_admin" value="1">
+                    <div class="mb-3">
+                        <label class="form-label small fw-bold text-muted text-uppercase">Full Name</label>
+                        <input type="text" name="name" class="form-control rounded-3" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label small fw-bold text-muted text-uppercase">Email Address</label>
+                        <input type="email" name="email" class="form-control rounded-3" required>
+                    </div>
+                    <div class="mb-0">
+                        <label class="form-label small fw-bold text-muted text-uppercase">Initial Password</label>
+                        <input type="password" name="password" class="form-control rounded-3" required>
+                    </div>
+                </div>
+                <div class="modal-footer border-0 pt-0 p-4">
+                    <button type="button" class="btn btn-light rounded-pill px-4" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-primary rounded-pill px-4">Create Owner</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
 
     <!-- Recent Activity -->
     <div class="card border-0 shadow-sm rounded-4 overflow-hidden">

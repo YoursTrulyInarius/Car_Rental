@@ -6,7 +6,7 @@ CREATE TABLE IF NOT EXISTS users (
     name VARCHAR(100) NOT NULL,
     email VARCHAR(100) NOT NULL UNIQUE,
     password VARCHAR(255) NOT NULL,
-    role ENUM('admin', 'user') DEFAULT 'user',
+    role ENUM('admin', 'user', 'owner') DEFAULT 'user',
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
@@ -18,8 +18,10 @@ CREATE TABLE IF NOT EXISTS cars (
     description TEXT,
     image VARCHAR(255),
     quantity INT DEFAULT 1,
+    owner_id INT,
     status ENUM('available', 'rented', 'maintenance') DEFAULT 'available',
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (owner_id) REFERENCES users(id) ON DELETE SET NULL
 );
 
 CREATE TABLE IF NOT EXISTS rentals (

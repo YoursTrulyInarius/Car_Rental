@@ -16,22 +16,77 @@ if(isset($_SESSION['role']) && $_SESSION['role'] === 'admin'){
 require_once 'includes/header.php';
 require_once 'includes/navbar.php';
 
-// Fetch available cars
-$sql = "SELECT * FROM cars WHERE status = 'available' ORDER BY created_at DESC";
-$result = $mysqli->query($sql);
+$owner_id = $_GET['owner_id'] ?? null;
+$owner_name = "";
+
+if($owner_id){
+    $res = $mysqli->query("SELECT name FROM users WHERE id = $owner_id");
+    if($res->num_rows > 0) $owner_name = $res->fetch_assoc()['name'];
+    
+    // Fetch available cars for this owner
+    $sql = "SELECT * FROM cars WHERE status = 'available' AND owner_id = $owner_id ORDER BY created_at DESC";
+    $result = $mysqli->query($sql);
+} else {
+    // Fetch all owners (admins) who have cars
+    $sql = "SELECT DISTINCT u.id, u.name, u.email FROM users u JOIN cars c ON u.id = c.owner_id WHERE u.role = 'admin'";
+    $owners = $mysqli->query($sql);
+}
 ?>
 
 <div class="container py-5">
     <div class="row mb-5 text-center">
         <div class="col-lg-8 mx-auto">
-            <h1 class="display-5 fw-bold text-primary">Your Premium Dashboard</h1>
-            <p class="lead text-muted">Browse our exclusive collection available for rent.</p>
+            <h1 class="display-5 fw-bold text-primary"><?php echo $owner_name ? "Available Fleet from " . htmlspecialchars($owner_name) : "Your Premium Dashboard"; ?></h1>
+            <p class="lead text-muted"><?php echo $owner_name ? "Browse cars managed by this owner." : "Browse our exclusive collection of car owners."; ?></p>
+            <?php if($owner_id): ?>
+                <a href="dashboard.php" class="btn btn-outline-secondary rounded-pill mt-3 shadow-sm">
+                    <i class="bi bi-arrow-left me-2"></i>Back to Owners
+                </a>
+            <?php endif; ?>
         </div>
     </div>
 
     <div class="row row-cols-1 row-cols-md-2 row-cols-xl-3 g-4">
-        <?php if($result->num_rows > 0): ?>
-            <?php while($row = $result->fetch_assoc()): ?>
+        <?php if(!$owner_id): ?>
+            <!-- Owners Grid -->
+            <?php if($owners->num_rows > 0): ?>
+                <?php while($owner = $owners->fetch_assoc()): ?>
+                    <?php 
+                        $oid = $owner['id'];
+                        $car_count = $mysqli->query("SELECT SUM(quantity) FROM cars WHERE owner_id = $oid AND status = 'available'")->fetch_row()[0] ?? 0;
+                    ?>
+                    <div class="col">
+                        <a href="dashboard.php?owner_id=<?php echo $oid; ?>" class="text-decoration-none">
+                            <div class="card h-100 border-0 shadow-lg rounded-4 overflow-hidden card-hover-effect">
+                                <div class="card-body p-4 text-center">
+                                    <div class="avatar-lg bg-primary bg-opacity-10 text-primary rounded-circle d-flex align-items-center justify-content-center mx-auto mb-4" style="width: 80px; height: 80px;">
+                                        <i class="bi bi-person-workspace fs-1"></i>
+                                    </div>
+                                    <h3 class="fw-bold text-dark mb-2"><?php echo htmlspecialchars($owner['name']); ?></h3>
+                                    <p class="text-muted mb-4"><?php echo htmlspecialchars($owner['email']); ?></p>
+                                    <div class="d-inline-block bg-light rounded-pill px-4 py-2 border">
+                                        <span class="fw-bold text-primary"><?php echo $car_count; ?></span>
+                                        <span class="text-muted small">Available Cars</span>
+                                    </div>
+                                </div>
+                                <div class="card-footer bg-primary border-0 text-center py-3">
+                                    <span class="text-white fw-bold">View Collection <i class="bi bi-chevron-right ms-2"></i></span>
+                                </div>
+                            </div>
+                        </a>
+                    </div>
+                <?php endwhile; ?>
+            <?php else: ?>
+                <div class="col-12 text-center py-5">
+                    <i class="bi bi-people display-1 text-muted mb-3"></i>
+                    <h3>No car owners found.</h3>
+                    <p class="text-muted">Check back later for new fleet additions.</p>
+                </div>
+            <?php endif; ?>
+        <?php else: ?>
+            <!-- Cars Grid -->
+            <?php if($result->num_rows > 0): ?>
+                <?php while($row = $result->fetch_assoc()): ?>
                 <?php
                     // Check Availability Logic
                     $car_id = $row['id'];
@@ -157,10 +212,11 @@ $result = $mysqli->query($sql);
         <?php else: ?>
             <div class="col-12 text-center py-5">
                 <i class="bi bi-car-front display-1 text-muted mb-3"></i>
-                <h3>No cars available at the moment.</h3>
-                <p class="text-muted">Please check back later.</p>
+                <h3>No cars available for this owner.</h3>
+                <p class="text-muted">Please check other owners.</p>
             </div>
         <?php endif; ?>
+    <?php endif; ?>
     </div>
 </div>
 

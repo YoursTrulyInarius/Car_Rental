@@ -28,8 +28,8 @@ $current_page = basename($_SERVER['PHP_SELF']);
                         <a class="btn btn-outline-danger btn-sm" href="<?php echo BASE_URL; ?>logout.php">Logout (Admin)</a>
                     </li>
 
-                <!-- User Links -->
-                <?php elseif(isset($_SESSION['role']) && $_SESSION['role'] == 'user'): ?>
+                <!-- Customer Links -->
+                <?php elseif(isset($_SESSION['role']) && $_SESSION['role'] == 'customer'): ?>
                     <li class="nav-item">
                         <a class="nav-link <?php echo ($current_page == 'dashboard.php') ? 'active' : ''; ?>" href="<?php echo BASE_URL; ?>dashboard.php">Browse Cars</a>
                     </li>
@@ -37,7 +37,7 @@ $current_page = basename($_SERVER['PHP_SELF']);
                         <a class="nav-link <?php echo ($current_page == 'my_rentals.php') ? 'active' : ''; ?>" href="<?php echo BASE_URL; ?>my_rentals.php">My Rentals</a>
                     </li>
                     <li class="nav-item ms-lg-3">
-                        <span class="navbar-text me-3">Hi, <?php echo htmlspecialchars($_SESSION['username'] ?? 'User'); ?></span>
+                        <span class="navbar-text me-3">Hi, <?php echo htmlspecialchars($_SESSION['username'] ?? 'Customer'); ?></span>
                         <a class="btn btn-outline-primary btn-sm" href="<?php echo BASE_URL; ?>logout.php">Logout</a>
                     </li>
 
