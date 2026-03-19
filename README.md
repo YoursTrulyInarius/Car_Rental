@@ -83,4 +83,4 @@ graph TD
 
 ---
 *Developed as a high-performance prototype for scalable rental systems.*
-*Created with ❤️ by Sonjeb.
+
