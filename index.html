@@ -255,6 +255,30 @@
                                     <label>Full Name</label>
                                 </div>
                             </div>
+
+                            <!-- Default Credentials Helper -->
+                            <div id="loginHelper" class="alert alert-secondary border-0 rounded-3 mb-3 p-3 animate-fade-up" style="background-color: #f8f9fa;">
+                                <div class="d-flex align-items-center mb-2">
+                                    <i class="bi bi-info-circle-fill text-primary me-2"></i>
+                                    <span class="small fw-bold text-uppercase text-muted">Demo Credentials</span>
+                                </div>
+                                <div class="row g-2">
+                                    <div class="col-6">
+                                        <div class="p-2 border rounded-2 bg-white" style="cursor: pointer;" onclick="autofill('admin@vega.com', 'admin123')">
+                                            <span class="d-block small text-primary fw-bold">ADMIN</span>
+                                            <span class="small text-muted" style="font-size: 0.7rem;">admin@vega.com</span>
+                                        </div>
+                                    </div>
+                                    <div class="col-6">
+                                        <div class="p-2 border rounded-2 bg-white" style="cursor: pointer;" onclick="autofill('customer@demo.com', 'pass123')">
+                                            <span class="d-block small text-success fw-bold">CUSTOMER</span>
+                                            <span class="small text-muted" style="font-size: 0.7rem;">customer@demo.com</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <small class="text-muted mt-2 d-block" style="font-size: 0.7rem;">* Password: <strong>any password</strong> works</small>
+                            </div>
+
                             <div class="form-floating mb-3">
                                 <input type="email" id="authEmail" class="form-control" placeholder="name@example.com" required>
                                 <label>Email Address</label>
@@ -641,6 +665,11 @@
         }
 
         // --- AUTH ---
+        function autofill(email, pass) {
+            document.getElementById('authEmail').value = email;
+            document.getElementById('authPass').value = pass;
+        }
+
         function setupAuth(isLogin) {
             const title = document.getElementById('authTitle');
             const sub = document.getElementById('authSubtitle');
@@ -650,6 +679,7 @@
             const regFields = document.getElementById('registerFields');
             const regRole = document.getElementById('registerRoleField');
             const submit = document.getElementById('authSubmitBtn');
+            const helper = document.getElementById('loginHelper');
 
             if(isLogin) {
                 title.innerText = "Welcome Back";
@@ -660,6 +690,7 @@
                 regFields.style.display = 'none';
                 regRole.style.display = 'none';
                 submit.innerText = "Sign In";
+                if(helper) helper.style.display = 'block';
             } else {
                 title.innerText = "Create Account";
                 sub.innerText = "Start your journey with us.";
@@ -669,6 +700,7 @@
                 regFields.style.display = 'block';
                 regRole.style.display = 'block';
                 submit.innerText = "Register";
+                if(helper) helper.style.display = 'none';
             }
         }
 
