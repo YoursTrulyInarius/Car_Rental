@@ -1,0 +1,937 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VEGA'S CAR RENTAL - Static UI Demo</title>
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Bootstrap Icons -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
+    <!-- SweetAlert2 -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            --primary-color: #0d6efd;
+            --primary-dark: #0a58ca;
+            --secondary-color: #f8f9fa;
+            --text-color: #2c3e50;
+        }
+
+        body {
+            font-family: 'Outfit', sans-serif;
+            background-color: var(--secondary-color);
+            color: var(--text-color);
+            margin: 0;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            overflow-x: hidden;
+        }
+
+        /* Navbar */
+        .navbar {
+            background-color: white !important;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.03);
+            padding: 1rem 0;
+            backdrop-filter: blur(10px);
+        }
+
+        .navbar-brand {
+            font-weight: 700;
+            color: var(--primary-color) !important;
+            font-size: 1.5rem;
+            letter-spacing: -0.5px;
+        }
+
+        /* Sections */
+        .view-section {
+            display: none;
+            flex-grow: 1;
+        }
+
+        .view-section.active {
+            display: block;
+        }
+
+        /* Landing Page Custom */
+        .hero-banner {
+            background: linear-gradient(135deg, #0d6efd 0%, #0043a8 100%);
+            color: white;
+            padding: 100px 0;
+            border-radius: 0 0 50px 50px;
+        }
+
+        /* Cards */
+        .card {
+            border: none;
+            border-radius: 16px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.05);
+            transition: transform 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
+            background: white;
+            overflow: hidden;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+        }
+
+        .card-hover-effect:hover {
+            box-shadow: 0 15px 50px rgba(13, 110, 253, 0.15);
+        }
+
+        /* Auth Panel */
+        .auth-container {
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            z-index: 1050;
+            background-color: #fff;
+        }
+
+        .auth-left-panel {
+            background: linear-gradient(135deg, #0d6efd 0%, #0043a8 100%);
+            position: relative;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            text-align: center;
+        }
+
+        .circle-shape {
+            position: absolute;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(5px);
+        }
+
+        .shape-1 { width: 300px; height: 300px; top: -50px; left: -50px; animation: float 8s infinite reverse; }
+        .shape-2 { width: 400px; height: 400px; bottom: -100px; right: -50px; animation: float 10s infinite; }
+        .shape-3 { width: 100px; height: 100px; top: 40%; right: 20%; background: rgba(255, 255, 255, 0.05); animation: float 5s infinite; }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-20px); }
+        }
+
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .animate-fade-up { animation: fadeInUp 0.8s ease-out forwards; }
+        .delay-100 { animation-delay: 0.1s; }
+        .delay-200 { animation-delay: 0.2s; }
+
+        /* Buttons */
+        .btn-primary {
+            font-weight: 600; padding: 12px 24px; border-radius: 12px;
+            background: linear-gradient(to right, #0d6efd, #0b5ed7);
+            border: none; box-shadow: 0 4px 15px rgba(13, 110, 253, 0.3);
+            transition: all 0.3s;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(13, 110, 253, 0.4);
+        }
+
+        .hover-float:hover { transform: translateY(-3px); }
+
+        /* Forms */
+        .form-floating > .form-control { border-radius: 12px; border: 2px solid #f1f3f5; }
+        .form-floating > .form-control:focus { border-color: var(--primary-color); box-shadow: 0 0 0 4px rgba(13, 110, 253, 0.1); }
+
+        footer { padding: 2rem 0; background: white; border-top: 1px solid #eee; margin-top: auto; }
+        
+        /* Stats icons */
+        .icon-box { display: flex; align-items: center; justify-content: center; border-radius: 12px; }
+    </style>
+</head>
+<body>
+
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-lg sticky-top" id="mainNavbar">
+        <div class="container">
+            <a class="navbar-brand" href="#home">
+                <i class="bi bi-car-front-fill me-2"></i>VEGA'S CAR RENTAL
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto align-items-center" id="navLinks">
+                    <!-- Links will be injected by JS -->
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- VIEWS -->
+
+    <!-- 1. Landing View -->
+    <section id="homeView" class="view-section active">
+        <div class="hero-banner text-center position-relative overflow-hidden">
+            <div class="container py-5">
+                <div class="row">
+                    <div class="col-lg-8 mx-auto animate-fade-up">
+                        <h1 class="display-3 fw-bold mb-4">Drive Your Dream Today</h1>
+                        <p class="lead mb-5 opacity-75">Experience the ultimate freedom with our premium fleet of vehicles. Affordable rates, luxury choices, and seamless booking.</p>
+                        <div class="d-flex gap-3 justify-content-center">
+                            <a href="#register" class="btn btn-light btn-lg px-5 fw-bold shadow-sm">Get Started</a>
+                            <a href="#login" class="btn btn-outline-light btn-lg px-5 fw-bold">Sign In</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="container py-5">
+            <div class="row g-4 py-5 row-cols-1 row-cols-lg-3">
+                <div class="col d-flex align-items-start">
+                    <div class="icon-square bg-primary bg-opacity-10 text-primary flex-shrink-0 me-3 rounded-circle p-3">
+                        <i class="bi bi-shield-check fs-4"></i>
+                    </div>
+                    <div>
+                        <h4 class="fw-bold mb-2">Secure Booking</h4>
+                        <p class="text-muted">High-standard security protocols for every transaction you make.</p>
+                    </div>
+                </div>
+                <div class="col d-flex align-items-start">
+                    <div class="icon-square bg-primary bg-opacity-10 text-primary flex-shrink-0 me-3 rounded-circle p-3">
+                        <i class="bi bi-currency-dollar fs-4"></i>
+                    </div>
+                    <div>
+                        <h4 class="fw-bold mb-2">Best Prices</h4>
+                        <p class="text-muted">Competitive pricing and flexible rental packages for every budget.</p>
+                    </div>
+                </div>
+                <div class="col d-flex align-items-start">
+                    <div class="icon-square bg-primary bg-opacity-10 text-primary flex-shrink-0 me-3 rounded-circle p-3">
+                        <i class="bi bi-emoji-smile fs-4"></i>
+                    </div>
+                    <div>
+                        <h4 class="fw-bold mb-2">24/7 Support</h4>
+                        <p class="text-muted">Dedicated team to assist you anytime, anywhere on your journey.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 2. Auth View (Login/Register) -->
+    <section id="authView" class="view-section">
+        <div class="auth-container">
+            <div class="row g-0 h-100">
+                <div class="col-lg-7 d-none d-lg-flex auth-left-panel">
+                    <div class="circle-shape shape-1"></div>
+                    <div class="circle-shape shape-2"></div>
+                    <div class="circle-shape shape-3"></div>
+                    <div class="position-relative z-1 p-5">
+                        <i id="authIcon" class="bi bi-car-front-fill display-1 mb-4 d-block animate-fade-up"></i>
+                        <h1 class="display-1 fw-bold mb-0 animate-fade-up delay-100">VEGA'S</h1>
+                        <h2 class="display-4 fw-light animate-fade-up delay-200">CAR RENTAL</h2>
+                        <div class="mt-4 border-top border-white border-opacity-25 pt-4 animate-fade-up delay-300" style="max-width: 400px; margin: 0 auto;">
+                            <p class="lead fs-5 text-white-50" id="authMotto">Experience the future of mobility.</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-5 d-flex align-items-center justify-content-center bg-white">
+                    <div class="auth-card border-0 shadow-none w-75 p-lg-5 p-3" id="loginFormSub">
+                        <div class="mb-4 text-center">
+                            <h2 class="fw-bold display-6 mb-1" id="authTitle">Welcome Back</h2>
+                            <p class="text-muted small" id="authSubtitle">Sign in to continue.</p>
+                        </div>
+                        <form id="actualAuthForm">
+                            <div id="registerFields" style="display:none;">
+                                <div class="form-floating mb-3">
+                                    <input type="text" id="regName" class="form-control" placeholder="Full Name">
+                                    <label>Full Name</label>
+                                </div>
+                            </div>
+                            <div class="form-floating mb-3">
+                                <input type="email" id="authEmail" class="form-control" placeholder="name@example.com" required>
+                                <label>Email Address</label>
+                            </div>
+                            <div class="form-floating mb-3">
+                                <input type="password" id="authPass" class="form-control" placeholder="Password" required>
+                                <label>Password</label>
+                            </div>
+                            <div id="registerRoleField" style="display:none;" class="form-floating mb-3">
+                                <select id="regRole" class="form-select">
+                                    <option value="customer">Customer (Renter)</option>
+                                    <option value="admin">Admin (Car Owner)</option>
+                                </select>
+                                <label>Select Role</label>
+                            </div>
+                            <button type="submit" class="btn btn-primary btn-lg w-100 mb-3" id="authSubmitBtn">Sign In</button>
+                            <div class="text-center">
+                                <p class="text-muted mb-0 small" id="authToggleText">Don't have an account? <a href="#register" class="fw-bold text-decoration-none">Create Account</a></p>
+                                <a href="#home" class="d-block mt-3 text-muted small text-decoration-none"><i class="bi bi-arrow-left me-1"></i>Back to Home</a>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 3. Customer Dashboard (Owners) -->
+    <section id="customerDashboardView" class="view-section py-5">
+        <div class="container">
+            <div class="row mb-5 text-center">
+                <div class="col-lg-8 mx-auto">
+                    <h1 class="display-5 fw-bold text-primary">Your Premium Dashboard</h1>
+                    <p class="lead text-muted">Browse our exclusive collection of car owners.</p>
+                </div>
+            </div>
+            <div class="row row-cols-1 row-cols-md-2 row-cols-xl-3 g-4" id="ownersList">
+                <!-- Owners will be injected -->
+            </div>
+        </div>
+    </section>
+
+    <!-- 4. Fleet View (Cars for Owner) -->
+    <section id="fleetView" class="view-section py-5">
+        <div class="container">
+            <div class="row mb-5 text-center">
+                <div class="col-lg-8 mx-auto">
+                    <h1 class="display-5 fw-bold text-primary" id="fleetOwnerTitle">Available Fleet</h1>
+                    <p class="lead text-muted">Browse cars managed by this owner.</p>
+                    <a href="#dashboard" class="btn btn-outline-secondary rounded-pill mt-3 shadow-sm">
+                        <i class="bi bi-arrow-left me-2"></i>Back to Owners
+                    </a>
+                </div>
+            </div>
+            <div class="row row-cols-1 row-cols-md-2 row-cols-xl-3 g-4" id="carsList">
+                <!-- Cars will be injected -->
+            </div>
+        </div>
+    </section>
+
+    <!-- 5. My Rentals View -->
+    <section id="myRentalsView" class="view-section py-5">
+        <div class="container">
+             <h2 class="fw-bold mb-4">My Rentals</h2>
+             <div class="card shadow-sm border-0">
+                 <div class="card-body p-0">
+                     <div class="table-responsive">
+                         <table class="table table-hover align-middle mb-0">
+                             <thead class="bg-light">
+                                 <tr>
+                                     <th class="ps-4">Car</th>
+                                     <th>Rental Period</th>
+                                     <th>Total Cost</th>
+                                     <th>Status</th>
+                                 </tr>
+                             </thead>
+                             <tbody id="myRentalsList">
+                                 <!-- Rentals will be injected -->
+                             </tbody>
+                         </table>
+                     </div>
+                 </div>
+             </div>
+        </div>
+    </section>
+
+    <!-- 6. Admin Dashboard View -->
+    <section id="adminDashboardView" class="view-section py-5">
+        <div class="container">
+            <div class="d-flex justify-content-between align-items-center mb-5">
+                <div>
+                    <h2 class="fw-bold mb-1">Admin Dashboard</h2>
+                    <p class="text-muted mb-0">Overview of your rental business performance.</p>
+                </div>
+            </div>
+            <!-- Stats -->
+            <div class="row g-4 mb-5">
+                <div class="col-md-3">
+                    <div class="card h-100 border-0 shadow-sm border-start border-4 border-primary">
+                        <div class="card-body p-4 d-flex justify-content-between align-items-center">
+                            <div>
+                                <h6 class="text-muted text-uppercase small fw-bold mb-1">Total Cars</h6>
+                                <h2 class="mb-0 fw-bold" id="statCars">0</h2>
+                            </div>
+                            <div class="icon-box bg-primary bg-opacity-10 text-primary p-3"><i class="bi bi-car-front-fill fs-4"></i></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="card h-100 border-0 shadow-sm border-start border-4 border-warning">
+                        <div class="card-body p-4 d-flex justify-content-between align-items-center">
+                            <div>
+                                <h6 class="text-muted text-uppercase small fw-bold mb-1">Pending</h6>
+                                <h2 class="mb-0 fw-bold" id="statPending">0</h2>
+                            </div>
+                            <div class="icon-box bg-warning bg-opacity-10 text-warning p-3"><i class="bi bi-hourglass-split fs-4"></i></div>
+                        </div>
+                    </div>
+                </div>
+                 <div class="col-md-3">
+                    <div class="card h-100 border-0 shadow-sm border-start border-4 border-success">
+                        <div class="card-body p-4 d-flex justify-content-between align-items-center">
+                            <div>
+                                <h6 class="text-muted text-uppercase small fw-bold mb-1">Active</h6>
+                                <h2 class="mb-0 fw-bold" id="statActive">0</h2>
+                            </div>
+                            <div class="icon-box bg-success bg-opacity-10 text-success p-3"><i class="bi bi-check-circle-fill fs-4"></i></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="card h-100 border-0 shadow-sm border-start border-4 border-info">
+                        <div class="card-body p-4 d-flex justify-content-between align-items-center">
+                            <div>
+                                <h6 class="text-muted text-uppercase small fw-bold mb-1">Revenue</h6>
+                                <h2 class="mb-0 fw-bold" id="statRevenue">₱0</h2>
+                            </div>
+                            <div class="icon-box bg-info bg-opacity-10 text-info p-3"><i class="bi bi-cash-stack fs-4"></i></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Recent Rentals for Admin -->
+            <div class="card border-0 shadow-sm rounded-4 overflow-hidden mb-5">
+                <div class="card-header bg-white border-bottom border-light p-4 d-flex justify-content-between align-items-center">
+                    <h5 class="fw-bold mb-0">Recent Rentals</h5>
+                    <a href="#admin-rentals" class="btn btn-sm btn-light text-muted">View All</a>
+                </div>
+                <div class="table-responsive">
+                    <table class="table table-hover align-middle mb-0">
+                        <thead class="bg-light">
+                            <tr class="text-muted small text-uppercase">
+                                <th class="ps-4">Car</th>
+                                <th>Customer</th>
+                                <th>Dates</th>
+                                <th>Total</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody id="adminRecentRentals">
+                            <!-- Injected -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 7. Admin Fleet View -->
+    <section id="adminFleetView" class="view-section py-5">
+         <div class="container">
+            <div class="d-flex justify-content-between align-items-center mb-5">
+                <div>
+                     <h2 class="fw-bold mb-1">Fleet Management</h2>
+                     <p class="text-muted mb-0">Add and manage your vehicle inventory.</p>
+                </div>
+                <button class="btn btn-primary rounded-pill px-4" data-bs-toggle="modal" data-bs-target="#addCarModal">
+                    <i class="bi bi-plus-lg me-2"></i>Add New Car
+                </button>
+            </div>
+            <div class="card border-0 shadow-sm rounded-4 overflow-hidden">
+                <div class="card-body p-0">
+                     <div class="table-responsive">
+                        <table class="table table-hover align-middle mb-0">
+                            <thead class="bg-light">
+                                <tr>
+                                    <th class="ps-4">Vehicle</th>
+                                    <th>Model</th>
+                                    <th>Year</th>
+                                    <th>Daily Rate</th>
+                                    <th>Status</th>
+                                    <th class="text-end pe-4">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="adminCarsList">
+                                <!-- Injected -->
+                            </tbody>
+                        </table>
+                     </div>
+                </div>
+            </div>
+         </div>
+    </section>
+
+    <!-- 8. Admin Rental Requests View -->
+    <section id="adminRentalsView" class="view-section py-5">
+        <div class="container">
+            <h2 class="fw-bold mb-4">Rental Requests</h2>
+            <div class="card shadow border-0 rounded-4 overflow-hidden">
+                <div class="card-body p-0">
+                    <div class="table-responsive">
+                        <table class="table table-hover align-middle mb-0">
+                            <thead class="bg-light border-0">
+                                <tr>
+                                    <th class="ps-4">Customer</th>
+                                    <th>Vehicle</th>
+                                    <th>Duration</th>
+                                    <th>Total</th>
+                                    <th>Status</th>
+                                    <th class="text-end pe-4">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="adminAllRentals">
+                                <!-- Injected -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Modal for Renting Car -->
+    <div class="modal fade" id="rentCarModal" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content border-0 shadow-lg rounded-4">
+                <div class="modal-header">
+                    <h5 class="modal-title fw-bold">Confirm Rental</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body p-4 text-center">
+                    <p class="text-muted">You are about to rent <strong id="rentCarName" class="text-dark"></strong>.</p>
+                    <div class="mb-4">
+                        <label class="form-label small fw-bold text-muted text-uppercase d-block text-start">Select Dates</label>
+                        <div class="input-group">
+                            <input type="date" id="rentStartDate" class="form-control" required>
+                            <span class="input-group-text">to</span>
+                            <input type="date" id="rentEndDate" class="form-control" required>
+                        </div>
+                    </div>
+                    <div class="alert alert-info py-2" id="totalEstimateBox" style="display:none;">
+                        Total Estimated Cost: <strong id="rentTotalPrice">₱0.00</strong>
+                    </div>
+                    <button class="btn btn-primary w-100 py-3 fw-bold" id="confirmRentBtn">Confirm Request</button>
+                    <p class="small text-muted mt-3 mb-0"><i class="bi bi-shield-check text-success me-1"></i> No payment required now.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal for Adding Car (Admin) -->
+    <div class="modal fade" id="addCarModal" tabindex="-1">
+         <div class="modal-dialog">
+            <div class="modal-content border-0 shadow-lg rounded-4">
+                <form id="addCarForm">
+                    <div class="modal-header border-0 pb-0">
+                        <h5 class="modal-title fw-bold">Add New Fleet Item</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                    </div>
+                    <div class="modal-body p-4">
+                        <div class="mb-3">
+                            <label class="form-label small fw-bold text-muted text-uppercase">Vehicle Model</label>
+                            <input type="text" id="carModelInput" class="form-control" required placeholder="e.g. Toyota Vios">
+                        </div>
+                        <div class="row g-2 mb-3">
+                            <div class="col">
+                                <label class="form-label small fw-bold text-muted text-uppercase">Year</label>
+                                <input type="number" id="carYearInput" class="form-control" required value="2023">
+                            </div>
+                            <div class="col">
+                                <label class="form-label small fw-bold text-muted text-uppercase">Price/Day (₱)</label>
+                                <input type="number" id="carPriceInput" class="form-control" required value="1500">
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                             <label class="form-label small fw-bold text-muted text-uppercase">Image URL</label>
+                             <input type="url" id="carImageInput" class="form-control" placeholder="Optional image link">
+                        </div>
+                        <div class="mb-0">
+                            <label class="form-label small fw-bold text-muted text-uppercase">Description</label>
+                            <textarea id="carDescInput" class="form-control" rows="3" placeholder="Describe the vehicle..."></textarea>
+                        </div>
+                    </div>
+                    <div class="modal-footer border-0 p-4 pt-0">
+                        <button type="button" class="btn btn-light rounded-pill px-4" data-bs-dismiss="modal">Cancel</button>
+                        <button type="submit" class="btn btn-primary rounded-pill px-4">Save Vehicle</button>
+                    </div>
+                </form>
+            </div>
+         </div>
+    </div>
+
+    <footer>
+        <div class="container text-center">
+            <p class="mb-0 text-muted">&copy; 2026 VEGAS CAR RENTAL. All rights reserved.</p>
+            <p class="small text-muted mb-0">Static UI Prototype for Demo Purposes</p>
+        </div>
+    </footer>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+    <script>
+        // --- DATA ---
+        let state = {
+            currentUser: null, // {id: 1, name: 'Demo', role: 'admin'|'customer'}
+            owners: [
+                { id: 1, name: "Vicente Lim", email: "limvic@demo.com", cars: 12 },
+                { id: 2, name: "Admin Vega", email: "admin@vega.com", cars: 8 },
+                { id: 3, name: "Car Master", email: "master@demo.com", cars: 5 }
+            ],
+            cars: [
+                { id: 1, ownerId: 1, model: "Tesla Model S", year: 2023, price: 5500, status: "available", image: "https://images.unsplash.com/photo-1560958089-b8a1929cea89?auto=format&fit=crop&q=80&w=800", desc: "Experience the electric revolution with unmatched performance and range." },
+                { id: 2, ownerId: 1, model: "BMW M4 Competition", year: 2022, price: 8000, status: "available", image: "https://images.unsplash.com/photo-1555215695-3004980ad54e?auto=format&fit=crop&q=80&w=800", desc: "Pure driving pleasure with aggressive styling and raw power." },
+                { id: 3, ownerId: 2, model: "Toyota Fortuner", year: 2021, price: 3500, status: "available", image: "https://images.unsplash.com/photo-1533473359331-0135ef1b58bf?auto=format&fit=crop&q=80&w=800", desc: "The ultimate SUV for your family adventure and off-road needs." },
+                { id: 4, ownerId: 3, model: "Honda Civic Type R", year: 2020, price: 4500, status: "available", image: "https://images.unsplash.com/photo-1594070319944-7c0c63146b7a?auto=format&fit=crop&q=80&w=800", desc: "Precision engineering meets track-ready performance." }
+            ],
+            rentals: [
+                { id: 1, userId: 99, carId: 3, startDate: "2026-03-20", endDate: "2026-03-25", totalPrice: 17500, status: "approved", userName: "Juan Luna", carModel: "Toyota Fortuner" },
+                { id: 2, userId: 100, carId: 1, startDate: "2026-04-01", endDate: "2026-04-03", totalPrice: 11000, status: "pending", userName: "Maria Clara", carModel: "Tesla Model S" }
+            ]
+        };
+
+        // --- ROUTING ---
+        function navigate() {
+            const hash = window.location.hash || '#home';
+            const sections = document.querySelectorAll('.view-section');
+            const nav = id => {
+                sections.forEach(s => s.classList.remove('active'));
+                const el = document.getElementById(id);
+                if(el) el.classList.add('active');
+                window.scrollTo(0,0);
+            };
+
+            // Access Control Logic
+            if(hash === '#dashboard' || hash === '#my-rentals' || hash === '#admin' || hash === '#admin-cars' || hash === '#admin-rentals') {
+                if(!state.currentUser) {
+                    window.location.hash = '#login';
+                    return;
+                }
+            }
+
+            if(hash === '#home') {
+                nav('homeView');
+            } else if(hash === '#login' || hash === '#register') {
+                setupAuth(hash === '#login');
+                nav('authView');
+            } else if(hash === '#dashboard') {
+                if(state.currentUser.role === 'admin') { window.location.hash = '#admin'; return; }
+                renderOwners();
+                nav('customerDashboardView');
+            } else if(hash.startsWith('#fleet/')) {
+                const ownerId = hash.split('/')[1];
+                renderFleet(parseInt(ownerId));
+                nav('fleetView');
+            } else if(hash === '#my-rentals') {
+                renderMyRentals();
+                nav('myRentalsView');
+            } else if(hash === '#admin') {
+                renderAdminDashboard();
+                nav('adminDashboardView');
+            } else if(hash === '#admin-cars') {
+                renderAdminCars();
+                nav('adminFleetView');
+            } else if(hash === '#admin-rentals') {
+                renderAdminRentals();
+                nav('adminRentalsView');
+            } else if(hash === '#logout') {
+                logout();
+            }
+
+            updateNavbar();
+        }
+
+        // --- AUTH ---
+        function setupAuth(isLogin) {
+            const title = document.getElementById('authTitle');
+            const sub = document.getElementById('authSubtitle');
+            const toggle = document.getElementById('authToggleText');
+            const icon = document.getElementById('authIcon');
+            const motto = document.getElementById('authMotto');
+            const regFields = document.getElementById('registerFields');
+            const regRole = document.getElementById('registerRoleField');
+            const submit = document.getElementById('authSubmitBtn');
+
+            if(isLogin) {
+                title.innerText = "Welcome Back";
+                sub.innerText = "Sign in to continue.";
+                toggle.innerHTML = 'Don\'t have an account? <a href="#register" class="fw-bold text-decoration-none">Create Account</a>';
+                icon.className = "bi bi-car-front-fill display-1 mb-4 d-block animate-fade-up";
+                motto.innerText = "Experience the future of mobility.";
+                regFields.style.display = 'none';
+                regRole.style.display = 'none';
+                submit.innerText = "Sign In";
+            } else {
+                title.innerText = "Create Account";
+                sub.innerText = "Start your journey with us.";
+                toggle.innerHTML = 'Already have an account? <a href="#login" class="fw-bold text-decoration-none">Sign In</a>';
+                icon.className = "bi bi-stars display-1 mb-4 d-block animate-fade-up";
+                motto.innerText = "Join the exclusive club today.";
+                regFields.style.display = 'block';
+                regRole.style.display = 'block';
+                submit.innerText = "Register";
+            }
+        }
+
+        document.getElementById('actualAuthForm').onsubmit = e => {
+            e.preventDefault();
+            const email = document.getElementById('authEmail').value;
+            const pass = document.getElementById('authPass').value;
+            
+            // Dummy Auth Logic
+            if(email.includes('admin')) {
+                state.currentUser = { id: 1, name: "Admin User", role: 'admin', email: email };
+            } else {
+                state.currentUser = { id: 101, name: document.getElementById('regName').value || "Guest User", role: 'customer', email: email };
+            }
+            
+            Swal.fire({ title: 'Success!', text: 'Welcome to VEGA\'S Car Rental!', icon: 'success', timer: 1500, showConfirmButton: false });
+            window.location.hash = state.currentUser.role === 'admin' ? '#admin' : '#dashboard';
+        };
+
+        function logout() {
+            state.currentUser = null;
+            window.location.hash = '#home';
+            Swal.fire({ title: 'Logged Out', icon: 'info', timer: 1000, showConfirmButton: false });
+        }
+
+        function updateNavbar() {
+            const list = document.getElementById('navLinks');
+            const user = state.currentUser;
+            if(!user) {
+                list.innerHTML = `
+                    <li class="nav-item"><a class="nav-link" href="#home">Home</a></li>
+                    <li class="nav-item ms-lg-2"><a class="btn btn-outline-primary me-2" href="#login">Login</a></li>
+                    <li class="nav-item"><a class="btn btn-primary" href="#register">Register</a></li>
+                `;
+            } else if(user.role === 'admin') {
+                list.innerHTML = `
+                    <li class="nav-item"><a class="nav-link" href="#admin">Dashboard</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#admin-cars">Fleet Management</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#admin-rentals">Rental Requests</a></li>
+                    <li class="nav-item ms-lg-3"><a class="btn btn-outline-danger btn-sm" href="#logout">Logout (Admin)</a></li>
+                `;
+            } else {
+                list.innerHTML = `
+                    <li class="nav-item"><a class="nav-link" href="#dashboard">Browse Cars</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#my-rentals">My Rentals</a></li>
+                    <li class="nav-item ms-lg-3">
+                        <span class="navbar-text me-3 fw-bold">Hi, ${user.name}</span>
+                        <a class="btn btn-outline-primary btn-sm" href="#logout">Logout</a>
+                    </li>
+                `;
+            }
+        }
+
+        // --- CUSTOMER LOGIC ---
+        function renderOwners() {
+            const list = document.getElementById('ownersList');
+            list.innerHTML = state.owners.map(o => `
+                <div class="col">
+                    <a href="#fleet/${o.id}" class="text-decoration-none">
+                        <div class="card h-100 border-0 shadow-lg rounded-4 overflow-hidden card-hover-effect">
+                            <div class="card-body p-4 text-center">
+                                <div class="avatar-lg bg-primary bg-opacity-10 text-primary rounded-circle d-flex align-items-center justify-content-center mx-auto mb-4" style="width: 80px; height: 80px;">
+                                    <i class="bi bi-person-workspace fs-1"></i>
+                                </div>
+                                <h3 class="fw-bold text-dark mb-2">${o.name}</h3>
+                                <p class="text-muted mb-4">${o.email}</p>
+                                <div class="d-inline-block bg-light rounded-pill px-4 py-2 border">
+                                    <span class="fw-bold text-primary">${state.cars.filter(c => c.ownerId === o.id).length}</span>
+                                    <span class="text-muted small">Available Cars</span>
+                                </div>
+                            </div>
+                            <div class="card-footer bg-primary border-0 text-center py-3">
+                                <span class="text-white fw-bold">View Collection <i class="bi bi-chevron-right ms-2"></i></span>
+                            </div>
+                        </div>
+                    </a>
+                </div>
+            `).join('');
+        }
+
+        function renderFleet(ownerId) {
+            const owner = state.owners.find(o => o.id === ownerId);
+            document.getElementById('fleetOwnerTitle').innerText = `Available Fleet from ${owner.name}`;
+            const filteredCars = state.cars.filter(c => c.ownerId === ownerId);
+            const list = document.getElementById('carsList');
+            
+            if(filteredCars.length === 0) {
+                list.innerHTML = `<div class="col-12 text-center py-5"><h3>No cars found.</h3></div>`;
+                return;
+            }
+
+            list.innerHTML = filteredCars.map(c => `
+                <div class="col">
+                    <div class="card h-100 border-0 shadow-lg rounded-4 overflow-hidden card-hover-effect">
+                        <div class="position-relative">
+                            <img src="${c.image}" class="card-img-top" style="height: 250px; object-fit: cover;">
+                            <div class="position-absolute top-0 end-0 m-3">
+                                <span class="badge bg-white text-dark shadow-sm px-3 py-2 rounded-pill fw-bold">${c.year}</span>
+                            </div>
+                        </div>
+                        <div class="card-body p-4 d-flex flex-column">
+                            <h5 class="card-title fw-bold mb-2">${c.model}</h5>
+                            <p class="card-text text-muted small flex-grow-1">${c.desc.substring(0, 90)}...</p>
+                            <div class="mt-auto pt-3 border-top">
+                                <div class="d-flex justify-content-between align-items-center mb-3">
+                                    <small class="text-uppercase text-muted fw-bold">Daily Rate</small>
+                                    <h5 class="text-primary mb-0 fw-bold">₱${c.price.toLocaleString()}</h5>
+                                </div>
+                                <div class="d-grid">
+                                    <button class="btn btn-primary rounded-pill py-2" onclick="openRentModal(${c.id})">Rent Now</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        let currentlySelectingCar = null;
+        function openRentModal(carId) {
+            const car = state.cars.find(c => c.id === carId);
+            currentlySelectingCar = car;
+            document.getElementById('rentCarName').innerText = car.model;
+            document.getElementById('totalEstimateBox').style.display = 'none';
+            const modal = new bootstrap.Modal(document.getElementById('rentCarModal'));
+            modal.show();
+        }
+
+        document.getElementById('confirmRentBtn').onclick = () => {
+            const start = document.getElementById('rentStartDate').value;
+            const end = document.getElementById('rentEndDate').value;
+            if(!start || !end) { Swal.fire('Error', 'Please select dates', 'error'); return; }
+            
+            const newRental = {
+                id: state.rentals.length + 1,
+                userId: state.currentUser.id,
+                carId: currentlySelectingCar.id,
+                startDate: start,
+                endDate: end,
+                totalPrice: calculateTotal(start, end, currentlySelectingCar.price),
+                status: 'pending',
+                userName: state.currentUser.name,
+                carModel: currentlySelectingCar.model
+            };
+            state.rentals.push(newRental);
+            bootstrap.Modal.getInstance(document.getElementById('rentCarModal')).hide();
+            Swal.fire('Success', 'Rental request submitted!', 'success');
+            window.location.hash = '#my-rentals';
+        };
+
+        function calculateTotal(s, e, price) {
+            const diff = (new Date(e) - new Date(s)) / (1000 * 60 * 60 * 24);
+            return (diff > 0 ? diff : 1) * price;
+        }
+
+        function renderMyRentals() {
+            const list = document.getElementById('myRentalsList');
+            const my = state.rentals.filter(r => r.userId === state.currentUser.id);
+            if(my.length === 0) {
+                list.innerHTML = `<tr><td colspan="4" class="text-center py-5">No rentals yet.</td></tr>`;
+                return;
+            }
+            list.innerHTML = my.map(r => `
+                <tr>
+                    <td class="ps-4 fw-bold">${r.carModel}</td>
+                    <td>${r.startDate} to ${r.endDate}</td>
+                    <td class="fw-bold">₱${r.totalPrice.toLocaleString()}</td>
+                    <td><span class="badge bg-${r.status==='approved'?'success':r.status==='rejected'?'danger':'warning'} rounded-pill px-3">${r.status.toUpperCase()}</span></td>
+                </tr>
+            `).join('');
+        }
+
+        // --- ADMIN LOGIC ---
+        function renderAdminDashboard() {
+            document.getElementById('statCars').innerText = state.cars.length;
+            document.getElementById('statPending').innerText = state.rentals.filter(r => r.status === 'pending').length;
+            document.getElementById('statActive').innerText = state.rentals.filter(r => r.status === 'approved').length;
+            const rev = state.rentals.filter(r => r.status === 'approved').reduce((acc, r) => acc + r.totalPrice, 0);
+            document.getElementById('statRevenue').innerText = `₱${rev.toLocaleString()}`;
+
+            const recent = document.getElementById('adminRecentRentals');
+            recent.innerHTML = state.rentals.slice(-5).reverse().map(r => `
+                <tr>
+                    <td class="ps-4 fw-bold">${r.carModel}</td>
+                    <td>${r.userName}</td>
+                    <td>${r.startDate}</td>
+                    <td class="fw-bold text-primary">₱${r.totalPrice.toLocaleString()}</td>
+                    <td><span class="badge bg-${r.status==='approved'?'success':'warning'} bg-opacity-10 text-${r.status==='approved'?'success':'warning'} px-2">${r.status.toUpperCase()}</span></td>
+                </tr>
+            `).join('');
+        }
+
+        function renderAdminCars() {
+            const list = document.getElementById('adminCarsList');
+            list.innerHTML = state.cars.map(c => `
+                <tr>
+                    <td class="ps-4"><img src="${c.image}" width="60" class="rounded shadow-sm"></td>
+                    <td class="fw-bold">${c.model}</td>
+                    <td>${c.year}</td>
+                    <td class="text-primary fw-bold">₱${c.price.toLocaleString()}</td>
+                    <td><span class="badge bg-success bg-opacity-10 text-success rounded-pill px-2">Available</span></td>
+                    <td class="text-end pe-4">
+                        <button class="btn btn-sm btn-light border" onclick="deleteCar(${c.id})">Delete</button>
+                    </td>
+                </tr>
+            `).join('');
+        }
+
+        function renderAdminRentals() {
+            const list = document.getElementById('adminAllRentals');
+            list.innerHTML = state.rentals.slice().reverse().map(r => `
+                <tr>
+                    <td class="ps-4 fw-bold">${r.userName}</td>
+                    <td>${r.carModel}</td>
+                    <td>${r.startDate} to ${r.endDate}</td>
+                    <td class="fw-bold text-primary">₱${r.totalPrice.toLocaleString()}</td>
+                    <td><span class="badge bg-${r.status==='approved'?'success':r.status==='rejected'?'danger':'warning'} bg-opacity-10 text-${r.status==='approved'?'success':r.status==='rejected'?'danger':'warning'} px-3 rounded-pill">${r.status.toUpperCase()}</span></td>
+                    <td class="text-end pe-4">
+                        ${r.status === 'pending' ? `
+                            <button class="btn btn-sm btn-success rounded-pill px-3" onclick="updateRental(${r.id}, 'approved')">Approve</button>
+                            <button class="btn btn-sm btn-outline-danger rounded-pill px-3" onclick="updateRental(${r.id}, 'rejected')">Reject</button>
+                        ` : '<span class="text-muted small">Processed</span>'}
+                    </td>
+                </tr>
+            `).join('');
+        }
+
+        function updateRental(id, status) {
+            const r = state.rentals.find(x => x.id === id);
+            r.status = status;
+            Swal.fire('Updated', `Rental has been ${status}`, 'success');
+            renderAdminRentals();
+            renderAdminDashboard();
+        }
+
+        document.getElementById('addCarForm').onsubmit = e => {
+            e.preventDefault();
+            const newCar = {
+                id: state.cars.length + 1,
+                ownerId: 1,
+                model: document.getElementById('carModelInput').value,
+                year: document.getElementById('carYearInput').value,
+                price: parseInt(document.getElementById('carPriceInput').value),
+                image: document.getElementById('carImageInput').value || "https://images.unsplash.com/photo-1533473359331-0135ef1b58bf?auto=format&fit=crop&q=80&w=800",
+                desc: document.getElementById('carDescInput').value || "No description provided.",
+                status: "available"
+            };
+            state.cars.push(newCar);
+            bootstrap.Modal.getInstance(document.getElementById('addCarModal')).hide();
+            Swal.fire('Added', 'New car added to fleet!', 'success');
+            renderAdminCars();
+        };
+
+        function deleteCar(id) {
+            state.cars = state.cars.filter(c => c.id !== id);
+            renderAdminCars();
+            Swal.fire('Deleted', 'Car removed from fleet', 'warning');
+        }
+
+        // --- INIT ---
+        window.onhashchange = navigate;
+        window.onload = navigate;
+
+    </script>
+</body>
+</html>
