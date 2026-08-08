@@ -1,9 +1,55 @@
-# 🚗 VEGA'S PREMIUM CAR RENTAL (Multi-Owner)
+# 🚗 FILIPS CAR RENTAL (Multi-Owner MVC Platform)
 
 > [!NOTE]
-> **Project Status**: Under Proposition (Under Prop / Prototyping Phase)
+> **Project Status**: Enterprise Restructured (MVC Architecture & Rebranded)
 
-A modern, full-stack multi-owner car rental platform built with **Vanilla PHP**, **MySQL**, and **Bootstrap 5**. This version refactors the traditional system into a collaborative marketplace where multiple administrators can manage their own distinct fleets within a unified customer portal.
+A modern, full-stack multi-owner car rental platform built with **PHP 8.x**, **MySQL**, **Bootstrap 5**, and structured under the **Model-View-Controller (MVC)** architectural pattern. It features a collaborative marketplace where multiple administrators manage distinct vehicle fleets within a unified, high-converting customer portal.
+
+---
+
+## 🏗 Directory & MVC Architecture
+
+The codebase follows a clean separation of concerns using an `app/` structure with automated class loading via `spl_autoload_register`.
+
+```text
+Car_Rental/
+├── config.php                  # Database, global constants & SMTP configuration
+├── index.php                   # Public landing page entry point
+├── login.php                   # Auth login entry point
+├── register.php                # Auth registration entry point
+├── logout.php                  # Session logout entry point
+├── dashboard.php               # Customer fleet browsing entry point
+├── car_details.php             # Vehicle detail & rental request entry point
+├── my_rentals.php              # Customer rental history entry point
+├── rent_process.php            # Rental submission handler
+├── admin/                      # Admin entry points & PHPMailer
+│   ├── dashboard.php           # Admin overview
+│   ├── cars.php                # Fleet management
+│   ├── rentals.php             # Rental request approval/rejection
+│   ├── owner_dashboard.php     # Individual owner dashboard
+│   ├── check_pending.php       # Real-time AJAX polling endpoint
+│   └── PHPMailer/              # Email dispatch library
+├── app/                        # MVC Application Core
+│   ├── Models/                 # Data Models & DB queries
+│   │   ├── User.php            # User authentication & owner management
+│   │   ├── Car.php             # Vehicle inventory & availability math
+│   │   └── Rental.php          # Booking transactions & SMTP mailer
+│   ├── Controllers/            # Application Controllers
+│   │   ├── AuthController.php      # Login, Register, Logout controller
+│   │   ├── DashboardController.php # Landing & Dashboard views controller
+│   │   ├── CarController.php       # Car details & fleet CRUD controller
+│   │   └── RentalController.php    # Rental processing & approval controller
+│   └── Views/                  # View Templates
+│       ├── includes/           # Header, sticky Navbar & Footer layouts
+│       ├── auth/               # Login & Register views
+│       ├── dashboard/          # Home landing, customer, admin & owner views
+│       ├── cars/               # Car details & admin fleet views
+│       └── rentals/            # Customer & admin rental views
+├── assets/                     # Stylesheets, JS & Static Assets
+└── uploads/                    # Vehicle uploaded images
+```
+
+---
 
 ## 📊 System Flowchart & Data Architecture
 
@@ -45,42 +91,50 @@ graph TD
     ReviewRentals -.->|SELECT| DB_Rentals
     ReviewRentals --> Decision{Approve / Reject}
     Decision -.->|UPDATE| DB_Rentals
-    Decision --> Mail[JSON/SMTP: Email Notification]
+    Decision --> Mail[Config-driven SMTP: Email Notification]
     Mail --> Customer((Customer Notified))
 ```
 
-## 🏦 Database Architecture
-- **Users Table**: Stores accounts with `role` (Admin/Customer). Admins function as Owners.
-- **Cars Table**: Keyed by `owner_id` (foreign key to Users). Stores model, year, and **stock quantity**.
-- **Rentals Table**: Acts as a junction between Customers and Cars, tracking `start_date`, `end_date`, and `total_price`.
+---
 
-## ✨ Major Architectural Changes
+## ✨ Recent Major Enhancements
 
-### 🏢 Multi-Owner Infrastructure
-- **Consolidated Roles**: Simplified to 2 core roles — **Admin** (acting as Car Owners) and **Customer** (Renters).
-- **Owner-Specific Dashboards**: Each admin has a dedicated management space for their specific vehicle inventory.
-- **Names-Based Filtering**: Fleet management now includes high-speed filtering to isolate cars by owner name.
-- **Accurate Inventory Tracking**: Dashboard metrics now calculate **physical total cars** (sum of all stocks) rather than just the number of unique models.
+### 📐 MVC Restructuring
+- **Clean Separation of Concerns**: Decoupled presentation (`Views`), business logic (`Controllers`), and data access (`Models`).
+- **Autoloading Integration**: Automatic class loading via `spl_autoload_register` handling `App\*` namespaces.
+- **Controller Wrappers**: Entry scripts delegate directly to specific Controller methods (`(new DashboardController($mysqli))->home()`).
 
-### 🛠 Admin Module
-- **Owner Grid**: Visual overview of all platform partners and their fleet sizes.
-- **Direct Account Creation**: Admins can create new owner accounts via an integrated modal system.
-- **Fleet Management**: Streamlined CRUD operations moved to specific owner contexts.
-- **Real-Time Data**: Instant metrics for revenue and active rentals across the platform.
+### ⚙️ Centralized SMTP Configuration
+- **No Hardcoded Credentials**: Moved all mail server settings (`SMTP_HOST`, `SMTP_PORT`, `SMTP_USERNAME`, `SMTP_PASSWORD`, `SMTP_ENCRYPTION`, `SMTP_FROM_EMAIL`, `SMTP_FROM_NAME`) to [config.php](file:///c:/xampp/htdocs/Car_Rental/config.php).
+- **Transactional Mailer**: `Rental` model uses PHPMailer driven strictly by configuration constants.
 
-### 👤 Customer Module
-- **Owner-First Browsing**: Users select which rental provider to browse first, ensuring transparency in management.
-- **Unified Carousel/Grid**: Seamless transition from owner grid to specific vehicle collection.
-- **Computed Estimations**: Real-time price calculation based on pickup and return dates.
+### 🎨 Executive Landing Page Redesign
+- **Hero & Search Box**: Hero banner with subtle background animations and floating search card.
+- **Metrics Section**: Interactive counters for available vehicles, customer satisfaction, and 24/7 support.
+- **Boxed Content Layout**: Structured `.box-card` and `.step-card` elements for high visual appeal.
+- **Reviews & CTA**: Testimonial grid and Call-To-Action conversion section.
 
-## 🚀 Technical Stack
-- **Backend**: PHP 8.x
-- **Database**: MySQL (Relational Schema with owner-car associations)
-- **Frontend**: Bootstrap 5, Custom Glassmorphism CSS, Vanilla JS
-- **Automation**: 
-  - [PHPMailer](https://github.com/PHPMailer/PHPMailer) for transactional emails.
-  - [SweetAlert2](https://sweetalert2.github.io/) for professional UI feedback.
+### 📌 Fixed Sticky Navigation Header
+- **Always-Accessible Header**: Applied `position: fixed !important` with backdrop blur (`backdrop-filter: blur(12px)`) so header navigation stays visible and clickable anywhere on the page when scrolling down.
+- **Streamlined Navigation Links**: Header includes direct links (`Home`, `Our Fleet`, `Why Us`, `How It Works`, `Reviews`) and a single **Sign In** call-to-action button (removed redundant Register button).
+- **Rebranded**: Updated brand title across all views to **FILIPS CAR RENTAL**.
+
+---
+
+## 🏦 Database Schema Overview
+- **`users` Table**: Accounts table with `role` (`admin` / `customer`). Admins act as car owners.
+- **`cars` Table**: Keyed by `owner_id` (foreign key to `users`). Stores vehicle model, year, daily rate, status, and stock `quantity`.
+- **`rentals` Table**: Junction table tracking `user_id`, `car_id`, `start_date`, `end_date`, `total_price`, and `status` (`pending`, `approved`, `rejected`, `completed`).
+
+---
+
+## 🚀 Technology Stack
+- **Backend**: PHP 8.x (MVC Architecture)
+- **Database**: MySQL (Relational Schema)
+- **Frontend**: Bootstrap 5, Custom Glassmorphism & Box System CSS, Vanilla JS
+- **Libraries**:
+  - [PHPMailer](https://github.com/PHPMailer/PHPMailer) for email dispatch.
+  - [SweetAlert2](https://sweetalert2.github.io/) for UI popups and alert notifications.
 
 ---
 *Developed as a high-performance prototype for scalable rental systems.*
-
