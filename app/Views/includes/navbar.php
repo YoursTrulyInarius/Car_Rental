@@ -1,55 +1,69 @@
 <?php
 $current_page = basename($_SERVER['PHP_SELF']);
 ?>
-<nav class="navbar navbar-expand-lg sticky-top">
+<nav class="navbar navbar-expand-lg fixed-top bg-white shadow-sm">
     <div class="container">
-        <span class="navbar-brand mb-0 h1" style="cursor: default;">
-            <i class="bi bi-car-front-fill me-2"></i>VEGA'S CAR RENTAL
-        </span>
-        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+        <a class="navbar-brand d-flex align-items-center me-4" href="<?php echo BASE_URL; ?>index.php">
+            <i class="bi bi-car-front-fill me-2 text-primary"></i>FILIPS CAR RENTAL
+        </a>
+        <button class="navbar-toggler border-0 shadow-none" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
             <span class="navbar-toggler-icon"></span>
         </button>
         <div class="collapse navbar-collapse" id="navbarNav">
-            <ul class="navbar-nav ms-auto align-items-center">
+            <ul class="navbar-nav ms-auto align-items-center gap-1">
                 
                 <!-- Admin Links -->
                 <?php if(isset($_SESSION['role']) && $_SESSION['role'] == 'admin'): ?>
                     <li class="nav-item">
-                        <a class="nav-link <?php echo ($current_page == 'dashboard.php') ? 'active' : ''; ?>" href="<?php echo BASE_URL; ?>admin/dashboard.php">Dashboard</a>
+                        <a class="nav-link px-3 fw-semibold <?php echo ($current_page == 'dashboard.php') ? 'active text-primary' : ''; ?>" href="<?php echo BASE_URL; ?>admin/dashboard.php">Dashboard</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link <?php echo ($current_page == 'cars.php') ? 'active' : ''; ?>" href="<?php echo BASE_URL; ?>admin/cars.php">Fleet Management</a>
+                        <a class="nav-link px-3 fw-semibold <?php echo ($current_page == 'cars.php') ? 'active text-primary' : ''; ?>" href="<?php echo BASE_URL; ?>admin/cars.php">Fleet Management</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link <?php echo ($current_page == 'rentals.php') ? 'active' : ''; ?>" href="<?php echo BASE_URL; ?>admin/rentals.php" id="rentals-link">Rentals</a>
+                        <a class="nav-link px-3 fw-semibold <?php echo ($current_page == 'rentals.php') ? 'active text-primary' : ''; ?>" href="<?php echo BASE_URL; ?>admin/rentals.php" id="rentals-link">Rentals</a>
                     </li>
                     <li class="nav-item ms-lg-3">
-                        <a class="btn btn-outline-danger btn-sm" href="<?php echo BASE_URL; ?>logout.php">Logout (Admin)</a>
+                        <a class="btn btn-outline-danger btn-sm rounded-pill px-3" href="<?php echo BASE_URL; ?>logout.php">Logout (Admin)</a>
                     </li>
 
                 <!-- Customer Links -->
                 <?php elseif(isset($_SESSION['role']) && $_SESSION['role'] == 'customer'): ?>
                     <li class="nav-item">
-                        <a class="nav-link <?php echo ($current_page == 'dashboard.php') ? 'active' : ''; ?>" href="<?php echo BASE_URL; ?>dashboard.php">Browse Cars</a>
+                        <a class="nav-link px-3 fw-semibold <?php echo ($current_page == 'index.php') ? 'active text-primary' : ''; ?>" href="<?php echo BASE_URL; ?>index.php">Home</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link <?php echo ($current_page == 'my_rentals.php') ? 'active' : ''; ?>" href="<?php echo BASE_URL; ?>my_rentals.php">My Rentals</a>
+                        <a class="nav-link px-3 fw-semibold <?php echo ($current_page == 'dashboard.php') ? 'active text-primary' : ''; ?>" href="<?php echo BASE_URL; ?>dashboard.php">Browse Cars</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link px-3 fw-semibold <?php echo ($current_page == 'my_rentals.php') ? 'active text-primary' : ''; ?>" href="<?php echo BASE_URL; ?>my_rentals.php">My Rentals</a>
                     </li>
                     <li class="nav-item ms-lg-3">
-                        <span class="navbar-text me-3">Hi, <?php echo htmlspecialchars($_SESSION['username'] ?? 'Customer'); ?></span>
-                        <a class="btn btn-outline-primary btn-sm" href="<?php echo BASE_URL; ?>logout.php">Logout</a>
+                        <span class="navbar-text me-3 fw-semibold">Hi, <?php echo htmlspecialchars($_SESSION['username'] ?? 'Customer'); ?></span>
+                        <a class="btn btn-outline-primary btn-sm rounded-pill px-3" href="<?php echo BASE_URL; ?>logout.php">Logout</a>
                     </li>
 
                 <!-- Guest Links -->
                 <?php else: ?>
                     <li class="nav-item">
-                        <a class="nav-link <?php echo ($current_page == 'index.php') ? 'active' : ''; ?>" href="<?php echo BASE_URL; ?>index.php">Home</a>
-                    </li>
-                    <li class="nav-item ms-lg-2">
-                        <a class="btn btn-outline-primary me-2" href="<?php echo BASE_URL; ?>login.php">Login</a>
+                        <a class="nav-link px-3 fw-semibold <?php echo ($current_page == 'index.php') ? 'active text-primary' : ''; ?>" href="<?php echo BASE_URL; ?>index.php">Home</a>
                     </li>
                     <li class="nav-item">
-                        <a class="btn btn-primary" href="<?php echo BASE_URL; ?>register.php">Register</a>
+                        <a class="nav-link px-3 fw-semibold" href="<?php echo BASE_URL; ?>dashboard.php">Our Fleet</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link px-3 fw-semibold" href="<?php echo BASE_URL; ?>index.php#features">Why Us</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link px-3 fw-semibold" href="<?php echo BASE_URL; ?>index.php#how-it-works">How It Works</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link px-3 fw-semibold" href="<?php echo BASE_URL; ?>index.php#reviews">Reviews</a>
+                    </li>
+                    <li class="nav-item ms-lg-3">
+                        <a class="btn btn-primary rounded-pill px-4 fw-bold shadow-sm" href="<?php echo BASE_URL; ?>login.php">
+                            <i class="bi bi-box-arrow-in-right me-1"></i> Sign In
+                        </a>
                     </li>
                 <?php endif; ?>
             </ul>
