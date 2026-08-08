@@ -16,11 +16,11 @@ if($mysqli === false){
 // SMTP Configuration
 define('SMTP_HOST', 'smtp.gmail.com');
 define('SMTP_PORT', 587);
-define('SMTP_USERNAME', 'limvic2019@gmail.com');
-define('SMTP_PASSWORD', 'svetplaptkssyrba');
+define('SMTP_USERNAME', 'youremail@.com');
+define('SMTP_PASSWORD', 'yourpassword');
 define('SMTP_ENCRYPTION', 'tls');
-define('SMTP_FROM_EMAIL', 'limvic2019@gmail.com');
-define('SMTP_FROM_NAME', "JEBWINE'S Rental");
+define('SMTP_FROM_EMAIL', 'youremail@.com');
+define('SMTP_FROM_NAME', "Your Brand Name");
 
 // Global Constants
 define('BASE_URL', 'http://localhost/Car_Rental/');
