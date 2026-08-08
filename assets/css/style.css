@@ -222,17 +222,120 @@ body {
     transform: translateY(-3px);
 }
 
-/* Footer Fix */
-footer {
-    width: 100%;
-    text-align: center !important;
-    padding: 1.5rem 0;
-    background-color: var(--secondary-color);
-    color: #6c757d;
-    margin-top: auto;
-    /* Pushes footer to bottom */
+/* Custom Enhancements & Landing Page Styling */
+.hero-wrapper {
+    position: relative;
+    background: radial-gradient(135.25% 100% at 50% 0%, #0d6efd 0%, #083b91 100%);
+    color: white;
+    padding: 6rem 0 7rem;
+    overflow: hidden;
 }
 
-footer .container {
-    text-align: center;
+.hero-bg-shapes .shape-circle {
+    position: absolute;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.06);
+    backdrop-filter: blur(20px);
 }
+.hero-bg-shapes .shape-1 {
+    width: 450px;
+    height: 450px;
+    top: -100px;
+    right: -50px;
+    animation: float 9s ease-in-out infinite;
+}
+.hero-bg-shapes .shape-2 {
+    width: 350px;
+    height: 350px;
+    bottom: -100px;
+    left: -50px;
+    animation: float 7s ease-in-out infinite reverse;
+}
+
+.hero-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    background: rgba(255, 255, 255, 0.15);
+    backdrop-filter: blur(12px);
+    border: 1px solid rgba(255, 255, 255, 0.25);
+    padding: 0.5rem 1.25rem;
+    border-radius: 50rem;
+    font-size: 0.875rem;
+    font-weight: 500;
+}
+
+.search-bar-card {
+    background: rgba(255, 255, 255, 0.98);
+    backdrop-filter: blur(20px);
+    border: 1px solid rgba(255, 255, 255, 0.4);
+    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.15);
+    border-radius: 24px;
+    margin-top: -3.5rem;
+    position: relative;
+    z-index: 10;
+}
+
+.feature-card {
+    background: #ffffff;
+    border: 1px solid #eef2f6;
+    border-radius: 20px;
+    padding: 2.5rem 2rem;
+    transition: all 0.35s ease;
+}
+
+.feature-card:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 20px 40px rgba(13, 110, 253, 0.08);
+    border-color: rgba(13, 110, 253, 0.2);
+}
+
+.icon-gradient {
+    width: 64px;
+    height: 64px;
+    border-radius: 18px;
+    background: linear-gradient(135deg, rgba(13, 110, 253, 0.12) 0%, rgba(13, 110, 253, 0.04) 100%);
+    color: var(--primary-color);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.75rem;
+    margin-bottom: 1.5rem;
+}
+
+.stats-section {
+    background: #ffffff;
+    border-top: 1px solid #edf2f7;
+    border-bottom: 1px solid #edf2f7;
+}
+
+.step-number {
+    width: 48px;
+    height: 48px;
+    background: var(--primary-color);
+    color: #ffffff;
+    font-weight: 700;
+    font-size: 1.25rem;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 1.5rem;
+    box-shadow: 0 6px 18px rgba(13, 110, 253, 0.3);
+}
+
+.cta-banner {
+    background: linear-gradient(135deg, #0b5ed7 0%, #052c65 100%);
+    border-radius: 28px;
+    color: white;
+    position: relative;
+    overflow: hidden;
+}
+
+.testimonial-card {
+    background: #ffffff;
+    border-radius: 20px;
+    border: 1px solid #eef2f6;
+    padding: 2rem;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.03);
+}
