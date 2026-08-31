@@ -109,17 +109,34 @@ $recentFleet = array_slice($carRows, 0, 6);
                                     <th>Car</th>
                                     <th>Status</th>
                                     <th>Price</th>
-                                    <th>Owner</th>
+                                    <th>Available Stock</th>
                                 </tr>
                             </thead>
                             <tbody>
                                 <?php if (!empty($recentFleet)): ?>
                                     <?php foreach ($recentFleet as $car): ?>
                                         <?php
+                                            $total_units = (int)($car['quantity'] ?? 1);
+                                            $car_id = (int)($car['id'] ?? 0);
+                                            $today = date('Y-m-d');
+                                            $active_count = $carModel->getActiveBookingsCount($car_id, $today);
+                                            $avail_stock = max(0, $total_units - $active_count);
+
                                             $status = $car['status'] ?? 'available';
+                                            if ($avail_stock <= 0) {
+                                                $status = 'rented';
+                                            }
+
+                                            $statusLabel = 'Available';
                                             $statusClass = 'success';
-                                            if ($status === 'rented' || $status === 'reserved') $statusClass = 'warning';
-                                            if ($status === 'maintenance') $statusClass = 'secondary';
+                                            if ($status === 'rented' || $status === 'reserved') {
+                                                $statusClass = 'danger';
+                                                $statusLabel = 'Fully Rented';
+                                            }
+                                            if ($status === 'maintenance') {
+                                                $statusClass = 'secondary';
+                                                $statusLabel = 'Maintenance';
+                                            }
                                         ?>
                                         <tr>
                                             <td>
@@ -128,18 +145,20 @@ $recentFleet = array_slice($carRows, 0, 6);
                                                         <i class="bi bi-car-front-fill"></i>
                                                     </div>
                                                     <div>
-                                                        <div class="fw-semibold"><?php echo htmlspecialchars($car['brand'] ?? 'Vehicle'); ?> <?php echo htmlspecialchars($car['model'] ?? ''); ?></div>
-                                                        <small class="text-muted"><?php echo htmlspecialchars($car['plate_number'] ?? ''); ?></small>
+                                                        <div class="fw-semibold"><?php echo htmlspecialchars($car['model'] ?? 'Vehicle'); ?></div>
+                                                        <small class="text-muted"><?php echo htmlspecialchars(ucfirst($car['type'] ?? 'Sedan')); ?></small>
                                                     </div>
                                                 </div>
                                             </td>
                                             <td>
-                                                <span class="status-badge status-<?php echo $statusClass; ?>"><?php echo ucfirst($status); ?></span>
+                                                <span class="status-badge status-<?php echo $statusClass; ?>"><?php echo $statusLabel; ?></span>
                                             </td>
                                             <td class="fw-semibold text-primary">₱<?php echo number_format((float)($car['price_per_day'] ?? 0), 2); ?></td>
                                             <td>
-                                                <?php $ownerName = $car['owner_id'] ? ($carModel->getById($car['owner_id'])['name'] ?? 'Owner') : 'N/A'; ?>
-                                                <?php echo htmlspecialchars($ownerName); ?>
+                                                <span class="fw-bold <?php echo ($avail_stock > 0) ? 'text-success' : 'text-danger'; ?>">
+                                                    <?php echo $avail_stock; ?> Available
+                                                </span>
+                                                <small class="text-muted d-block">Total: <?php echo $total_units; ?></small>
                                             </td>
                                         </tr>
                                     <?php endforeach; ?>

@@ -67,16 +67,16 @@ require_once __DIR__ . '/../includes/navbar.php';
                     $available_qty = $quantity - $active_count;
                     if($available_qty < 0) $available_qty = 0;
                     
-                    $is_available = ($available_qty > 0);
+                    $is_available = ($available_qty > 0 && ($row['status'] ?? 'available') === 'available');
                     $btn_class = $is_available ? 'btn-primary' : 'btn-secondary disabled';
-                    $btn_text = $is_available ? 'Rent Now' : 'Out of Stock';
+                    $btn_text = $is_available ? 'Rent Now' : 'Fully Rented';
                     
                     $badge_class = 'bg-success';
                     $badge_text = "$available_qty Available";
 
                     if(!$is_available){
                         $badge_class = 'bg-danger';
-                        $badge_text = "Out of Stock";
+                        $badge_text = "Fully Rented";
 
                         $next_date_str = $carModel->getNextAvailableDate($car_id, $today);
                         if($next_date_str){

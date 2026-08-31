@@ -40,14 +40,36 @@ require_once __DIR__ . '/../includes/navbar.php';
                 <img src="https://via.placeholder.com/800x420?text=Premium+Fleet" class="w-100 rounded-4 shadow" style="height: 420px; object-fit: cover;" alt="Car">
             <?php endif; ?>
             
+            <?php 
+                $car_id = (int)$car['id'];
+                $total_units = (int)($car['quantity'] ?? 1);
+                $today = date('Y-m-d');
+                $carModelObj = new \App\Models\Car($mysqli);
+                $active_count = $carModelObj->getActiveBookingsCount($car_id, $today);
+                $avail_stock = max(0, $total_units - $active_count);
+                $is_fully_rented = ($avail_stock <= 0 || ($car['status'] ?? 'available') === 'rented');
+            ?>
+
             <div class="mt-4">
                 <h2 class="fw-bold"><?php echo htmlspecialchars($car['model']); ?></h2>
-                <div class="mb-3">
+                <div class="mb-3 d-flex align-items-center gap-2 flex-wrap">
                     <span class="badge bg-primary px-3 py-2"><?php echo $car['year']; ?> Model</span>
-                    <span class="badge bg-light text-dark border px-3 py-2 ms-2">
-                        <i class="bi bi-person-circle me-1 text-primary"></i>
-                        Manager: <?php echo htmlspecialchars($car['owner_name'] ?? 'System'); ?>
-                    </span>
+                    <?php if(!empty($car['type'])): ?>
+                        <span class="badge bg-light text-dark border px-3 py-2 text-capitalize">
+                            <i class="bi bi-gear-wide-connected me-1 text-primary"></i>
+                            <?php echo htmlspecialchars(ucfirst($car['type'])); ?>
+                        </span>
+                    <?php endif; ?>
+
+                    <?php if ($is_fully_rented): ?>
+                        <span class="badge bg-danger px-3 py-2">
+                            <i class="bi bi-x-circle-fill me-1"></i>Fully Rented
+                        </span>
+                    <?php else: ?>
+                        <span class="badge bg-success px-3 py-2">
+                            <i class="bi bi-check-circle-fill me-1"></i><?php echo $avail_stock; ?> Unit(s) Available
+                        </span>
+                    <?php endif; ?>
                 </div>
                 <p class="mt-3 text-muted lead"><?php echo nl2br(htmlspecialchars($car['description'])); ?></p>
             </div>
@@ -59,6 +81,13 @@ require_once __DIR__ . '/../includes/navbar.php';
                     <h3 class="fw-bold mb-1">Rental Confirmation</h3>
                     <p class="text-muted small mb-0">Complete the details below to secure your ride.</p>
                 </div>
+
+                <?php if ($is_fully_rented): ?>
+                    <div class="alert alert-danger border-0 shadow-sm rounded-4 p-3 mb-4">
+                        <i class="bi bi-exclamation-triangle-fill me-2 fs-5"></i>
+                        <strong>Fully Rented:</strong> All <?php echo $total_units; ?> unit(s) of this vehicle are currently rented out. Please check back later.
+                    </div>
+                <?php endif; ?>
 
                 <div class="d-flex align-items-end mb-4">
                     <h2 class="text-primary mb-0 fw-bold display-5 me-2">₱<?php echo number_format($car['price_per_day'], 2); ?></h2>
@@ -72,11 +101,11 @@ require_once __DIR__ . '/../includes/navbar.php';
                     <div class="row g-3 mb-4">
                         <div class="col-6">
                             <label class="form-label text-uppercase small text-muted fw-bold">Pick-up Date</label>
-                            <input type="date" name="start_date" id="startDate" class="form-control form-control-lg bg-light border-0" required min="<?php echo date('Y-m-d'); ?>">
+                            <input type="date" name="start_date" id="startDate" class="form-control form-control-lg bg-light border-0" required min="<?php echo date('Y-m-d'); ?>" <?php echo $is_fully_rented ? 'disabled' : ''; ?>>
                         </div>
                         <div class="col-6">
                             <label class="form-label text-uppercase small text-muted fw-bold">Return Date</label>
-                            <input type="date" name="end_date" id="endDate" class="form-control form-control-lg bg-light border-0" required min="<?php echo date('Y-m-d'); ?>">
+                            <input type="date" name="end_date" id="endDate" class="form-control form-control-lg bg-light border-0" required min="<?php echo date('Y-m-d'); ?>" <?php echo $is_fully_rented ? 'disabled' : ''; ?>>
                         </div>
                     </div>
 
@@ -93,7 +122,7 @@ require_once __DIR__ . '/../includes/navbar.php';
                     <div class="mb-4">
                         <div class="p-3 border border-2 rounded-3 bg-white shadow-sm">
                             <div class="form-check mb-0">
-                                <input class="form-check-input border-secondary" type="checkbox" value="" id="termsCheck" required style="transform: scale(1.1); cursor: pointer;">
+                                <input class="form-check-input border-secondary" type="checkbox" value="" id="termsCheck" required style="transform: scale(1.1); cursor: pointer;" <?php echo $is_fully_rented ? 'disabled' : ''; ?>>
                                 <label class="form-check-label small text-dark lh-sm ms-2" for="termsCheck" style="cursor: pointer;">
                                     I verify that I possess a valid driver's license and agree to the 
                                     <a href="#" class="text-primary text-decoration-none fw-bold">Terms & Conditions</a> 
@@ -103,8 +132,8 @@ require_once __DIR__ . '/../includes/navbar.php';
                         </div>
                     </div>
 
-                    <button type="submit" class="btn btn-primary btn-lg w-100 py-3 fw-bold shadow-hover hover-float">
-                        Confirm Rental Request
+                    <button type="submit" class="btn <?php echo $is_fully_rented ? 'btn-secondary disabled' : 'btn-primary'; ?> btn-lg w-100 py-3 fw-bold shadow-hover hover-float" <?php echo $is_fully_rented ? 'disabled' : ''; ?>>
+                        <?php echo $is_fully_rented ? 'Fully Rented — Unavailable' : 'Confirm Rental Request'; ?>
                     </button>
                     
                     <p class="text-center text-muted small mt-3 mb-0">

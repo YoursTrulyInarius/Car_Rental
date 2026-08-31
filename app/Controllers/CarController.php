@@ -70,7 +70,7 @@ class CarController {
             $quantity = $_POST['quantity'] ?? 1;
             $type = $_POST['type'] ?? 'sedan';
             $car_id = $_POST['car_id'] ?? null;
-            $owner_id = !empty($_POST['owner_id']) ? $_POST['owner_id'] : null;
+            $owner_id = $_SESSION['user_id'] ?? $_POST['owner_id'] ?? null;
 
             $uploaded_images = [];
             $target_dir = __DIR__ . "/../../uploads/";
