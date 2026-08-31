@@ -110,23 +110,85 @@ require_once __DIR__ . '/../includes/header.php';
                                         </span>
                                     </td>
                                     <td class="text-end pe-4">
-                                        <?php if($row['status'] == 'pending'): ?>
-                                            <form method="POST" action="<?php echo BASE_URL; ?>admin/rentals.php" class="d-inline">
-                                                <input type="hidden" name="rental_id" value="<?php echo $row['id']; ?>">
-                                                <button type="submit" name="action" value="approved" class="btn btn-sm btn-success rounded-pill px-3 fw-bold me-1 hover-float shadow-sm">
-                                                    Approve
-                                                </button>
-                                                <button type="submit" name="action" value="rejected" class="btn btn-sm btn-outline-danger rounded-pill px-3 fw-bold hover-float shadow-sm">
-                                                    Reject
-                                                </button>
-                                            </form>
-                                        <?php else: ?>
-                                            <button class="btn btn-sm btn-light border rounded-pill px-3 disabled text-muted">
-                                                Completed
+                                        <div class="d-flex justify-content-end align-items-center gap-2 flex-wrap">
+                                            <button type="button" class="btn btn-sm btn-outline-primary rounded-pill px-3 fw-bold" data-bs-toggle="modal" data-bs-target="#rentalDetailModal<?php echo $row['id']; ?>">
+                                                View
                                             </button>
-                                        <?php endif; ?>
+                                            <?php if($row['status'] == 'pending'): ?>
+                                                <form method="POST" action="<?php echo BASE_URL; ?>admin/rentals.php" class="d-inline">
+                                                    <input type="hidden" name="rental_id" value="<?php echo $row['id']; ?>">
+                                                    <button type="button" data-rental-confirm="true" data-action="approved" data-customer="<?php echo htmlspecialchars($row['user_name']); ?>" class="btn btn-sm btn-success rounded-pill px-3 fw-bold me-1 hover-float shadow-sm">
+                                                        Approve
+                                                    </button>
+                                                    <button type="button" data-rental-confirm="true" data-action="rejected" data-customer="<?php echo htmlspecialchars($row['user_name']); ?>" class="btn btn-sm btn-outline-danger rounded-pill px-3 fw-bold hover-float shadow-sm">
+                                                        Reject
+                                                    </button>
+                                                </form>
+                                            <?php else: ?>
+                                                <button class="btn btn-sm btn-light border rounded-pill px-3 disabled text-muted">
+                                                    Completed
+                                                </button>
+                                            <?php endif; ?>
+                                        </div>
                                     </td>
                                 </tr>
+
+                                <div class="modal fade" id="rentalDetailModal<?php echo $row['id']; ?>" tabindex="-1" aria-hidden="true">
+                                    <div class="modal-dialog modal-dialog-centered modal-lg">
+                                        <div class="modal-content border-0 rounded-4 shadow-lg overflow-hidden">
+                                            <div class="modal-header border-0 bg-light px-4 py-3">
+                                                <div>
+                                                    <p class="small text-uppercase text-muted fw-bold mb-1">Rental details</p>
+                                                    <h5 class="modal-title fw-bold mb-0"><?php echo htmlspecialchars($row['car_model']); ?></h5>
+                                                </div>
+                                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                            </div>
+                                            <div class="modal-body p-4">
+                                                <div class="row g-4">
+                                                    <div class="col-md-6">
+                                                        <div class="rounded-4 bg-light p-3 h-100">
+                                                            <small class="text-uppercase text-muted fw-bold">Customer</small>
+                                                            <h6 class="fw-bold mt-2 mb-1"><?php echo htmlspecialchars($row['user_name']); ?></h6>
+                                                            <p class="mb-1 text-muted"><?php echo htmlspecialchars($row['email'] ?? 'No email'); ?></p>
+                                                            <p class="mb-0 text-muted"><?php echo htmlspecialchars($row['phone'] ?? 'No phone'); ?></p>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-md-6">
+                                                        <div class="rounded-4 bg-light p-3 h-100">
+                                                            <small class="text-uppercase text-muted fw-bold">Vehicle</small>
+                                                            <h6 class="fw-bold mt-2 mb-1"><?php echo htmlspecialchars($row['car_model']); ?></h6>
+                                                            <p class="mb-1 text-muted"><?php echo htmlspecialchars($row['brand'] ?? 'N/A'); ?></p>
+                                                            <p class="mb-0 text-muted"><?php echo htmlspecialchars($row['plate_number'] ?? 'N/A'); ?></p>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-md-6">
+                                                        <div class="rounded-4 border p-3 h-100">
+                                                            <small class="text-uppercase text-muted fw-bold">Rental period</small>
+                                                            <p class="fw-bold mb-1 mt-2"><?php echo date('M d, Y', strtotime($row['start_date'])); ?> - <?php echo date('M d, Y', strtotime($row['end_date'])); ?></p>
+                                                            <p class="mb-0 text-muted"><?php echo ceil((strtotime($row['end_date']) - strtotime($row['start_date'])) / (60 * 60 * 24)) . ' day(s)'; ?></p>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-md-6">
+                                                        <div class="rounded-4 border p-3 h-100">
+                                                            <small class="text-uppercase text-muted fw-bold">Payment</small>
+                                                            <p class="fw-bold mb-1 mt-2 text-primary">₱<?php echo number_format($row['total_price'], 2); ?></p>
+                                                            <p class="mb-0 text-muted"><?php echo ucfirst($row['status']); ?></p>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-12">
+                                                        <div class="rounded-4 bg-light p-3">
+                                                            <small class="text-uppercase text-muted fw-bold">Notes</small>
+                                                            <p class="mb-0 mt-2 text-muted"><?php echo !empty($row['notes']) ? nl2br(htmlspecialchars($row['notes'])) : 'No notes provided.'; ?></p>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="modal-footer border-0 px-4 pb-4 pt-0">
+                                                <button type="button" class="btn btn-secondary rounded-pill px-4" data-bs-dismiss="modal">Close</button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
                             <?php endwhile; ?>
                         <?php else: ?>
                             <tr><td colspan="7" class="text-center py-4 text-muted">No rental requests found.</td></tr>
@@ -137,5 +199,39 @@ require_once __DIR__ . '/../includes/header.php';
         </div>
     </main>
 </div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        document.querySelectorAll('[data-rental-confirm="true"]').forEach(function (button) {
+            button.addEventListener('click', function () {
+                const form = this.closest('form');
+                const action = this.dataset.action;
+                const customer = this.dataset.customer || 'this customer';
+                const actionText = action === 'approved' ? 'approve' : 'reject';
+                const actionLabel = action === 'approved' ? 'Approve' : 'Reject';
+
+                Swal.fire({
+                    title: 'Are you sure?',
+                    text: 'You are about to ' + actionText + ' the rental request for ' + customer + '.',
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonText: 'Yes, ' + actionLabel,
+                    cancelButtonText: 'Cancel',
+                    confirmButtonColor: action === 'approved' ? '#198754' : '#dc3545',
+                    reverseButtons: true
+                }).then(function (result) {
+                    if (result.isConfirmed && form) {
+                        const hiddenInput = document.createElement('input');
+                        hiddenInput.type = 'hidden';
+                        hiddenInput.name = 'action';
+                        hiddenInput.value = action;
+                        form.appendChild(hiddenInput);
+                        form.submit();
+                    }
+                });
+            });
+        });
+    });
+</script>
 
 <?php require_once __DIR__ . '/../includes/footer.php'; ?>

@@ -4,19 +4,17 @@
             <div class="col-lg-4">
                 <a href="<?php echo BASE_URL; ?>index.php" class="site-footer-brand">
                     <i class="bi bi-car-front-fill"></i>
-                    CAR RENTAL
+                    Car Rental
                 </a>
             </div>
-            <div class="col-lg-4">
-                <div class="site-footer-links">
-                    <a href="<?php echo BASE_URL; ?>dashboard.php">Browse Cars</a>
-                    <a href="<?php echo BASE_URL; ?>my_rentals.php">My Rentals</a>
-                    <a href="<?php echo BASE_URL; ?>login.php">Sign In</a>
+            <div class="col-lg-4 text-lg-center">
+                <div class="site-footer-meta">
+                    <span><i class="bi bi-envelope me-1"></i>support@carrental.com</span>
                 </div>
             </div>
             <div class="col-lg-4 text-lg-end">
                 <div class="site-footer-meta">
-                    <span><i class="bi bi-envelope me-1"></i>support@carrental.com</span>
+                    <span>Premium mobility</span>
                 </div>
             </div>
         </div>
