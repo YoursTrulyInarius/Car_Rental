@@ -1,6 +1,5 @@
 <?php
 require_once __DIR__ . '/../includes/header.php';
-require_once __DIR__ . '/../includes/navbar.php';
 
 $allCars = $carModel->getAll();
 $inventorySummary = [
@@ -28,36 +27,7 @@ $recentFleet = array_slice($carRows, 0, 6);
 ?>
 
 <div class="admin-shell">
-    <aside class="admin-sidebar">
-        <div class="admin-brand">
-            <span class="admin-brand-mark">CR</span>
-            <div>
-                <strong>CAR RENTAL</strong>
-                <small class="text-white-50">Admin Panel</small>
-            </div>
-        </div>
-
-        <nav class="admin-nav">
-            <a class="<?php echo ($current_page == 'dashboard.php' || $current_page == 'admin') ? 'active' : ''; ?>" href="<?php echo BASE_URL; ?>admin/dashboard.php">
-                <i class="bi bi-speedometer2"></i>
-                <span>Overview</span>
-            </a>
-            <a class="<?php echo ($current_page == 'cars.php') ? 'active' : ''; ?>" href="<?php echo BASE_URL; ?>admin/cars.php">
-                <i class="bi bi-car-front"></i>
-                <span>Cars</span>
-            </a>
-            <a class="<?php echo ($current_page == 'rentals.php') ? 'active' : ''; ?>" href="<?php echo BASE_URL; ?>admin/rentals.php">
-                <i class="bi bi-calendar3"></i>
-                <span>Rentals</span>
-            </a>
-        </nav>
-
-        <div class="admin-sidebar-card">
-            <span class="d-block text-uppercase small text-white-50 mb-1 fw-bold">Quick Stats</span>
-            <h3 class="mb-0 fw-bold text-white"><?php echo count($carRows); ?></h3>
-            <small class="text-white-50">Fleet units</small>
-        </div>
-    </aside>
+    <?php require_once __DIR__ . '/../includes/sidebar.php'; ?>
 
     <main class="admin-main">
         <header class="admin-topbar">

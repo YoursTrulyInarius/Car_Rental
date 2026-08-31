@@ -128,9 +128,10 @@ body {
    ============================================= */
 .admin-shell {
     display: flex;
-    min-height: calc(100vh - var(--navbar-height));
+    min-height: 100vh;
     width: 100%;
     background: var(--bg-main);
+    margin-top: calc(-1 * var(--navbar-height));
 }
 
 /* ---- Sidebar (Solid Secondary Color) ---- */
@@ -144,6 +145,23 @@ body {
     flex-direction: column;
     gap: 1.6rem;
     border-right: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.admin-sidebar-footer {
+    margin-top: auto;
+}
+
+.admin-sidebar-footer .btn-outline-danger {
+    color: #ef4444;
+    border-color: rgba(239, 68, 68, 0.4);
+    background: transparent;
+    transition: var(--transition);
+}
+
+.admin-sidebar-footer .btn-outline-danger:hover {
+    color: #ffffff;
+    background: #ef4444;
+    border-color: #ef4444;
 }
 
 .admin-brand {

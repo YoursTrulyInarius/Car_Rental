@@ -1,9 +1,10 @@
 <?php
 require_once __DIR__ . '/../includes/header.php';
-require_once __DIR__ . '/../includes/navbar.php';
 ?>
 
-<div class="container py-5">
+<div class="admin-shell">
+    <?php require_once __DIR__ . '/../includes/sidebar.php'; ?>
+    <main class="admin-main">
     <div class="d-flex justify-content-between align-items-center mb-5">
         <div>
             <h2 class="fw-bold mb-1">Rental Requests</h2>
@@ -134,7 +135,7 @@ require_once __DIR__ . '/../includes/navbar.php';
                 </table>
             </div>
         </div>
-    </div>
+    </main>
 </div>
 
 <?php require_once __DIR__ . '/../includes/footer.php'; ?>

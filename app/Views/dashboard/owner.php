@@ -1,9 +1,10 @@
 <?php
 require_once __DIR__ . '/../includes/header.php';
-require_once __DIR__ . '/../includes/navbar.php';
 ?>
 
-<div class="container py-5">
+<div class="admin-shell">
+    <?php require_once __DIR__ . '/../includes/sidebar.php'; ?>
+    <main class="admin-main">
     <?php if(!empty($error)): ?>
         <div class="alert alert-danger border-0 shadow-sm rounded-4 mb-4"><?php echo htmlspecialchars($error); ?></div>
     <?php endif; ?>
@@ -155,5 +156,8 @@ function resetForm(){
     document.querySelector('form').reset();
 }
 </script>
+
+    </main>
+</div>
 
 <?php require_once __DIR__ . '/../includes/footer.php'; ?>
