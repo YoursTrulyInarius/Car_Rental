@@ -1,16 +1,16 @@
 # 🚗 Car Rental System
 
-A PHP-based car rental web application for managing vehicle listings, customer rentals, and admin approval workflows. The system is designed for a multi-role setup with customers, owners, and staff using a simple MVC structure with Bootstrap styling.
+A PHP-based car rental web application for managing vehicle listings, rental requests, and approval workflows. The system uses a simple two-role structure: admin/car owners and regular users/renters.
 
 ## Overview
 
 This project allows:
 
-- customers to browse available vehicles and view car details
+- users to browse available vehicles and view car details
 - guests or users to register and sign in
-- renters to request a booking for a specific vehicle
-- owners/admins to review pending rental requests
-- admins to approve, reject, or manage rental operations
+- renters to request a booking for a selected vehicle
+- admins/car owners to review pending rental requests
+- admins/car owners to approve, reject, or manage rental operations
 
 ## Default login
 
@@ -23,9 +23,8 @@ Use the seeded admin account to access the dashboard:
 
 | Role | Access |
 |---|---|
-| owner | full system and fleet access |
-| staff | dashboard and operational access |
-| customer | browse cars, request bookings, and view rentals |
+| admin / car owner | full system and fleet access; manages listings and rental approvals |
+| user / renter | browses cars, requests bookings, and views rental activity |
 
 ## Features
 
@@ -43,37 +42,36 @@ Use the seeded admin account to access the dashboard:
 ```mermaid
 flowchart TD
     A[Visitor opens homepage] --> B[Register or Sign In]
-    B --> C{User role}
+    B --> C{User type}
 
-    C -->|Customer| D[Browse available cars]
-    D --> E[View car details modal]
-    E --> F[Select vehicle and book now]
-    F --> G[Create rental request]
-    G --> H[Admin/Owner reviews request]
+    C -->|User / Renter| D[Browse available cars]
+    D --> E[View car details]
+    E --> F[Book now / request rental]
+    F --> G[Submit booking request]
+    G --> H[Admin / Car Owner reviews request]
 
-    H --> I{Request approved?}
-    I -->|No| J[Rental rejected]
-    I -->|Yes| K[Payment / confirmation step]
-    K --> L[Rental becomes active]
-    L --> M[Customer completes rental period]
-    M --> N[Rental marked completed]
+    H --> I{Approved?}
+    I -->|No| J[Request rejected]
+    I -->|Yes| K[Rental proceeds to active stage]
+    K --> L[User completes rental period]
+    L --> M[Rental marked completed]
 
-    C -->|Owner/Staff| O[Access dashboard]
-    O --> P[Manage cars and rental requests]
-    P --> Q[Approve or reject bookings]
-    Q --> R[Monitor operations and activity]
+    C -->|Admin / Car Owner| N[Open admin dashboard]
+    N --> O[Manage vehicles and rental requests]
+    O --> P[Approve or reject bookings]
+    P --> Q[Monitor rental activity]
 ```
 
 ## Typical user flow
 
 1. A user visits the public site.
 2. The user signs up or logs in.
-3. A customer browses available cars, applies filters, and opens car details.
-4. The customer clicks Book Now or proceeds with the rental request.
-5. The owner/staff receives the request in the admin dashboard.
+3. A renter browses available cars, applies filters, and opens car details.
+4. The renter clicks Book Now to submit a rental request.
+5. The admin/car owner receives the request in the admin dashboard.
 6. The request is approved or rejected.
-7. If approved, the rental moves into the payment/active stage.
-8. The customer can then track the rental in their account area.
+7. If approved, the rental proceeds to the active stage.
+8. The renter can then track the rental in their account area.
 
 ## Tech stack
 
@@ -117,7 +115,7 @@ Car_Rental/
 ## Notes
 
 - The seeded admin account is created from database.sql.
-- Roles are normalized to owner, staff, and customer.
+- The system uses two main roles: admin/car owner and user/renter.
 - In production, the default admin credentials should be changed after setup.
 
 ## Status
