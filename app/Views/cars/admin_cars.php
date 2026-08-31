@@ -189,36 +189,17 @@ require_once __DIR__ . '/../includes/header.php';
                         <textarea name="description" id="description" class="form-control rounded-3" rows="3" placeholder="Provide vehicle details, features, transmission type, fuel policy, etc."></textarea>
                     </div>
 
-                    <!-- Multi-Image Upload Section -->
+                    <!-- Multi-Image Upload Section (Multiselect Max 4 Photos) -->
                     <div class="border rounded-3 p-3 bg-light mb-3">
                         <label class="form-label fw-bold d-block mb-1">
-                            <i class="bi bi-images me-2 text-primary"></i>Vehicle Gallery Images (Upload up to 4+ photos)
+                            <i class="bi bi-images me-2 text-primary"></i>Vehicle Gallery Photos (Select up to 4 photos max)
                         </label>
-                        <small class="text-muted d-block mb-3">Upload multiple photos to create an automated carousel preview for customers.</small>
+                        <small class="text-muted d-block mb-3">Hold <kbd>Ctrl</kbd> or <kbd>Shift</kbd> in file selector to choose up to 4 photos at once for automated carousel display.</small>
 
-                        <div class="mb-3">
-                            <label class="form-label small text-uppercase fw-bold text-muted">Batch Upload (Select 4 photos at once)</label>
-                            <input type="file" name="images[]" multiple class="form-control rounded-3" accept="image/*">
+                        <div>
+                            <input type="file" name="images[]" id="carImagesInput" multiple class="form-control rounded-3" accept="image/*" onchange="validateMaxPhotos(this)">
                         </div>
-
-                        <div class="row g-2">
-                            <div class="col-md-6">
-                                <label class="form-label small text-muted">Photo 1 (Primary Cover)</label>
-                                <input type="file" name="image1" class="form-control form-control-sm rounded-3" accept="image/*">
-                            </div>
-                            <div class="col-md-6">
-                                <label class="form-label small text-muted">Photo 2</label>
-                                <input type="file" name="image2" class="form-control form-control-sm rounded-3" accept="image/*">
-                            </div>
-                            <div class="col-md-6">
-                                <label class="form-label small text-muted">Photo 3</label>
-                                <input type="file" name="image3" class="form-control form-control-sm rounded-3" accept="image/*">
-                            </div>
-                            <div class="col-md-6">
-                                <label class="form-label small text-muted">Photo 4</label>
-                                <input type="file" name="image4" class="form-control form-control-sm rounded-3" accept="image/*">
-                            </div>
-                        </div>
+                        <div id="imageCountBadge" class="small text-primary fw-semibold mt-2" style="display: none;"></div>
                     </div>
                 </div>
                 <div class="modal-footer border-top bg-light rounded-bottom-4">
@@ -231,6 +212,30 @@ require_once __DIR__ . '/../includes/header.php';
 </div>
 
 <script>
+function validateMaxPhotos(input) {
+    const maxAllowed = 4;
+    const badge = document.getElementById('imageCountBadge');
+    if (input.files && input.files.length > maxAllowed) {
+        Swal.fire({
+            title: 'Maximum 4 Photos',
+            text: 'You can only upload a maximum of 4 photos per vehicle.',
+            icon: 'warning',
+            confirmButtonColor: '#2563eb'
+        });
+        input.value = ''; // Reset selection
+        if (badge) badge.style.display = 'none';
+        return false;
+    }
+    if (badge) {
+        if (input.files && input.files.length > 0) {
+            badge.innerText = `✓ ${input.files.length} photo(s) selected (Maximum 4 allowed)`;
+            badge.style.display = 'block';
+        } else {
+            badge.style.display = 'none';
+        }
+    }
+}
+
 function editCar(car){
     document.getElementById('modalTitle').innerText = 'Edit Car';
     document.getElementById('car_id').value = car.id;
@@ -243,6 +248,9 @@ function editCar(car){
     document.getElementById('type').value = car.type || 'sedan';
     document.getElementById('current_image').value = car.image || '';
     
+    const badge = document.getElementById('imageCountBadge');
+    if (badge) badge.style.display = 'none';
+
     var myModal = new bootstrap.Modal(document.getElementById('carModal'));
     myModal.show();
 }
@@ -253,6 +261,8 @@ function resetForm(){
     document.getElementById('quantity').value = '1';
     document.getElementById('type').value = 'sedan';
     document.querySelector('#carModal form').reset();
+    const badge = document.getElementById('imageCountBadge');
+    if (badge) badge.style.display = 'none';
 }
 </script>
 

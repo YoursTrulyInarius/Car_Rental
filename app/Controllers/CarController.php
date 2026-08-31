@@ -75,9 +75,12 @@ class CarController {
             $uploaded_images = [];
             $target_dir = __DIR__ . "/../../uploads/";
 
-            // 1. Handle multiple files upload array (images[])
+            // 1. Handle multiselect images[] upload (Max 4 photos)
             if (isset($_FILES['images']) && is_array($_FILES['images']['name'])) {
                 foreach ($_FILES['images']['name'] as $key => $name) {
+                    if (count($uploaded_images) >= 4) {
+                        break; // Strict limit: max 4 photos
+                    }
                     if ($_FILES['images']['error'][$key] == 0 && !empty($name)) {
                         $filename = time() . "_" . $key . "_" . basename($name);
                         if (move_uploaded_file($_FILES['images']['tmp_name'][$key], $target_dir . $filename)) {
@@ -87,24 +90,16 @@ class CarController {
                 }
             }
 
-            // 2. Handle distinct file inputs (image1, image2, image3, image4)
-            for ($i = 1; $i <= 4; $i++) {
-                $field = 'image' . $i;
-                if (isset($_FILES[$field]) && $_FILES[$field]['error'] == 0 && !empty($_FILES[$field]['name'])) {
-                    $filename = time() . "_img" . $i . "_" . basename($_FILES[$field]['name']);
-                    if (move_uploaded_file($_FILES[$field]['tmp_name'], $target_dir . $filename)) {
-                        $uploaded_images[] = $filename;
-                    }
-                }
-            }
-
-            // 3. Fallback for single 'image' upload
+            // 2. Fallback for single 'image' upload
             if (empty($uploaded_images) && isset($_FILES['image']) && $_FILES['image']['error'] == 0 && !empty($_FILES['image']['name'])) {
                 $filename = time() . "_" . basename($_FILES['image']['name']);
                 if (move_uploaded_file($_FILES['image']['tmp_name'], $target_dir . $filename)) {
                     $uploaded_images[] = $filename;
                 }
             }
+
+            // Enforce hard cap of 4 photos max
+            $uploaded_images = array_slice($uploaded_images, 0, 4);
 
             // Construct final image string or keep current
             if (!empty($uploaded_images)) {
