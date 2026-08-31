@@ -23,8 +23,8 @@ Use the seeded admin account to access the dashboard:
 
 | Role | Access |
 |---|---|
-| admin / car owner | full system and fleet access; manages listings and rental approvals |
-| user / renter | browses cars, requests bookings, and views rental activity |
+| admin | full system access; manages cars, rental approvals, and dashboard operations |
+| renter | browses cars, requests bookings, and views rental activity |
 
 ## Features
 
