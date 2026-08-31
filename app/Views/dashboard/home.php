@@ -1,6 +1,43 @@
 <?php
-require_once __DIR__ . '/../includes/header.php';
-require_once __DIR__ . '/../includes/navbar.php';
+$isAjaxRequest = (!empty($_GET['ajax']) && $_GET['ajax'] === '1');
+if (!$isAjaxRequest) {
+    require_once __DIR__ . '/../includes/header.php';
+    require_once __DIR__ . '/../includes/navbar.php';
+}
+
+if ($isAjaxRequest) {
+    echo '<div id="fleetResults">';
+    if ($cars && $cars->num_rows > 0) {
+        echo '<div class="fleet-grid">';
+        while($row = $cars->fetch_assoc()) {
+            $car_id = $row['id'];
+            $car_imgs = getCarImagesList($row['image']);
+            $available_qty = max(0, (int)($row['quantity'] ?? 0));
+            echo '<article class="fleet-card">';
+            echo '<div class="fleet-image-wrap">';
+            if (!empty($car_imgs)) {
+                echo '<img src="' . BASE_URL . 'uploads/' . htmlspecialchars($car_imgs[0]) . '" alt="' . htmlspecialchars($row['model']) . '">';
+            } else {
+                echo '<img src="https://via.placeholder.com/800x500?text=Premium+Fleet" alt="' . htmlspecialchars($row['model']) . '">';
+            }
+            echo '</div>';
+            echo '<div class="fleet-card-body">';
+            echo '<div class="fleet-card-topline">';
+            echo '<h3>' . htmlspecialchars($row['model']) . '</h3>';
+            echo '<span class="fleet-type">' . htmlspecialchars($row['type'] ?? 'SUV') . '</span>';
+            echo '</div>';
+            echo '<p class="fleet-owner">' . htmlspecialchars($row['owner_name'] ?? 'System Administrator') . '</p>';
+            echo '<div class="fleet-price-row"><div><small>Daily Rate</small><strong>₱' . number_format((float)($row['price_per_day'] ?? 0), 2) . '</strong></div><span class="fleet-availability">' . $available_qty . ' Available</span></div>';
+            echo '<a href="' . BASE_URL . 'car_details.php?id=' . $car_id . '" class="fleet-details-btn">View Details</a>';
+            echo '</div></article>';
+        }
+        echo '</div>';
+    } else {
+        echo '<div class="text-center py-5"><i class="bi bi-car-front display-1 text-muted mb-3"></i><h4 class="fw-bold">No cars available in this category</h4><p class="text-muted mb-0">Try another type to see more options.</p></div>';
+    }
+    echo '</div>';
+    exit;
+}
 ?>
 
 <!-- Hero Section -->
@@ -43,68 +80,72 @@ require_once __DIR__ . '/../includes/navbar.php';
         <div class="fleet-header mb-4">
             <h2 class="fleet-title">Browse Available Cars</h2>
             <div class="fleet-toolbar">
-                <form method="GET" action="<?php echo BASE_URL; ?>index.php" class="fleet-filter-form">
+                <form method="GET" action="<?php echo BASE_URL; ?>index.php" class="fleet-filter-form" id="fleetFilterForm">
                     <label class="fleet-filter-label">Vehicle Category</label>
                     <div class="fleet-filter-control">
                         <i class="bi bi-car-front"></i>
-                        <select name="type">
+                        <select name="type" id="fleetTypeFilter">
                             <option value="">All Categories & Owners</option>
                             <option value="sedan" <?php echo (($_GET['type'] ?? '') === 'sedan') ? 'selected' : ''; ?>>Sedan</option>
                             <option value="suv" <?php echo (($_GET['type'] ?? '') === 'suv') ? 'selected' : ''; ?>>SUV</option>
                             <option value="sports" <?php echo (($_GET['type'] ?? '') === 'sports') ? 'selected' : ''; ?>>Sports</option>
                             <option value="van" <?php echo (($_GET['type'] ?? '') === 'van') ? 'selected' : ''; ?>>Van</option>
                             <option value="truck" <?php echo (($_GET['type'] ?? '') === 'truck') ? 'selected' : ''; ?>>Truck</option>
+                            <option value="luxury" <?php echo (($_GET['type'] ?? '') === 'luxury') ? 'selected' : ''; ?>>Luxury</option>
+                            <option value="other" <?php echo (($_GET['type'] ?? '') === 'other') ? 'selected' : ''; ?>>Other</option>
                         </select>
                     </div>
                 </form>
             </div>
         </div>
 
-        <?php if($cars && $cars->num_rows > 0): ?>
-            <div class="fleet-grid">
-                <?php while($row = $cars->fetch_assoc()): ?>
-                    <?php
-                        $car_id = $row['id'];
-                        $car_imgs = getCarImagesList($row['image']);
-                        $available_qty = max(0, (int)($row['quantity'] ?? 0));
-                    ?>
-                    <article class="fleet-card">
-                        <div class="fleet-image-wrap">
-                            <?php if(!empty($car_imgs)): ?>
-                                <img src="<?php echo BASE_URL; ?>uploads/<?php echo htmlspecialchars($car_imgs[0]); ?>" alt="<?php echo htmlspecialchars($row['model']); ?>">
-                            <?php else: ?>
-                                <img src="https://via.placeholder.com/800x500?text=Premium+Fleet" alt="<?php echo htmlspecialchars($row['model']); ?>">
-                            <?php endif; ?>
-                        </div>
-
-                        <div class="fleet-card-body">
-                            <div class="fleet-card-topline">
-                                <h3><?php echo htmlspecialchars($row['model']); ?></h3>
-                                <span class="fleet-type"><?php echo htmlspecialchars($row['type'] ?? 'SUV'); ?></span>
+        <div id="fleetResults">
+            <?php if($cars && $cars->num_rows > 0): ?>
+                <div class="fleet-grid">
+                    <?php while($row = $cars->fetch_assoc()): ?>
+                        <?php
+                            $car_id = $row['id'];
+                            $car_imgs = getCarImagesList($row['image']);
+                            $available_qty = max(0, (int)($row['quantity'] ?? 0));
+                        ?>
+                        <article class="fleet-card">
+                            <div class="fleet-image-wrap">
+                                <?php if(!empty($car_imgs)): ?>
+                                    <img src="<?php echo BASE_URL; ?>uploads/<?php echo htmlspecialchars($car_imgs[0]); ?>" alt="<?php echo htmlspecialchars($row['model']); ?>">
+                                <?php else: ?>
+                                    <img src="https://via.placeholder.com/800x500?text=Premium+Fleet" alt="<?php echo htmlspecialchars($row['model']); ?>">
+                                <?php endif; ?>
                             </div>
 
-                            <p class="fleet-owner"><?php echo htmlspecialchars($row['owner_name'] ?? 'System Administrator'); ?></p>
-
-                            <div class="fleet-price-row">
-                                <div>
-                                    <small>Daily Rate</small>
-                                    <strong>₱<?php echo number_format((float)($row['price_per_day'] ?? 0), 2); ?></strong>
+                            <div class="fleet-card-body">
+                                <div class="fleet-card-topline">
+                                    <h3><?php echo htmlspecialchars($row['model']); ?></h3>
+                                    <span class="fleet-type"><?php echo htmlspecialchars($row['type'] ?? 'SUV'); ?></span>
                                 </div>
-                                <span class="fleet-availability"><?php echo $available_qty; ?> Available</span>
-                            </div>
 
-                            <a href="<?php echo BASE_URL; ?>car_details.php?id=<?php echo $car_id; ?>" class="fleet-details-btn">View Details</a>
-                        </div>
-                    </article>
-                <?php endwhile; ?>
-            </div>
-        <?php else: ?>
-            <div class="text-center py-5">
-                <i class="bi bi-car-front display-1 text-muted mb-3"></i>
-                <h4 class="fw-bold">No cars available in this category</h4>
-                <p class="text-muted mb-0">Try another type to see more options.</p>
-            </div>
-        <?php endif; ?>
+                                <p class="fleet-owner"><?php echo htmlspecialchars($row['owner_name'] ?? 'System Administrator'); ?></p>
+
+                                <div class="fleet-price-row">
+                                    <div>
+                                        <small>Daily Rate</small>
+                                        <strong>₱<?php echo number_format((float)($row['price_per_day'] ?? 0), 2); ?></strong>
+                                    </div>
+                                    <span class="fleet-availability"><?php echo $available_qty; ?> Available</span>
+                                </div>
+
+                                <a href="<?php echo BASE_URL; ?>car_details.php?id=<?php echo $car_id; ?>" class="fleet-details-btn">View Details</a>
+                            </div>
+                        </article>
+                    <?php endwhile; ?>
+                </div>
+            <?php else: ?>
+                <div class="text-center py-5">
+                    <i class="bi bi-car-front display-1 text-muted mb-3"></i>
+                    <h4 class="fw-bold">No cars available in this category</h4>
+                    <p class="text-muted mb-0">Try another type to see more options.</p>
+                </div>
+            <?php endif; ?>
+        </div>
     </div>
 </section>
 
@@ -342,5 +383,55 @@ require_once __DIR__ . '/../includes/navbar.php';
         </div>
     </div>
 </div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const filterSelect = document.getElementById('fleetTypeFilter');
+        const fleetForm = document.getElementById('fleetFilterForm');
+        const fleetResults = document.getElementById('fleetResults');
+
+        if (filterSelect && fleetForm && fleetResults) {
+            filterSelect.addEventListener('change', function () {
+                const selectedType = this.value;
+                const url = new URL('<?php echo BASE_URL; ?>index.php', window.location.origin);
+                url.searchParams.set('ajax', '1');
+
+                if (selectedType) {
+                    url.searchParams.set('type', selectedType);
+                } else {
+                    url.searchParams.delete('type');
+                }
+
+                fetch(url.toString(), {
+                    method: 'GET',
+                    headers: {
+                        'X-Requested-With': 'XMLHttpRequest'
+                    }
+                })
+                .then(function (response) {
+                    if (!response.ok) {
+                        throw new Error('Network response was not ok');
+                    }
+                    return response.text();
+                })
+                .then(function (html) {
+                    const match = html.match(/<div id="fleetResults">([\s\S]*?)<\/div>\s*$/);
+                    if (match && match[1]) {
+                        fleetResults.innerHTML = match[1];
+                    } else {
+                        fleetResults.innerHTML = html;
+                    }
+                    const currentHash = window.location.hash;
+                    if (currentHash) {
+                        history.replaceState(null, '', window.location.pathname + window.location.search + currentHash);
+                    }
+                })
+                .catch(function () {
+                    fleetForm.submit();
+                });
+            });
+        }
+    });
+</script>
 
 <?php require_once __DIR__ . '/../includes/footer.php'; ?>

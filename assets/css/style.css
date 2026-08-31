@@ -956,6 +956,24 @@ body {
     z-index: 10;
 }
 
+.section-spacing {
+    padding: 6rem 0;
+    scroll-margin-top: 90px;
+}
+
+#features,
+#how-it-works {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    scroll-margin-top: 90px;
+}
+
+#features > .container,
+#how-it-works > .container {
+    width: 100%;
+}
+
 .box-card {
     background: var(--surface);
     border: 1px solid var(--border);

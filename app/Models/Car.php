@@ -11,7 +11,7 @@ class Car {
     const STATUS_MAINTENANCE = 'maintenance';
     
     // Define vehicle types
-    const TYPES = ['sedan', 'suv', 'truck', 'van', 'sports', 'other'];
+    const TYPES = ['sedan', 'suv', 'truck', 'van', 'sports', 'luxury', 'other'];
 
     public function __construct($mysqli) {
         $this->db = $mysqli;
@@ -162,8 +162,13 @@ class Car {
     public function getAvailableCars($type = null) {
         $query = "SELECT c.*, u.name as owner_name FROM cars c LEFT JOIN users u ON c.owner_id = u.id WHERE c.status = '" . self::STATUS_AVAILABLE . "'";
 
-        if ($type && in_array($type, self::TYPES)) {
-            $query .= " AND c.type = '" . $this->db->real_escape_string($type) . "'";
+        if ($type !== null && $type !== '') {
+            $type = strtolower(trim((string) $type));
+            if (in_array($type, self::TYPES, true)) {
+                $query .= " AND LOWER(c.type) = '" . $this->db->real_escape_string($type) . "'";
+            } else {
+                $query .= " AND 1 = 0";
+            }
         }
 
         $query .= " ORDER BY c.created_at DESC";

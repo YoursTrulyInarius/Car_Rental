@@ -19,7 +19,7 @@ class DashboardController {
     }
 
     public function home() {
-        $type = $_GET['type'] ?? '';
+        $type = isset($_GET['type']) ? strtolower(trim((string) $_GET['type'])) : '';
         $cars = $this->carModel->getAvailableCars($type);
         require_once __DIR__ . '/../Views/dashboard/home.php';
     }
