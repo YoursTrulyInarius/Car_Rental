@@ -1,23 +1,22 @@
 # 🚗 Car Rental System
 
-A PHP-based car rental web application for managing vehicle listings, rental requests, and approval workflows. The system uses a simple two-role structure: admin/car owners and regular users/renters.
+This project is a prototype car rental web application built with PHP, MySQL, and Bootstrap. It is intended for demonstration and early-stage development, not for production deployment as-is.
+
+## Prototype notice
+
+This is a prototype project created for demonstration purposes. It is designed to show the core idea of a car rental workflow, including browsing cars, submitting rental requests, and managing approvals from an admin dashboard.
+
+Features and interfaces may still evolve as the app is refined.
 
 ## Overview
 
 This project allows:
 
-- users to browse available vehicles and view car details
+- renters to browse available vehicles and view car details
 - guests or users to register and sign in
 - renters to request a booking for a selected vehicle
-- admins/car owners to review pending rental requests
-- admins/car owners to approve, reject, or manage rental operations
-
-## Default login
-
-Use the seeded admin account to access the dashboard:
-
-- Email: admin@carental.com
-- Password: admin123
+- admins to review pending rental requests
+- admins to approve, reject, or manage rental operations
 
 ## Roles
 
@@ -25,6 +24,13 @@ Use the seeded admin account to access the dashboard:
 |---|---|
 | admin | full system access; manages cars, rental approvals, and dashboard operations |
 | renter | browses cars, requests bookings, and views rental activity |
+
+## Default admin login
+
+Use the seeded admin account to access the dashboard:
+
+- Email: admin@carental.com
+- Password: admin123
 
 ## Features
 
@@ -35,7 +41,7 @@ Use the seeded admin account to access the dashboard:
 - admin approval workflow for rentals
 - rental status tracking
 - responsive Bootstrap UI
-- PHPMailer based notifications
+- PHPMailer-based notifications
 
 ## How the system works
 
@@ -44,20 +50,20 @@ flowchart TD
     A[Visitor opens homepage] --> B[Register or Sign In]
     B --> C{User type}
 
-    C -->|User / Renter| D[Browse available cars]
+    C -->|Renter| D[Browse available cars]
     D --> E[View car details]
     E --> F[Book now / request rental]
     F --> G[Submit booking request]
-    G --> H[Admin / Car Owner reviews request]
+    G --> H[Admin reviews request]
 
     H --> I{Approved?}
     I -->|No| J[Request rejected]
     I -->|Yes| K[Rental proceeds to active stage]
-    K --> L[User completes rental period]
+    K --> L[Renter completes rental period]
     L --> M[Rental marked completed]
 
-    C -->|Admin / Car Owner| N[Open admin dashboard]
-    N --> O[Manage vehicles and rental requests]
+    C -->|Admin| N[Open admin dashboard]
+    N --> O[Manage cars and rental requests]
     O --> P[Approve or reject bookings]
     P --> Q[Monitor rental activity]
 ```
@@ -66,12 +72,12 @@ flowchart TD
 
 1. A user visits the public site.
 2. The user signs up or logs in.
-3. A renter browses available cars, applies filters, and opens car details.
+3. A renter browses cars, applies filters, and opens car details.
 4. The renter clicks Book Now to submit a rental request.
-5. The admin/car owner receives the request in the admin dashboard.
+5. The admin receives the request in the admin dashboard.
 6. The request is approved or rejected.
 7. If approved, the rental proceeds to the active stage.
-8. The renter can then track the rental in their account area.
+8. The renter can track the rental in their account area.
 
 ## Tech stack
 
@@ -81,12 +87,42 @@ flowchart TD
 - PHPMailer
 - MVC architecture with app/Models, app/Controllers, and app/Views
 
-## Setup
+## How to clone the project
 
-1. Start Apache and MySQL in XAMPP.
-2. Import the database schema from database.sql.
-3. Update database credentials in config.php if needed.
-4. Open the project in your browser at http://localhost/Car_Rental/
+```bash
+git clone https://github.com/YoursTrulyInarius/Car_Rental.git
+cd Car_Rental
+```
+
+## How to run it locally
+
+### 1) Start your local web server
+Use XAMPP and make sure:
+
+- Apache is running
+- MySQL is running
+
+### 2) Import the database
+1. Open phpMyAdmin.
+2. Create a database named `car_rental` or match the name configured in your project.
+3. Import the SQL file from:
+   - `database.sql`
+
+### 3) Configure database connection
+Edit the database settings in:
+
+- `config.php`
+
+Update the DB name, username, and password if needed.
+
+### 4) Run the app
+Open the browser and visit:
+
+```text
+http://localhost/Car_Rental/
+```
+
+If your project is in a different folder, use the matching local path instead.
 
 ## Project structure
 
@@ -109,15 +145,17 @@ Car_Rental/
 ├── rent_process.php
 ├── README.md
 ├── LICENSE
+├── PROJECT_OVERVIEW.md
 └── other project docs
 ```
 
 ## Notes
 
-- The seeded admin account is created from database.sql.
-- The system uses two main roles: admin/car owner and user/renter.
-- In production, the default admin credentials should be changed after setup.
+- The seeded admin account is created from `database.sql`.
+- The system uses two main roles: admin and renter.
+- For a real production system, you should change default credentials and harden security.
+- This project is meant for learning, prototyping, demo presentations, and early-stage project work.
 
 ## Status
 
-The project is currently structured for local deployment and supports a working customer-to-admin rental workflow with a modern web interface.
+This project is currently structured for local prototype deployment and supports a working renter-to-admin rental workflow in a demo environment.
