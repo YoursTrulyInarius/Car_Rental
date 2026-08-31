@@ -916,7 +916,7 @@ body {
     background: transparent;
     color: #2563eb;
     border: 2px solid #2563eb;
-    border-radius: 999px;
+    border-radius: 0.8rem;
     font-weight: 700;
     text-align: center;
     padding: 0.9rem 1rem;
@@ -928,6 +928,10 @@ body {
     background: #2563eb;
     color: #ffffff;
     text-decoration: none;
+}
+
+.modal-content {
+    border-radius: 1rem;
 }
 
 @keyframes floatImage {

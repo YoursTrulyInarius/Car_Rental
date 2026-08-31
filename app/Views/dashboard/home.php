@@ -28,7 +28,7 @@ if ($isAjaxRequest) {
             echo '</div>';
             echo '<p class="fleet-owner">' . htmlspecialchars($row['owner_name'] ?? 'System Administrator') . '</p>';
             echo '<div class="fleet-price-row"><div><small>Daily Rate</small><strong>₱' . number_format((float)($row['price_per_day'] ?? 0), 2) . '</strong></div><span class="fleet-availability">' . $available_qty . ' Available</span></div>';
-            echo '<a href="' . BASE_URL . 'car_details.php?id=' . $car_id . '" class="fleet-details-btn">View Details</a>';
+            echo '<button type="button" class="fleet-details-btn fleet-details-modal-btn" data-car-id="' . $car_id . '">View Details</button>';
             echo '</div></article>';
         }
         echo '</div>';
@@ -133,7 +133,7 @@ if ($isAjaxRequest) {
                                     <span class="fleet-availability"><?php echo $available_qty; ?> Available</span>
                                 </div>
 
-                                <a href="<?php echo BASE_URL; ?>car_details.php?id=<?php echo $car_id; ?>" class="fleet-details-btn">View Details</a>
+                                <button type="button" class="fleet-details-btn fleet-details-modal-btn" data-car-id="<?php echo $car_id; ?>">View Details</button>
                             </div>
                         </article>
                     <?php endwhile; ?>
@@ -148,6 +148,19 @@ if ($isAjaxRequest) {
         </div>
     </div>
 </section>
+
+<div class="modal fade" id="carDetailsModal" tabindex="-1" aria-labelledby="carDetailsModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable">
+        <div class="modal-content rounded-4 border-0 shadow-lg">
+            <div id="carDetailsModalBody" class="modal-body p-0">
+                <div class="text-center py-5 text-muted">
+                    <div class="spinner-border text-primary mb-3" role="status"></div>
+                    <div>Loading vehicle details...</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
 
 <!-- Boxed Stats Section -->
 <section class="section-spacing">
@@ -431,6 +444,27 @@ if ($isAjaxRequest) {
                 });
             });
         }
+
+        const carDetailsModal = new bootstrap.Modal(document.getElementById('carDetailsModal'));
+        const carDetailsModalBody = document.getElementById('carDetailsModalBody');
+
+        document.addEventListener('click', async function (event) {
+            const trigger = event.target.closest('.fleet-details-modal-btn');
+            if (!trigger) return;
+
+            event.preventDefault();
+            const carId = trigger.dataset.carId;
+            carDetailsModalBody.innerHTML = '<div class="text-center py-5 text-muted"><div class="spinner-border text-primary mb-3" role="status"></div><div>Loading vehicle details...</div></div>';
+            carDetailsModal.show();
+
+            try {
+                const response = await fetch('<?php echo BASE_URL; ?>car_details.php?modal=1&id=' + encodeURIComponent(carId));
+                const html = await response.text();
+                carDetailsModalBody.innerHTML = html;
+            } catch (error) {
+                carDetailsModalBody.innerHTML = '<div class="alert alert-danger m-4 mb-0">Unable to load vehicle details right now.</div>';
+            }
+        });
     });
 </script>
 

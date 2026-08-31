@@ -1,4 +1,71 @@
 <?php
+global $mysqli;
+$mysqli = $mysqli ?? ($GLOBALS['mysqli'] ?? null);
+
+if (!$mysqli) {
+    http_response_code(500);
+    echo '<div class="alert alert-danger mb-0 rounded-3">Database connection is unavailable.</div>';
+    exit;
+}
+
+if (!empty($_GET['modal']) && $_GET['modal'] === '1') {
+    $car_id = isset($_GET['id']) ? (int)$_GET['id'] : 0;
+    $carModel = new \App\Models\Car($mysqli);
+    $car = $carModel->getById($car_id);
+
+    if (!$car) {
+        http_response_code(404);
+        echo '<div class="alert alert-danger mb-0 rounded-3">Vehicle not found.</div>';
+        exit;
+    }
+
+    $car_imgs = getCarImagesList($car['image']);
+    $car_id = (int)$car['id'];
+    $total_units = (int)($car['quantity'] ?? 1);
+    $today = date('Y-m-d');
+    $active_count = $carModel->getActiveBookingsCount($car_id, $today);
+    $avail_stock = max(0, $total_units - $active_count);
+    $is_fully_rented = ($avail_stock <= 0 || ($car['status'] ?? 'available') === 'rented');
+
+    echo '<div class="modal-content border-0 rounded-4">';
+    echo '<div class="modal-header border-0 pb-2">';
+    echo '<h5 class="modal-title fw-bold">' . htmlspecialchars($car['model']) . '</h5>';
+    echo '<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>';
+    echo '</div>';
+    echo '<div class="modal-body p-0">';
+    echo '<div class="overflow-hidden rounded-4">';
+    if (!empty($car_imgs)) {
+        echo '<img src="' . BASE_URL . 'uploads/' . htmlspecialchars($car_imgs[0]) . '" class="img-fluid w-100" style="height: 220px; object-fit: cover;" alt="' . htmlspecialchars($car['model']) . '">';
+    } else {
+        echo '<img src="https://via.placeholder.com/800x420?text=Premium+Fleet" class="img-fluid w-100" style="height: 220px; object-fit: cover;" alt="Car">';
+    }
+    echo '</div>';
+    echo '<div class="p-4">';
+    echo '<div class="d-flex align-items-center gap-2 flex-wrap mb-3">';
+    echo '<span class="badge bg-primary px-3 py-2">' . htmlspecialchars($car['year']) . ' Model</span>';
+    if (!empty($car['type'])) {
+        echo '<span class="badge bg-light text-dark border px-3 py-2 text-capitalize">' . htmlspecialchars(ucfirst($car['type'])) . '</span>';
+    }
+    if ($is_fully_rented) {
+        echo '<span class="badge bg-danger px-3 py-2">Fully Rented</span>';
+    } else {
+        echo '<span class="badge bg-success px-3 py-2">' . $avail_stock . ' Available</span>';
+    }
+    echo '</div>';
+    echo '<div class="d-flex align-items-end mb-3">';
+    echo '<h3 class="text-primary mb-0 fw-bold me-2">₱' . number_format((float)($car['price_per_day'] ?? 0), 2) . '</h3>';
+    echo '<span class="text-muted mb-1">/ day</span>';
+    echo '</div>';
+    echo '<p class="text-muted mb-3">' . nl2br(htmlspecialchars($car['description'])) . '</p>';
+    echo '<div class="row g-2 text-sm text-muted">';
+    echo '<div class="col-6"><div class="bg-light rounded-3 p-2"><strong class="d-block text-dark">Brand</strong>' . htmlspecialchars($car['brand'] ?? 'N/A') . '</div></div>';
+    echo '<div class="col-6"><div class="bg-light rounded-3 p-2"><strong class="d-block text-dark">Owner</strong>' . htmlspecialchars($car['owner_name'] ?? 'System Administrator') . '</div></div>';
+    echo '</div>';
+    echo '</div>';
+    echo '</div>';
+    exit;
+}
+
 require_once __DIR__ . '/../includes/header.php';
 require_once __DIR__ . '/../includes/navbar.php';
 ?>
