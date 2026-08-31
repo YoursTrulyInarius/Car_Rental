@@ -89,18 +89,37 @@ require_once __DIR__ . '/../includes/navbar.php';
                 <div class="col">
                     <div class="card h-100 border-0 shadow-lg rounded-4 overflow-hidden card-hover-effect">
                         <?php 
-                        $img_path = !empty($row['image']) ? BASE_URL . 'uploads/' . $row['image'] : 'https://via.placeholder.com/400x250?text=Premium+Fleet'; 
+                        $car_imgs = getCarImagesList($row['image']); 
+                        $card_carousel_id = "cardCarousel_" . $row['id'];
                         ?>
                         <div class="position-relative">
-                            <img src="<?php echo htmlspecialchars($img_path); ?>" class="card-img-top" style="height: 250px; object-fit: cover;" alt="<?php echo htmlspecialchars($row['model']); ?>">
-                            <div class="position-absolute top-0 end-0 m-3">
+                            <?php if(!empty($car_imgs)): ?>
+                                <div id="<?php echo $card_carousel_id; ?>" class="carousel slide" data-bs-ride="carousel" data-bs-interval="2500">
+                                    <div class="carousel-inner">
+                                        <?php foreach($car_imgs as $idx => $img): ?>
+                                            <div class="carousel-item <?php echo ($idx === 0) ? 'active' : ''; ?>">
+                                                <img src="<?php echo BASE_URL . 'uploads/' . htmlspecialchars($img); ?>" class="d-block w-100" style="height: 250px; object-fit: cover;" alt="<?php echo htmlspecialchars($row['model']); ?>">
+                                            </div>
+                                        <?php endforeach; ?>
+                                    </div>
+                                </div>
+                            <?php else: ?>
+                                <img src="https://via.placeholder.com/400x250?text=Premium+Fleet" class="card-img-top" style="height: 250px; object-fit: cover;" alt="Car">
+                            <?php endif; ?>
+
+                            <div class="position-absolute top-0 end-0 m-3 z-3">
                                 <span class="badge bg-white text-dark shadow-sm px-3 py-2 rounded-pill fw-bold mb-1 d-block"><?php echo $row['year']; ?></span>
                                 <span class="badge <?php echo $badge_class; ?> text-white shadow-sm px-3 py-2 rounded-pill fw-bold d-block"><?php echo $badge_text; ?></span>
                             </div>
                         </div>
                         
                         <div class="card-body p-4 d-flex flex-column">
-                            <h5 class="card-title fw-bold mb-2 text-dark"><?php echo htmlspecialchars($row['model']); ?></h5>
+                            <div class="d-flex justify-content-between align-items-center mb-1">
+                                <h5 class="card-title fw-bold mb-0 text-dark"><?php echo htmlspecialchars($row['model']); ?></h5>
+                                <?php if(!empty($row['type'])): ?>
+                                    <span class="badge bg-light text-dark border rounded-pill px-2 py-1 text-capitalize small"><?php echo htmlspecialchars($row['type']); ?></span>
+                                <?php endif; ?>
+                            </div>
                             <p class="card-text text-muted small flex-grow-1 lh-sm mb-4">
                                 <?php echo substr(htmlspecialchars($row['description']), 0, 90) . '...'; ?>
                             </p>
@@ -130,7 +149,35 @@ require_once __DIR__ . '/../includes/navbar.php';
                                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                             </div>
                             <div class="modal-body p-0">
-                                <img src="<?php echo htmlspecialchars($img_path); ?>" class="w-100" style="height: 400px; object-fit: cover;" alt="<?php echo htmlspecialchars($row['model']); ?>">
+                                <?php $modal_carousel_id = "modalCarousel_" . $row['id']; ?>
+                                <?php if(!empty($car_imgs)): ?>
+                                    <div id="<?php echo $modal_carousel_id; ?>" class="carousel slide" data-bs-ride="carousel" data-bs-interval="2500">
+                                        <?php if(count($car_imgs) > 1): ?>
+                                            <div class="carousel-indicators">
+                                                <?php foreach($car_imgs as $idx => $img): ?>
+                                                    <button type="button" data-bs-target="#<?php echo $modal_carousel_id; ?>" data-bs-slide-to="<?php echo $idx; ?>" class="<?php echo ($idx === 0) ? 'active' : ''; ?>"></button>
+                                                <?php endforeach; ?>
+                                            </div>
+                                        <?php endif; ?>
+                                        <div class="carousel-inner">
+                                            <?php foreach($car_imgs as $idx => $img): ?>
+                                                <div class="carousel-item <?php echo ($idx === 0) ? 'active' : ''; ?>">
+                                                    <img src="<?php echo BASE_URL . 'uploads/' . htmlspecialchars($img); ?>" class="d-block w-100" style="height: 400px; object-fit: cover;" alt="<?php echo htmlspecialchars($row['model']); ?>">
+                                                </div>
+                                            <?php endforeach; ?>
+                                        </div>
+                                        <?php if(count($car_imgs) > 1): ?>
+                                            <button class="carousel-control-prev" type="button" data-bs-target="#<?php echo $modal_carousel_id; ?>" data-bs-slide="prev">
+                                                <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                                            </button>
+                                            <button class="carousel-control-next" type="button" data-bs-target="#<?php echo $modal_carousel_id; ?>" data-bs-slide="next">
+                                                <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                                            </button>
+                                        <?php endif; ?>
+                                    </div>
+                                <?php else: ?>
+                                    <img src="https://via.placeholder.com/600x400?text=Premium+Fleet" class="w-100" style="height: 400px; object-fit: cover;" alt="Car">
+                                <?php endif; ?>
                                 <div class="p-4">
                                     <div class="d-flex justify-content-between align-items-center mb-3">
                                         <h2 class="fw-bold mb-0"><?php echo htmlspecialchars($row['model']); ?></h2>

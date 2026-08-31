@@ -90,5 +90,13 @@ spl_autoload_register(function ($class) {
     if (file_exists($file)) {
         require_once $file;
     }
-});
+// Helper function to parse multiple car images
+if (!function_exists('getCarImagesList')) {
+    function getCarImagesList($imgString) {
+        if (empty($imgString)) return [];
+        $decoded = json_decode($imgString, true);
+        if (is_array($decoded)) return array_values(array_filter($decoded));
+        return array_values(array_filter(array_map('trim', explode(',', $imgString))));
+    }
+}
 ?>

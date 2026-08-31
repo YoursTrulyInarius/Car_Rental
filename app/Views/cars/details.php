@@ -9,9 +9,36 @@ require_once __DIR__ . '/../includes/navbar.php';
     <div class="row g-5">
         <div class="col-lg-7">
             <?php 
-            $img_path = !empty($car['image']) ? BASE_URL . 'uploads/' . $car['image'] : 'https://via.placeholder.com/800x400?text=Premium+Car'; 
+            $car_imgs = getCarImagesList($car['image']);
             ?>
-            <img src="<?php echo htmlspecialchars($img_path); ?>" class="car-details-img shadow" alt="<?php echo htmlspecialchars($car['model']); ?>">
+            <?php if (!empty($car_imgs)): ?>
+                <div id="detailsCarCarousel" class="carousel slide shadow rounded-4 overflow-hidden mb-3" data-bs-ride="carousel" data-bs-interval="2500">
+                    <?php if(count($car_imgs) > 1): ?>
+                        <div class="carousel-indicators">
+                            <?php foreach($car_imgs as $idx => $img): ?>
+                                <button type="button" data-bs-target="#detailsCarCarousel" data-bs-slide-to="<?php echo $idx; ?>" class="<?php echo ($idx === 0) ? 'active' : ''; ?>"></button>
+                            <?php endforeach; ?>
+                        </div>
+                    <?php endif; ?>
+                    <div class="carousel-inner">
+                        <?php foreach($car_imgs as $idx => $img): ?>
+                            <div class="carousel-item <?php echo ($idx === 0) ? 'active' : ''; ?>">
+                                <img src="<?php echo BASE_URL . 'uploads/' . htmlspecialchars($img); ?>" class="d-block w-100" style="height: 420px; object-fit: cover;" alt="<?php echo htmlspecialchars($car['model']); ?>">
+                            </div>
+                        <?php endforeach; ?>
+                    </div>
+                    <?php if(count($car_imgs) > 1): ?>
+                        <button class="carousel-control-prev" type="button" data-bs-target="#detailsCarCarousel" data-bs-slide="prev">
+                            <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                        </button>
+                        <button class="carousel-control-next" type="button" data-bs-target="#detailsCarCarousel" data-bs-slide="next">
+                            <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                        </button>
+                    <?php endif; ?>
+                </div>
+            <?php else: ?>
+                <img src="https://via.placeholder.com/800x420?text=Premium+Fleet" class="w-100 rounded-4 shadow" style="height: 420px; object-fit: cover;" alt="Car">
+            <?php endif; ?>
             
             <div class="mt-4">
                 <h2 class="fw-bold"><?php echo htmlspecialchars($car['model']); ?></h2>

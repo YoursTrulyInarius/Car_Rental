@@ -295,26 +295,26 @@ class Car {
         return $row['avg_price'] ?? 0;
     }
 
-    public function addCar($model, $year, $price, $desc, $image, $status, $quantity, $owner_id) {
-        $stmt = $this->db->prepare("INSERT INTO cars (model, year, price_per_day, description, image, status, quantity, owner_id) VALUES (?, ?, ?, ?, ?, ?, ?, ?)");
-        $stmt->bind_param("sidsssii", $model, $year, $price, $desc, $image, $status, $quantity, $owner_id);
+    public function addCar($model, $year, $price, $desc, $image, $status, $quantity, $owner_id, $type = 'sedan') {
+        $stmt = $this->db->prepare("INSERT INTO cars (model, year, price_per_day, description, image, status, quantity, owner_id, type) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)");
+        $stmt->bind_param("sidsssiis", $model, $year, $price, $desc, $image, $status, $quantity, $owner_id, $type);
         return $stmt->execute();
     }
 
-    public function updateCar($id, $model, $year, $price, $desc, $image, $status, $quantity, $owner_id) {
+    public function updateCar($id, $model, $year, $price, $desc, $image, $status, $quantity, $owner_id, $type = 'sedan') {
         if ($owner_id !== null) {
-            $stmt = $this->db->prepare("UPDATE cars SET model=?, year=?, price_per_day=?, description=?, image=?, status=?, quantity=?, owner_id=? WHERE id=?");
-            $stmt->bind_param("sidsssiii", $model, $year, $price, $desc, $image, $status, $quantity, $owner_id, $id);
+            $stmt = $this->db->prepare("UPDATE cars SET model=?, year=?, price_per_day=?, description=?, image=?, status=?, quantity=?, owner_id=?, type=? WHERE id=?");
+            $stmt->bind_param("sidsssiisi", $model, $year, $price, $desc, $image, $status, $quantity, $owner_id, $type, $id);
         } else {
-            $stmt = $this->db->prepare("UPDATE cars SET model=?, year=?, price_per_day=?, description=?, image=?, status=?, quantity=? WHERE id=?");
-            $stmt->bind_param("sidsssii", $model, $year, $price, $desc, $image, $status, $quantity, $id);
+            $stmt = $this->db->prepare("UPDATE cars SET model=?, year=?, price_per_day=?, description=?, image=?, status=?, quantity=?, type=? WHERE id=?");
+            $stmt->bind_param("sidsssiis", $model, $year, $price, $desc, $image, $status, $quantity, $type, $id);
         }
         return $stmt->execute();
     }
 
-    public function updateCarForOwner($id, $owner_id, $model, $year, $price, $desc, $image, $status, $quantity) {
-        $stmt = $this->db->prepare("UPDATE cars SET model=?, year=?, price_per_day=?, description=?, image=?, status=?, quantity=? WHERE id=? AND owner_id=?");
-        $stmt->bind_param("sidsssiii", $model, $year, $price, $desc, $image, $status, $quantity, $id, $owner_id);
+    public function updateCarForOwner($id, $owner_id, $model, $year, $price, $desc, $image, $status, $quantity, $type = 'sedan') {
+        $stmt = $this->db->prepare("UPDATE cars SET model=?, year=?, price_per_day=?, description=?, image=?, status=?, quantity=?, type=? WHERE id=? AND owner_id=?");
+        $stmt->bind_param("sidsssisii", $model, $year, $price, $desc, $image, $status, $quantity, $type, $id, $owner_id);
         return $stmt->execute();
     }
 
