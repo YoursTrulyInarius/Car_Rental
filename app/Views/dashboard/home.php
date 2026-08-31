@@ -461,6 +461,19 @@ if ($isAjaxRequest) {
                 const response = await fetch('<?php echo BASE_URL; ?>car_details.php?modal=1&id=' + encodeURIComponent(carId));
                 const html = await response.text();
                 carDetailsModalBody.innerHTML = html;
+
+                const modalCarousel = document.getElementById('vehicleModalCarousel');
+                if (modalCarousel) {
+                    const existingCarousel = bootstrap.Carousel.getOrCreateInstance(modalCarousel);
+                    existingCarousel.dispose();
+                    new bootstrap.Carousel(modalCarousel, {
+                        ride: 'carousel',
+                        interval: 3500,
+                        wrap: true,
+                        pause: 'hover',
+                        touch: true
+                    });
+                }
             } catch (error) {
                 carDetailsModalBody.innerHTML = '<div class="alert alert-danger m-4 mb-0">Unable to load vehicle details right now.</div>';
             }

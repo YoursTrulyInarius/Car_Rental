@@ -27,39 +27,70 @@ if (!empty($_GET['modal']) && $_GET['modal'] === '1') {
     $avail_stock = max(0, $total_units - $active_count);
     $is_fully_rented = ($avail_stock <= 0 || ($car['status'] ?? 'available') === 'rented');
 
-    echo '<div class="modal-content border-0 rounded-4">';
-    echo '<div class="modal-header border-0 pb-2">';
-    echo '<h5 class="modal-title fw-bold">' . htmlspecialchars($car['model']) . '</h5>';
-    echo '<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>';
+    echo '<div class="modal-content border-0 rounded-4 overflow-hidden shadow-lg detail-modal-shell">';
+    echo '<div class="modal-header border-0 px-4 pt-4 pb-0 justify-content-between align-items-center">';
+    echo '<div class="d-flex align-items-center gap-2">';
+    echo '<span class="badge detail-pill">' . htmlspecialchars(ucfirst($car['type'] ?? 'vehicle')) . '</span>';
+    echo '</div>';
+    echo '<button type="button" class="btn btn-link text-dark p-0 modal-close-btn" data-bs-dismiss="modal" aria-label="Close"><i class="bi bi-x-lg"></i></button>';
     echo '</div>';
     echo '<div class="modal-body p-0">';
-    echo '<div class="overflow-hidden rounded-4">';
-    if (!empty($car_imgs)) {
-        echo '<img src="' . BASE_URL . 'uploads/' . htmlspecialchars($car_imgs[0]) . '" class="img-fluid w-100" style="height: 220px; object-fit: cover;" alt="' . htmlspecialchars($car['model']) . '">';
-    } else {
-        echo '<img src="https://via.placeholder.com/800x420?text=Premium+Fleet" class="img-fluid w-100" style="height: 220px; object-fit: cover;" alt="Car">';
+
+    echo '<div id="vehicleModalCarousel" class="carousel slide carousel-fade" data-bs-ride="carousel" data-bs-interval="3500" data-bs-wrap="true">';
+    if (count($car_imgs) > 1) {
+        echo '<div class="carousel-indicators">';
+        foreach ($car_imgs as $idx => $img) {
+            echo '<button type="button" data-bs-target="#vehicleModalCarousel" data-bs-slide-to="' . $idx . '" class="' . ($idx === 0 ? 'active' : '') . '" aria-label="Slide ' . ($idx + 1) . '"></button>';
+        }
+        echo '</div>';
+    }
+    echo '<div class="carousel-inner">';
+    foreach ($car_imgs as $idx => $img) {
+        echo '<div class="carousel-item ' . ($idx === 0 ? 'active' : '') . '">';
+        echo '<img src="' . BASE_URL . 'uploads/' . htmlspecialchars($img) . '" class="d-block w-100" style="height: 270px; object-fit: cover;" alt="' . htmlspecialchars($car['model']) . '">';
+        echo '</div>';
     }
     echo '</div>';
-    echo '<div class="p-4">';
-    echo '<div class="d-flex align-items-center gap-2 flex-wrap mb-3">';
-    echo '<span class="badge bg-primary px-3 py-2">' . htmlspecialchars($car['year']) . ' Model</span>';
-    if (!empty($car['type'])) {
-        echo '<span class="badge bg-light text-dark border px-3 py-2 text-capitalize">' . htmlspecialchars(ucfirst($car['type'])) . '</span>';
+    if (count($car_imgs) > 1) {
+        echo '<button class="carousel-control-prev" type="button" data-bs-target="#vehicleModalCarousel" data-bs-slide="prev"><span class="carousel-control-prev-icon" aria-hidden="true"></span></button>';
+        echo '<button class="carousel-control-next" type="button" data-bs-target="#vehicleModalCarousel" data-bs-slide="next"><span class="carousel-control-next-icon" aria-hidden="true"></span></button>';
     }
+    echo '</div>';
+
+    echo '<div class="p-4 pt-3">';
+    echo '<div class="d-flex justify-content-between align-items-start gap-3 flex-wrap mb-3">';
+    echo '<div>';
+    echo '<h3 class="fw-bolder mb-1 detail-title">' . htmlspecialchars($car['model']) . '</h3>';
+    echo '<div class="text-muted small detail-subtitle">Year ' . htmlspecialchars($car['year'] ?? 'N/A') . ' • ' . htmlspecialchars($car['brand'] ?? 'Premium') . '</div>';
+    echo '</div>';
+    echo '<div class="text-end">';
+    echo '<div class="small text-muted">Daily rate</div>';
+    echo '<div class="fw-bold text-primary detail-price">₱' . number_format((float)($car['price_per_day'] ?? 0), 2) . '</div>';
+    echo '</div>';
+    echo '</div>';
+
+    echo '<div class="d-flex align-items-center gap-2 flex-wrap mb-4">';
     if ($is_fully_rented) {
-        echo '<span class="badge bg-danger px-3 py-2">Fully Rented</span>';
+        echo '<span class="detail-badge unavailable">Unavailable</span>';
     } else {
-        echo '<span class="badge bg-success px-3 py-2">' . $avail_stock . ' Available</span>';
+        echo '<span class="detail-badge available">Available now</span>';
     }
+    echo '<span class="detail-badge neutral">' . ($avail_stock > 0 ? $avail_stock . ' unit(s) available' : 'No units available') . '</span>';
     echo '</div>';
-    echo '<div class="d-flex align-items-end mb-3">';
-    echo '<h3 class="text-primary mb-0 fw-bold me-2">₱' . number_format((float)($car['price_per_day'] ?? 0), 2) . '</h3>';
-    echo '<span class="text-muted mb-1">/ day</span>';
+
+    echo '<div class="detail-description">';
+    echo '<p class="text-muted mb-0 lh-lg">' . nl2br(htmlspecialchars($car['description'] ?? 'No description provided yet.')) . '</p>';
     echo '</div>';
-    echo '<p class="text-muted mb-3">' . nl2br(htmlspecialchars($car['description'])) . '</p>';
-    echo '<div class="row g-2 text-sm text-muted">';
-    echo '<div class="col-6"><div class="bg-light rounded-3 p-2"><strong class="d-block text-dark">Brand</strong>' . htmlspecialchars($car['brand'] ?? 'N/A') . '</div></div>';
-    echo '<div class="col-6"><div class="bg-light rounded-3 p-2"><strong class="d-block text-dark">Owner</strong>' . htmlspecialchars($car['owner_name'] ?? 'System Administrator') . '</div></div>';
+
+    echo '<div class="row g-3 mt-1 mb-4">';
+    echo '<div class="col-6"><div class="detail-info-card"><div class="detail-meta">Owner</div><div class="detail-value">' . htmlspecialchars($car['owner_name'] ?? 'System Administrator') . '</div></div></div>';
+    echo '<div class="col-6"><div class="detail-info-card"><div class="detail-meta">Vehicle type</div><div class="detail-value text-capitalize">' . htmlspecialchars($car['type'] ?? 'Vehicle') . '</div></div></div>';
+    echo '<div class="col-6"><div class="detail-info-card"><div class="detail-meta">Status</div><div class="detail-value ' . ($is_fully_rented ? 'text-danger' : 'text-success') . '">' . ($is_fully_rented ? 'Booked / Unavailable' : 'Ready to rent') . '</div></div></div>';
+    echo '<div class="col-6"><div class="detail-info-card"><div class="detail-meta">Quantity</div><div class="detail-value">' . htmlspecialchars((string)($car['quantity'] ?? 1)) . ' total units</div></div></div>';
+    echo '</div>';
+
+    echo '<div class="d-grid">';
+    echo '<a href="' . BASE_URL . 'register.php" class="btn btn-primary btn-lg rounded-3 fw-bold detail-book-btn">Book now</a>';
     echo '</div>';
     echo '</div>';
     echo '</div>';
