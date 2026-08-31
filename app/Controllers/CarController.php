@@ -16,11 +16,6 @@ class CarController {
     }
 
     public function carDetails() {
-        if (!isset($_SESSION['user_id'])) {
-            header("Location: " . BASE_URL . "login.php");
-            exit;
-        }
-
         if (!isset($_GET['id'])) {
             header("Location: " . BASE_URL . "index.php");
             exit;

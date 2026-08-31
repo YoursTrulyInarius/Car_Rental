@@ -19,15 +19,12 @@ class DashboardController {
     }
 
     public function home() {
+        $type = $_GET['type'] ?? '';
+        $cars = $this->carModel->getAvailableCars($type);
         require_once __DIR__ . '/../Views/dashboard/home.php';
     }
 
     public function customerDashboard() {
-        if (!isset($_SESSION['user_id'])) {
-            header("Location: " . BASE_URL . "login.php");
-            exit;
-        }
-
         if (isset($_SESSION['role']) && $_SESSION['role'] === 'owner') {
             header("Location: " . BASE_URL . "admin/dashboard.php");
             exit;
@@ -42,8 +39,11 @@ class DashboardController {
             $owner = $this->userModel->getById($owner_id);
             if ($owner) $owner_name = $owner['name'];
             $cars_result = $this->carModel->getAvailableByOwner($owner_id);
-        } else {
+        } elseif (isset($_SESSION['user_id'])) {
             $owners = $this->userModel->getOwnersWithCars();
+        } else {
+            $owner_name = "Available Cars";
+            $cars_result = $this->carModel->getAvailableCars();
         }
 
         $mysqli = $this->db;

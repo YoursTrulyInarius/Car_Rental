@@ -49,6 +49,12 @@ require_once __DIR__ . '/../includes/header.php';
         <!-- Right Side: Login Form -->
         <div class="col-lg-5 d-flex align-items-center justify-content-center bg-white">
             <div class="auth-card border-0 shadow-none w-75 p-lg-5 p-3">
+                <div class="mb-3 text-start w-100">
+                    <a href="<?php echo BASE_URL; ?>index.php" class="text-decoration-none small fw-bold text-muted">
+                        <i class="bi bi-arrow-left"></i> Return to Home
+                    </a>
+                </div>
+
                 <div class="mb-4 text-center">
                     <h2 class="fw-bold display-6 mb-1">Welcome Back</h2>
                     <p class="text-muted small">Sign in to continue.</p>

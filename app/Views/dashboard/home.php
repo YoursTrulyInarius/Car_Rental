@@ -22,74 +22,91 @@ require_once __DIR__ . '/../includes/navbar.php';
                 <p class="lead text-white-50 mb-5 fs-5 animate-fade-up delay-200" style="max-width: 600px;">
                     Unlock instant access to luxury sedans, sports cars, and spacious family SUVs. Verified hosts, transparent daily rates, and zero hidden fees.
                 </p>
-                <div class="d-flex flex-column flex-sm-row gap-3 justify-content-center justify-content-lg-start animate-fade-up delay-300">
-                    <?php if(isset($_SESSION['user_id'])): ?>
-                        <?php if($_SESSION['role'] == 'owner'): ?>
-                            <a class="btn btn-light btn-lg rounded-pill px-5 py-3 fw-bold shadow-lg hover-float text-primary" href="<?php echo BASE_URL; ?>admin/dashboard.php">
-                                <i class="bi bi-speedometer2 me-2"></i>Admin Dashboard
-                            </a>
-                        <?php else: ?>
-                            <a class="btn btn-light btn-lg rounded-pill px-5 py-3 fw-bold shadow-lg hover-float text-primary" href="<?php echo BASE_URL; ?>dashboard.php">
-                                <i class="bi bi-car-front-fill me-2"></i>Browse Collection
-                            </a>
-                        <?php endif; ?>
-                    <?php else: ?>
-                        <a class="btn btn-light btn-lg rounded-pill px-5 py-3 fw-bold shadow-lg hover-float text-primary" href="<?php echo BASE_URL; ?>register.php">
-                            Get Started Now <i class="bi bi-arrow-right ms-2"></i>
-                        </a>
-                        <a class="btn btn-outline-light btn-lg rounded-pill px-5 py-3 fw-bold hover-float" href="<?php echo BASE_URL; ?>login.php">
-                            Sign In
-                        </a>
-                    <?php endif; ?>
+                <div class="hero-cta-row animate-fade-up delay-300">
+                    <div class="hero-metric-pill">
+                        <span class="pulse-dot"></span>
+                        <span>24/7 concierge support</span>
+                    </div>
                 </div>
             </div>
             <div class="col-lg-5 d-none d-lg-block animate-fade-up delay-200 text-center">
-                <div class="position-relative d-inline-block">
-                    <img src="https://images.unsplash.com/photo-1617814076367-b759c7d7e738?auto=format&fit=crop&w=800&q=80" class="img-fluid rounded-4 shadow-2xl hover-float" alt="Luxury Car" style="max-height: 380px; width: 100%; object-fit: cover;">
+                <div class="hero-visual position-relative d-inline-block">
+                    <img src="https://images.unsplash.com/photo-1617814076367-b759c7d7e738?auto=format&fit=crop&w=800&q=80" class="img-fluid rounded-4 shadow-2xl hero-car-image" alt="Luxury Car" style="max-height: 380px; width: 100%; object-fit: cover;">
                 </div>
             </div>
         </div>
     </div>
 </section>
 
-<!-- Boxed Search Bar Container -->
-<div class="container mb-5">
-    <div class="search-bar-card p-4 p-md-5">
-        <form action="<?php echo BASE_URL; ?>dashboard.php" method="GET" class="row g-4 align-items-end">
-            <div class="col-lg-4 col-md-6">
-                <label class="form-label small fw-bold text-uppercase text-muted mb-2">Vehicle Category</label>
-                <div class="input-group">
-                    <span class="input-group-text bg-light border-0"><i class="bi bi-car-front text-primary"></i></span>
-                    <select name="type" class="form-select bg-light border-0 py-2.5">
-                        <option value="">All Categories & Owners</option>
-                        <option value="luxury">Luxury & Performance</option>
-                        <option value="suv">SUVs & Crossovers</option>
-                        <option value="sedan">Executive Sedans</option>
-                    </select>
-                </div>
+<section id="available-cars" class="fleet-section bg-light">
+    <div class="container">
+        <div class="fleet-header mb-4">
+            <h2 class="fleet-title">Browse Available Cars</h2>
+            <div class="fleet-toolbar">
+                <form method="GET" action="<?php echo BASE_URL; ?>index.php" class="fleet-filter-form">
+                    <label class="fleet-filter-label">Vehicle Category</label>
+                    <div class="fleet-filter-control">
+                        <i class="bi bi-car-front"></i>
+                        <select name="type">
+                            <option value="">All Categories & Owners</option>
+                            <option value="sedan" <?php echo (($_GET['type'] ?? '') === 'sedan') ? 'selected' : ''; ?>>Sedan</option>
+                            <option value="suv" <?php echo (($_GET['type'] ?? '') === 'suv') ? 'selected' : ''; ?>>SUV</option>
+                            <option value="sports" <?php echo (($_GET['type'] ?? '') === 'sports') ? 'selected' : ''; ?>>Sports</option>
+                            <option value="van" <?php echo (($_GET['type'] ?? '') === 'van') ? 'selected' : ''; ?>>Van</option>
+                            <option value="truck" <?php echo (($_GET['type'] ?? '') === 'truck') ? 'selected' : ''; ?>>Truck</option>
+                        </select>
+                    </div>
+                </form>
             </div>
-            <div class="col-lg-3 col-md-6">
-                <label class="form-label small fw-bold text-uppercase text-muted mb-2">Pickup Location</label>
-                <div class="input-group">
-                    <span class="input-group-text bg-light border-0"><i class="bi bi-geo-alt text-primary"></i></span>
-                    <input type="text" class="form-control bg-light border-0 py-2.5" placeholder="City or Airport" value="Metro Manila">
-                </div>
+        </div>
+
+        <?php if($cars && $cars->num_rows > 0): ?>
+            <div class="fleet-grid">
+                <?php while($row = $cars->fetch_assoc()): ?>
+                    <?php
+                        $car_id = $row['id'];
+                        $car_imgs = getCarImagesList($row['image']);
+                        $available_qty = max(0, (int)($row['quantity'] ?? 0));
+                    ?>
+                    <article class="fleet-card">
+                        <div class="fleet-image-wrap">
+                            <?php if(!empty($car_imgs)): ?>
+                                <img src="<?php echo BASE_URL; ?>uploads/<?php echo htmlspecialchars($car_imgs[0]); ?>" alt="<?php echo htmlspecialchars($row['model']); ?>">
+                            <?php else: ?>
+                                <img src="https://via.placeholder.com/800x500?text=Premium+Fleet" alt="<?php echo htmlspecialchars($row['model']); ?>">
+                            <?php endif; ?>
+                        </div>
+
+                        <div class="fleet-card-body">
+                            <div class="fleet-card-topline">
+                                <h3><?php echo htmlspecialchars($row['model']); ?></h3>
+                                <span class="fleet-type"><?php echo htmlspecialchars($row['type'] ?? 'SUV'); ?></span>
+                            </div>
+
+                            <p class="fleet-owner"><?php echo htmlspecialchars($row['owner_name'] ?? 'System Administrator'); ?></p>
+
+                            <div class="fleet-price-row">
+                                <div>
+                                    <small>Daily Rate</small>
+                                    <strong>₱<?php echo number_format((float)($row['price_per_day'] ?? 0), 2); ?></strong>
+                                </div>
+                                <span class="fleet-availability"><?php echo $available_qty; ?> Available</span>
+                            </div>
+
+                            <a href="<?php echo BASE_URL; ?>car_details.php?id=<?php echo $car_id; ?>" class="fleet-details-btn">View Details</a>
+                        </div>
+                    </article>
+                <?php endwhile; ?>
             </div>
-            <div class="col-lg-3 col-md-6">
-                <label class="form-label small fw-bold text-uppercase text-muted mb-2">Rental Start Date</label>
-                <div class="input-group">
-                    <span class="input-group-text bg-light border-0"><i class="bi bi-calendar-event text-primary"></i></span>
-                    <input type="date" class="form-control bg-light border-0 py-2.5" value="<?php echo date('Y-m-d'); ?>">
-                </div>
+        <?php else: ?>
+            <div class="text-center py-5">
+                <i class="bi bi-car-front display-1 text-muted mb-3"></i>
+                <h4 class="fw-bold">No cars available in this category</h4>
+                <p class="text-muted mb-0">Try another type to see more options.</p>
             </div>
-            <div class="col-lg-2 col-md-6 d-grid">
-                <button type="submit" class="btn btn-primary btn-lg rounded-pill py-2.5 fw-bold shadow-sm">
-                    <i class="bi bi-search me-1"></i> Search Fleet
-                </button>
-            </div>
-        </form>
+        <?php endif; ?>
     </div>
-</div>
+</section>
 
 <!-- Boxed Stats Section -->
 <section class="section-spacing">

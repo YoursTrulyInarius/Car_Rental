@@ -6,8 +6,8 @@ require_once __DIR__ . '/../includes/navbar.php';
 <div class="container py-5">
     <div class="row mb-5 text-center">
         <div class="col-lg-8 mx-auto">
-            <h1 class="display-5 fw-bold text-primary"><?php echo $owner_name ? "Available Fleet from " . htmlspecialchars($owner_name) : "Your Premium Dashboard"; ?></h1>
-            <p class="lead text-muted"><?php echo $owner_name ? "Browse cars managed by this owner." : "Browse our exclusive collection of car owners."; ?></p>
+            <h1 class="display-5 fw-bold text-primary"><?php echo $owner_name ? htmlspecialchars($owner_name) : "Your Premium Dashboard"; ?></h1>
+            <p class="lead text-muted"><?php echo $owner_name && $owner_id ? "Browse cars managed by this owner." : "Browse our available fleet and explore each vehicle in detail."; ?></p>
             <?php if($owner_id): ?>
                 <a href="<?php echo BASE_URL; ?>dashboard.php" class="btn btn-outline-secondary rounded-pill mt-3 shadow-sm">
                     <i class="bi bi-arrow-left me-2"></i>Back to Owners
@@ -17,7 +17,7 @@ require_once __DIR__ . '/../includes/navbar.php';
     </div>
 
     <div class="row row-cols-1 row-cols-md-2 row-cols-xl-3 g-4">
-        <?php if(!$owner_id): ?>
+        <?php if(!$owner_id && isset($_SESSION['user_id'])): ?>
             <!-- Owners Grid -->
             <?php if($owners && $owners->num_rows > 0): ?>
                 <?php while($owner = $owners->fetch_assoc()): ?>
@@ -120,9 +120,14 @@ require_once __DIR__ . '/../includes/navbar.php';
                                     <span class="badge bg-light text-dark border rounded-pill px-2 py-1 text-capitalize small"><?php echo htmlspecialchars($row['type']); ?></span>
                                 <?php endif; ?>
                             </div>
-                            <p class="card-text text-muted small flex-grow-1 lh-sm mb-4">
+                            <p class="card-text text-muted small flex-grow-1 lh-sm mb-2">
                                 <?php echo substr(htmlspecialchars($row['description']), 0, 90) . '...'; ?>
                             </p>
+                            <?php if(!empty($row['owner_name'])): ?>
+                                <p class="text-muted small mb-3">
+                                    <i class="bi bi-person-badge me-1"></i><?php echo htmlspecialchars($row['owner_name']); ?>
+                                </p>
+                            <?php endif; ?>
                             
                             <div class="mt-auto pt-3 border-top border-light">
                                 <div class="d-flex justify-content-between align-items-center mb-3">
@@ -130,10 +135,14 @@ require_once __DIR__ . '/../includes/navbar.php';
                                     <h5 class="text-primary mb-0 fw-bold">₱<?php echo number_format($row['price_per_day'], 2); ?></h5>
                                 </div>
                                 <div class="d-grid gap-2">
-                                    <button type="button" class="btn btn-outline-primary rounded-pill shadow-sm fw-bold py-2" data-bs-toggle="modal" data-bs-target="#carModal<?php echo $row['id']; ?>">
+                                    <a href="<?php echo BASE_URL; ?>car_details.php?id=<?php echo $row['id']; ?>" class="btn btn-outline-primary rounded-pill shadow-sm fw-bold py-2">
                                         View Details
-                                    </button>
-                                    <a href="<?php echo BASE_URL; ?>car_details.php?id=<?php echo $row['id']; ?>" class="btn <?php echo $btn_class; ?> rounded-pill shadow-sm fw-bold py-2"><?php echo $btn_text; ?></a>
+                                    </a>
+                                    <?php if(isset($_SESSION['user_id'])): ?>
+                                        <a href="<?php echo BASE_URL; ?>car_details.php?id=<?php echo $row['id']; ?>" class="btn <?php echo $btn_class; ?> rounded-pill shadow-sm fw-bold py-2"><?php echo $btn_text; ?></a>
+                                    <?php else: ?>
+                                        <a href="<?php echo BASE_URL; ?>login.php" class="btn btn-primary rounded-pill shadow-sm fw-bold py-2">Login to Rent</a>
+                                    <?php endif; ?>
                                 </div>
                             </div>
                         </div>

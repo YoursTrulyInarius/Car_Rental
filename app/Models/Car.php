@@ -157,6 +157,20 @@ class Car {
     }
 
     /**
+     * Get all available vehicles across owners for public browsing.
+     */
+    public function getAvailableCars($type = null) {
+        $query = "SELECT c.*, u.name as owner_name FROM cars c LEFT JOIN users u ON c.owner_id = u.id WHERE c.status = '" . self::STATUS_AVAILABLE . "'";
+
+        if ($type && in_array($type, self::TYPES)) {
+            $query .= " AND c.type = '" . $this->db->real_escape_string($type) . "'";
+        }
+
+        $query .= " ORDER BY c.created_at DESC";
+        return $this->db->query($query);
+    }
+
+    /**
      * Check if vehicle is available for rental period
      */
     public function isAvailableForPeriod($car_id, $start_date, $end_date) {

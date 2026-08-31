@@ -671,6 +671,281 @@ body {
     font-size: 0.88rem;
 }
 
+.hero-cta-row {
+    margin-top: 1.5rem;
+    display: flex;
+    justify-content: center;
+    justify-content: flex-start;
+}
+
+.hero-metric-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.7rem;
+    padding: 0.85rem 1.2rem;
+    border-radius: var(--radius-pill);
+    background: rgba(255, 255, 255, 0.08);
+    border: 1px solid rgba(255, 255, 255, 0.16);
+    color: #e2e8f0;
+    letter-spacing: 0.02em;
+    font-size: 0.92rem;
+    box-shadow: 0 16px 40px rgba(37, 99, 235, 0.18);
+    animation: floatPill 4s ease-in-out infinite;
+}
+
+.pulse-dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background: #22c55e;
+    box-shadow: 0 0 0 0 rgba(34, 197, 94, 0.5);
+    animation: pulseDot 2s infinite;
+    display: inline-block;
+}
+
+.hero-visual {
+    position: relative;
+}
+
+.hero-visual::before {
+    content: "";
+    position: absolute;
+    inset: -18% -10% -12% -8%;
+    background: radial-gradient(circle at center, rgba(59, 130, 246, 0.28), rgba(59, 130, 246, 0) 62%);
+    filter: blur(20px);
+    z-index: 0;
+}
+
+.hero-car-image {
+    position: relative;
+    z-index: 1;
+    animation: floatImage 6s ease-in-out infinite;
+    border: 1px solid rgba(255, 255, 255, 0.12);
+}
+
+.fleet-section {
+    padding: 4rem 0 3rem;
+    background: #f4f7fb;
+}
+
+.fleet-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    gap: 1.5rem;
+    margin-bottom: 2rem;
+}
+
+.fleet-title {
+    font-size: clamp(2.3rem, 3vw, 4rem);
+    font-weight: 900;
+    letter-spacing: -0.06em;
+    color: #0f172a;
+    margin: 0;
+    text-transform: none;
+    line-height: 0.96;
+}
+
+.fleet-toolbar {
+    display: flex;
+    justify-content: flex-end;
+    width: 100%;
+}
+
+.fleet-filter-form {
+    display: flex;
+    align-items: center;
+    gap: 0.8rem;
+    background: #ffffff;
+    border: 1px solid #dfe7f1;
+    border-radius: 1.1rem;
+    padding: 0.8rem 1rem;
+    box-shadow: 0 8px 18px rgba(15, 23, 42, 0.05);
+}
+
+.fleet-filter-label {
+    margin: 0;
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--text-muted);
+    font-weight: 700;
+}
+
+.fleet-filter-control {
+    display: flex;
+    align-items: center;
+    gap: 0.55rem;
+    min-width: 260px;
+    background: #f8fafc;
+    border: 1px solid #ebeff5;
+    border-radius: 0.8rem;
+    padding: 0.6rem 0.85rem;
+}
+
+.fleet-filter-control i {
+    color: var(--primary);
+    font-size: 1rem;
+}
+
+.fleet-filter-control select {
+    border: none;
+    background: transparent;
+    outline: none;
+    width: 100%;
+    color: #0f172a;
+    font-weight: 600;
+    padding: 0;
+}
+
+.fleet-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 2rem;
+}
+
+.fleet-card {
+    background: #fff;
+    border: 1px solid rgba(148, 163, 184, 0.22);
+    border-radius: 1.6rem;
+    overflow: hidden;
+    box-shadow: 0 14px 28px rgba(15, 23, 42, 0.06);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.fleet-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 18px 36px rgba(15, 23, 42, 0.1);
+}
+
+.fleet-image-wrap {
+    height: 240px;
+    overflow: hidden;
+    background: #e2e8f0;
+}
+
+.fleet-image-wrap img {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.fleet-card-body {
+    padding: 1.5rem 1.5rem 1.25rem;
+}
+
+.fleet-card-topline {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 0.8rem;
+    margin-bottom: 0.9rem;
+}
+
+.fleet-card-topline h3 {
+    margin: 0;
+    font-size: 2rem;
+    font-weight: 800;
+    color: #0f172a;
+    letter-spacing: -0.05em;
+}
+
+.fleet-type {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 60px;
+    padding: 0.45rem 0.75rem;
+    border-radius: 999px;
+    background: #eef5ff;
+    color: #1d4ed8;
+    font-size: 0.72rem;
+    font-weight: 700;
+    text-transform: uppercase;
+}
+
+.fleet-owner {
+    margin: 0 0 1.25rem;
+    color: #475569;
+    font-size: 0.95rem;
+}
+
+.fleet-price-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: end;
+    gap: 1rem;
+    padding-top: 1rem;
+    border-top: 1px solid #edf2f7;
+    margin-bottom: 1.2rem;
+}
+
+.fleet-price-row small {
+    display: block;
+    margin-bottom: 0.2rem;
+    color: #64748b;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    font-weight: 700;
+}
+
+.fleet-price-row strong {
+    font-size: 2rem;
+    color: #2563eb;
+    letter-spacing: -0.05em;
+    line-height: 1;
+}
+
+.fleet-availability {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 2.2rem;
+    padding: 0.55rem 0.8rem;
+    border-radius: 999px;
+    background: #dcfce7;
+    color: #15803d;
+    font-size: 0.8rem;
+    font-weight: 700;
+}
+
+.fleet-details-btn {
+    display: block;
+    width: 100%;
+    background: transparent;
+    color: #2563eb;
+    border: 2px solid #2563eb;
+    border-radius: 999px;
+    font-weight: 700;
+    text-align: center;
+    padding: 0.9rem 1rem;
+    text-decoration: none;
+    transition: all 0.2s ease;
+}
+
+.fleet-details-btn:hover {
+    background: #2563eb;
+    color: #ffffff;
+    text-decoration: none;
+}
+
+@keyframes floatImage {
+    0%, 100% { transform: translateY(0px); }
+    50% { transform: translateY(-10px); }
+}
+
+@keyframes floatPill {
+    0%, 100% { transform: translateY(0px); }
+    50% { transform: translateY(-6px); }
+}
+
+@keyframes pulseDot {
+    0% { box-shadow: 0 0 0 0 rgba(34, 197, 94, 0.5); }
+    70% { box-shadow: 0 0 0 12px rgba(34, 197, 94, 0); }
+    100% { box-shadow: 0 0 0 0 rgba(34, 197, 94, 0); }
+}
+
 .search-bar-card {
     background: var(--surface);
     border: 1px solid var(--border);
@@ -728,4 +1003,33 @@ body {
     background: var(--secondary);
     color: #ffffff;
     height: 100%;
+}
+
+.password-wrapper {
+    position: relative;
+    width: 100%;
+}
+
+.password-wrapper .form-floating {
+    width: 100%;
+}
+
+.eye-toggle {
+    position: absolute;
+    right: 1rem;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #6c757d;
+    cursor: pointer;
+    z-index: 10;
+    font-size: 1rem;
+    line-height: 1;
+}
+
+.eye-toggle:hover {
+    color: var(--primary);
+}
+
+.auth-card .text-start {
+    width: 100%;
 }

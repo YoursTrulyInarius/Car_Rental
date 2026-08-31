@@ -49,7 +49,7 @@ $current_page = basename($_SERVER['PHP_SELF']);
                         <a class="nav-link px-3 fw-semibold <?php echo ($current_page == 'index.php') ? 'active text-primary' : ''; ?>" href="<?php echo BASE_URL; ?>index.php">Home</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link px-3 fw-semibold" href="<?php echo BASE_URL; ?>dashboard.php">Our Fleet</a>
+                        <a class="nav-link px-3 fw-semibold <?php echo ($current_page == 'index.php') ? 'active text-primary' : ''; ?>" href="<?php echo BASE_URL; ?>index.php#available-cars">Available Cars</a>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link px-3 fw-semibold" href="<?php echo BASE_URL; ?>index.php#features">Why Us</a>
