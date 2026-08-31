@@ -90,6 +90,8 @@ spl_autoload_register(function ($class) {
     if (file_exists($file)) {
         require_once $file;
     }
+});
+
 // Helper function to parse multiple car images
 if (!function_exists('getCarImagesList')) {
     function getCarImagesList($imgString) {
