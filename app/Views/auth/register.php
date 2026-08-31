@@ -38,8 +38,7 @@ require_once __DIR__ . '/../includes/header.php';
                 <div class="mb-4 animate-fade-up">
                     <i class="bi bi-stars display-1"></i>
                 </div>
-                <h1 class="display-1 fw-bold mb-0 animate-fade-up delay-100">FILIPS</h1>
-                <h2 class="display-4 fw-light animate-fade-up delay-200">CAR RENTAL</h2>
+                <h1 class="display-4 fw-light animate-fade-up delay-100">CAR RENTAL</h1>
                 <div class="mt-4 border-top border-white border-opacity-25 pt-4 animate-fade-up delay-300" style="max-width: 400px; margin: 0 auto;">
                     <p class="lead fs-5 text-white-50">Join the exclusive club today.</p>
                 </div>
@@ -91,7 +90,8 @@ require_once __DIR__ . '/../includes/header.php';
                     <div class="form-floating mb-4">
                         <select name="role" class="form-select" id="floatingRole">
                             <option value="customer">Customer (Renter)</option>
-                            <option value="admin">Admin (Car Owner)</option>
+                            <option value="owner">Owner (Car Owner)</option>
+                            <option value="staff">Staff</option>
                         </select>
                         <label for="floatingRole">Select Role</label>
                     </div>

@@ -62,15 +62,19 @@ class Rental {
     }
 
     public function getPendingCount() {
-        return $this->db->query("SELECT COUNT(*) FROM rentals WHERE status = 'pending'")->fetch_row()[0];
+        $result = $this->db->query("SELECT COUNT(*) as count FROM rentals WHERE status = 'pending'");
+        return $result ? $result->fetch_assoc()['count'] : 0;
     }
 
     public function getActiveCount() {
-        return $this->db->query("SELECT COUNT(*) FROM rentals WHERE status = 'approved'")->fetch_row()[0];
+        $result = $this->db->query("SELECT COUNT(*) as count FROM rentals WHERE status = 'approved'");
+        return $result ? $result->fetch_assoc()['count'] : 0;
     }
 
     public function getTotalRevenue() {
-        return $this->db->query("SELECT SUM(total_price) FROM rentals WHERE status = 'approved'")->fetch_row()[0] ?? 0;
+        $result = $this->db->query("SELECT SUM(total_price) as total FROM rentals WHERE status = 'approved'");
+        $row = $result ? $result->fetch_assoc() : null;
+        return ($row && $row['total']) ? $row['total'] : 0;
     }
 
     public function sendStatusEmail($toEmail, $userName, $carModel, $status, $dates, $totalPrice) {

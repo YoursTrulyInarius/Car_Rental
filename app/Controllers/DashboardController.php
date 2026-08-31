@@ -28,7 +28,7 @@ class DashboardController {
             exit;
         }
 
-        if (isset($_SESSION['role']) && $_SESSION['role'] === 'admin') {
+        if (isset($_SESSION['role']) && ($_SESSION['role'] === 'owner' || $_SESSION['role'] === 'staff')) {
             header("Location: " . BASE_URL . "admin/dashboard.php");
             exit;
         }
@@ -52,7 +52,7 @@ class DashboardController {
     }
 
     public function adminDashboard() {
-        if (!isset($_SESSION['user_id']) || $_SESSION['role'] !== 'admin') {
+        if (!isset($_SESSION['user_id']) || ($_SESSION['role'] !== 'owner' && $_SESSION['role'] !== 'staff')) {
             header("Location: " . BASE_URL . "login.php");
             exit;
         }
@@ -79,11 +79,12 @@ class DashboardController {
         $owners = $this->userModel->getOwners();
 
         $mysqli = $this->db;
+        $carModel = $this->carModel;
         require_once __DIR__ . '/../Views/dashboard/admin.php';
     }
 
     public function ownerDashboard() {
-        if (!isset($_SESSION['user_id']) || $_SESSION['role'] !== 'admin') {
+        if (!isset($_SESSION['user_id']) || ($_SESSION['role'] !== 'owner' && $_SESSION['role'] !== 'staff')) {
             header("Location: " . BASE_URL . "login.php");
             exit;
         }

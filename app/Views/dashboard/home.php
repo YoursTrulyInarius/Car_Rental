@@ -24,7 +24,7 @@ require_once __DIR__ . '/../includes/navbar.php';
                 </p>
                 <div class="d-flex flex-column flex-sm-row gap-3 justify-content-center justify-content-lg-start animate-fade-up delay-300">
                     <?php if(isset($_SESSION['user_id'])): ?>
-                        <?php if($_SESSION['role'] == 'admin'): ?>
+                        <?php if($_SESSION['role'] == 'owner' || $_SESSION['role'] == 'staff'): ?>
                             <a class="btn btn-light btn-lg rounded-pill px-5 py-3 fw-bold shadow-lg hover-float text-primary" href="<?php echo BASE_URL; ?>admin/dashboard.php">
                                 <i class="bi bi-speedometer2 me-2"></i>Admin Dashboard
                             </a>

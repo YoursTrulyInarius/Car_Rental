@@ -4,7 +4,7 @@ $current_page = basename($_SERVER['PHP_SELF']);
 <nav class="navbar navbar-expand-lg fixed-top bg-white shadow-sm">
     <div class="container">
         <a class="navbar-brand d-flex align-items-center me-4" href="<?php echo BASE_URL; ?>index.php">
-            <i class="bi bi-car-front-fill me-2 text-primary"></i>FILIPS CAR RENTAL
+            <i class="bi bi-car-front-fill me-2 text-primary"></i>CAR RENTAL
         </a>
         <button class="navbar-toggler border-0 shadow-none" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
             <span class="navbar-toggler-icon"></span>
@@ -13,7 +13,7 @@ $current_page = basename($_SERVER['PHP_SELF']);
             <ul class="navbar-nav ms-auto align-items-center gap-1">
                 
                 <!-- Admin Links -->
-                <?php if(isset($_SESSION['role']) && $_SESSION['role'] == 'admin'): ?>
+                <?php if(isset($_SESSION['role']) && ($_SESSION['role'] == 'owner' || $_SESSION['role'] == 'staff')): ?>
                     <li class="nav-item">
                         <a class="nav-link px-3 fw-semibold <?php echo ($current_page == 'dashboard.php') ? 'active text-primary' : ''; ?>" href="<?php echo BASE_URL; ?>admin/dashboard.php">Dashboard</a>
                     </li>

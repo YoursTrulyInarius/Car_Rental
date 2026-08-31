@@ -101,7 +101,7 @@ require_once __DIR__ . '/../includes/navbar.php';
                 <?php while($owner = $owners->fetch_assoc()): ?>
                     <?php 
                         $owner_id = $owner['id'];
-                        $car_count = $this->carModel->getStockCountByOwner($owner_id);
+                        $car_count = $carModel->getStockCountByOwner($owner_id);
                     ?>
                     <div class="col-md-3">
                         <a href="<?php echo BASE_URL; ?>admin/owner_dashboard.php?id=<?php echo $owner_id; ?>" class="text-decoration-none">

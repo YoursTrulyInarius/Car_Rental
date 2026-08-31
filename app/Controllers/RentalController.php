@@ -56,7 +56,7 @@ class RentalController {
     }
 
     public function adminManageRentals() {
-        if (!isset($_SESSION['user_id']) || $_SESSION['role'] !== 'admin') {
+        if (!isset($_SESSION['user_id']) || ($_SESSION['role'] !== 'owner' && $_SESSION['role'] !== 'staff')) {
             header("Location: " . BASE_URL . "login.php");
             exit;
         }
@@ -87,7 +87,7 @@ class RentalController {
     }
 
     public function checkPending() {
-        if (!isset($_SESSION['user_id']) || $_SESSION['role'] !== 'admin') {
+        if (!isset($_SESSION['user_id']) || ($_SESSION['role'] !== 'owner' && $_SESSION['role'] !== 'staff')) {
             header('Content-Type: application/json');
             echo json_encode(['error' => 'not authorized']);
             exit;

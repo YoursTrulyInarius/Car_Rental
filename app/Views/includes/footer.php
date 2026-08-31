@@ -1,6 +1,6 @@
 <footer class="mt-auto">
     <div class="container">
-        <p class="mb-0 text-muted">&copy; <?php echo date('Y'); ?> FILIPS CAR RENTAL. All rights reserved.</p>
+        <p class="mb-0 text-muted">&copy; <?php echo date('Y'); ?> CAR RENTAL. All rights reserved.</p>
     </div>
 </footer>
 
@@ -24,7 +24,7 @@
         }
     }
 
-    <?php if(isset($_SESSION['role']) && $_SESSION['role'] === 'admin'): ?>
+    <?php if(isset($_SESSION['role']) && ($_SESSION['role'] === 'owner' || $_SESSION['role'] === 'staff')): ?>
     // Real-time Notification for Admins
     let lastPendingCount = null;
 
