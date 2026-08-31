@@ -56,11 +56,11 @@ require_once __DIR__ . '/../includes/header.php';
                                     ?>
                                     <tr>
                                         <td class="ps-4">
-                                            <div class="position-relative d-inline-block">
+                                            <div class="position-relative d-inline-block" style="cursor: pointer;" onclick='viewGallery(<?php echo htmlspecialchars(json_encode($imgs), ENT_QUOTES, 'UTF-8'); ?>, "<?php echo htmlspecialchars($row['model']); ?>")' title="Click to view all photos">
                                                 <?php if($primary_img): ?>
-                                                    <img src="<?php echo htmlspecialchars($primary_img); ?>" width="70" height="46" class="rounded-3 shadow-sm object-fit-cover" alt="Car">
-                                                    <?php if(count($imgs) > 1): ?>
-                                                        <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-dark">
+                                                    <img src="<?php echo htmlspecialchars($primary_img); ?>" width="70" height="46" class="rounded-3 shadow-sm object-fit-cover hover-opacity" alt="Car">
+                                                    <?php if(count($imgs) > 0): ?>
+                                                        <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-primary shadow-sm">
                                                             <i class="bi bi-images me-1"></i><?php echo count($imgs); ?>
                                                         </span>
                                                     <?php endif; ?>
@@ -189,15 +189,17 @@ require_once __DIR__ . '/../includes/header.php';
                         <textarea name="description" id="description" class="form-control rounded-3" rows="3" placeholder="Provide vehicle details, features, transmission type, fuel policy, etc."></textarea>
                     </div>
 
-                    <!-- Multi-Image Upload Section (Multiselect Max 4 Photos) -->
+                    <!-- Multi-Image Upload & Preview Section -->
                     <div class="border rounded-3 p-3 bg-light mb-3">
-                        <label class="form-label fw-bold d-block mb-1">
+                        <label class="form-label fw-bold d-block mb-2">
                             <i class="bi bi-images me-2 text-primary"></i>Vehicle Gallery Photos (Select up to 4 photos max)
                         </label>
-                        <small class="text-muted d-block mb-3">Hold <kbd>Ctrl</kbd> or <kbd>Shift</kbd> in file selector to choose up to 4 photos at once for automated carousel display.</small>
+
+                        <!-- Image Preview Thumbnails Container -->
+                        <div id="imagePreviewContainer" class="d-flex flex-wrap gap-2 mb-3" style="display: none;"></div>
 
                         <div>
-                            <input type="file" name="images[]" id="carImagesInput" multiple class="form-control rounded-3" accept="image/*" onchange="validateMaxPhotos(this)">
+                            <input type="file" name="images[]" id="carImagesInput" multiple class="form-control rounded-3" accept="image/*" onchange="handleImageSelection(this)">
                         </div>
                         <div id="imageCountBadge" class="small text-primary fw-semibold mt-2" style="display: none;"></div>
                     </div>
@@ -212,9 +214,53 @@ require_once __DIR__ . '/../includes/header.php';
 </div>
 
 <script>
-function validateMaxPhotos(input) {
+// View full vehicle photo gallery in popup carousel
+function viewGallery(images, modelName) {
+    if (!images || images.length === 0) {
+        Swal.fire({ title: modelName, text: 'No photos uploaded for this vehicle.', icon: 'info' });
+        return;
+    }
+
+    let slidesHtml = '';
+    images.forEach((img, idx) => {
+        const activeClass = idx === 0 ? 'active' : '';
+        const imgUrl = '<?php echo BASE_URL; ?>uploads/' + img;
+        slidesHtml += `<div class="carousel-item ${activeClass}"><img src="${imgUrl}" class="d-block w-100 rounded-3" style="max-height: 400px; object-fit: cover;" alt="Photo ${idx+1}"></div>`;
+    });
+
+    let carouselHtml = `
+        <div id="galleryPopupCarousel" class="carousel slide" data-bs-ride="carousel" data-bs-interval="2500">
+            <div class="carousel-inner">${slidesHtml}</div>
+            ${images.length > 1 ? `
+                <button class="carousel-control-prev" type="button" data-bs-target="#galleryPopupCarousel" data-bs-slide="prev"><span class="carousel-control-prev-icon"></span></button>
+                <button class="carousel-control-next" type="button" data-bs-target="#galleryPopupCarousel" data-bs-slide="next"><span class="carousel-control-next-icon"></span></button>
+            ` : ''}
+        </div>
+    `;
+
+    Swal.fire({
+        title: modelName,
+        html: carouselHtml,
+        showCloseButton: true,
+        showConfirmButton: false,
+        width: '650px',
+        customClass: { popup: 'rounded-4' }
+    });
+
+    setTimeout(() => {
+        const el = document.getElementById('galleryPopupCarousel');
+        if (el && typeof bootstrap !== 'undefined') {
+            new bootstrap.Carousel(el, { interval: 2500, ride: 'carousel' });
+        }
+    }, 200);
+}
+
+// Live preview & validation when user selects new image files
+function handleImageSelection(input) {
     const maxAllowed = 4;
     const badge = document.getElementById('imageCountBadge');
+    const container = document.getElementById('imagePreviewContainer');
+    
     if (input.files && input.files.length > maxAllowed) {
         Swal.fire({
             title: 'Maximum 4 Photos',
@@ -224,15 +270,79 @@ function validateMaxPhotos(input) {
         });
         input.value = ''; // Reset selection
         if (badge) badge.style.display = 'none';
+        if (container) container.style.display = 'none';
         return false;
     }
-    if (badge) {
-        if (input.files && input.files.length > 0) {
+
+    if (input.files && input.files.length > 0) {
+        if (badge) {
             badge.innerText = `✓ ${input.files.length} photo(s) selected (Maximum 4 allowed)`;
             badge.style.display = 'block';
-        } else {
-            badge.style.display = 'none';
         }
+        
+        if (container) {
+            container.innerHTML = '';
+            container.style.display = 'flex';
+
+            Array.from(input.files).forEach((file, index) => {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    const div = document.createElement('div');
+                    div.className = 'position-relative border rounded-3 overflow-hidden shadow-sm me-1 mb-1';
+                    div.style.width = '100px';
+                    div.style.height = '75px';
+                    div.innerHTML = `
+                        <img src="${e.target.result}" style="width:100%; height:100%; object-fit:cover;">
+                        <span class="position-absolute bottom-0 start-0 bg-dark text-white opacity-75 px-1 py-0" style="font-size:10px;">Photo ${index + 1}</span>
+                    `;
+                    container.appendChild(div);
+                };
+                reader.readAsDataURL(file);
+            });
+        }
+    } else {
+        if (badge) badge.style.display = 'none';
+    }
+}
+
+// Render thumbnails for existing car photos in edit modal
+function renderExistingImagePreviews(imgJsonOrString) {
+    const container = document.getElementById('imagePreviewContainer');
+    if (!container) return;
+
+    let imgs = [];
+    if (imgJsonOrString) {
+        try {
+            const parsed = JSON.parse(imgJsonOrString);
+            if (Array.isArray(parsed)) imgs = parsed;
+        } catch(e) {
+            imgs = imgJsonOrString.split(',').map(s => s.trim()).filter(Boolean);
+        }
+    }
+
+    if (imgs.length > 0) {
+        container.innerHTML = '';
+        container.style.display = 'flex';
+
+        imgs.forEach((img, idx) => {
+            const imgUrl = '<?php echo BASE_URL; ?>uploads/' + img;
+            const div = document.createElement('div');
+            div.className = 'position-relative border rounded-3 overflow-hidden shadow-sm me-1 mb-1';
+            div.style.width = '100px';
+            div.style.height = '75px';
+            div.style.cursor = 'pointer';
+            div.onclick = function() {
+                Swal.fire({ imageUrl: imgUrl, imageAlt: 'Photo ' + (idx + 1), showConfirmButton: false, showCloseButton: true });
+            };
+            div.innerHTML = `
+                <img src="${imgUrl}" style="width:100%; height:100%; object-fit:cover;" title="Click to view full photo">
+                <span class="position-absolute bottom-0 start-0 bg-dark text-white opacity-75 px-1 py-0" style="font-size:10px;">Photo ${idx + 1}</span>
+            `;
+            container.appendChild(div);
+        });
+    } else {
+        container.style.display = 'none';
+        container.innerHTML = '';
     }
 }
 
@@ -251,6 +361,8 @@ function editCar(car){
     const badge = document.getElementById('imageCountBadge');
     if (badge) badge.style.display = 'none';
 
+    renderExistingImagePreviews(car.image);
+
     var myModal = new bootstrap.Modal(document.getElementById('carModal'));
     myModal.show();
 }
@@ -261,8 +373,15 @@ function resetForm(){
     document.getElementById('quantity').value = '1';
     document.getElementById('type').value = 'sedan';
     document.querySelector('#carModal form').reset();
+
     const badge = document.getElementById('imageCountBadge');
     if (badge) badge.style.display = 'none';
+
+    const container = document.getElementById('imagePreviewContainer');
+    if (container) {
+        container.innerHTML = '';
+        container.style.display = 'none';
+    }
 }
 </script>
 
