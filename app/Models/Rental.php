@@ -39,6 +39,7 @@ class Rental {
                 FROM rentals r 
                 JOIN users u ON r.user_id = u.id 
                 JOIN cars c ON r.car_id = c.id 
+                WHERE r.status IN ('pending', 'approved', 'rejected', 'completed')
                 ORDER BY r.created_at DESC LIMIT $limit";
         return $this->db->query($sql);
     }
@@ -67,7 +68,7 @@ class Rental {
     }
 
     public function getActiveCount() {
-        $result = $this->db->query("SELECT COUNT(*) as count FROM rentals WHERE status = 'approved'");
+        $result = $this->db->query("SELECT COUNT(*) as count FROM rentals WHERE status IN ('pending', 'approved')");
         return $result ? $result->fetch_assoc()['count'] : 0;
     }
 

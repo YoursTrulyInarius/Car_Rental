@@ -3,59 +3,56 @@ require_once __DIR__ . '/../includes/header.php';
 require_once __DIR__ . '/../includes/navbar.php';
 ?>
 
+<section class="bg-gradient-primary text-white py-5 mt-5">
+    <div class="container">
+        <div class="row align-items-center gy-4">
+            <div class="col-lg-7">
+                <span class="badge bg-white text-primary px-3 py-2 rounded-pill mb-3 fw-semibold">Premium Fleet</span>
+                <h1 class="display-5 fw-bold mb-3">Available Cars</h1>
+                <p class="lead text-white-50 mb-0">
+                    Browse our verified vehicles and choose the right ride for your next trip.
+                </p>
+            </div>
+            <div class="col-lg-5">
+                <div class="bg-white rounded-4 p-3 shadow-sm">
+                    <form method="GET" action="<?php echo BASE_URL; ?>dashboard.php" class="d-flex flex-column gap-3">
+                        <div>
+                            <label for="carTypeFilter" class="form-label small text-uppercase text-muted fw-bold mb-2">Filter by type</label>
+                            <select id="carTypeFilter" name="type" class="form-select rounded-pill border-0 shadow-sm" onchange="this.form.submit()">
+                                <option value="">All Types</option>
+                                <?php foreach (['sedan','suv','truck','van','sports','luxury','other'] as $typeOption): ?>
+                                    <option value="<?php echo htmlspecialchars($typeOption); ?>" <?php echo ($selected_type === $typeOption) ? 'selected' : ''; ?>>
+                                        <?php echo ucfirst($typeOption); ?>
+                                    </option>
+                                <?php endforeach; ?>
+                            </select>
+                        </div>
+                        <?php if (!empty($selected_type)): ?>
+                            <div class="d-flex justify-content-end">
+                                <a href="<?php echo BASE_URL; ?>dashboard.php" class="btn btn-outline-secondary btn-sm rounded-pill">Clear</a>
+                            </div>
+                        <?php endif; ?>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
 <div class="container py-5">
-    <div class="row mb-5 text-center">
-        <div class="col-lg-8 mx-auto">
-            <h1 class="display-5 fw-bold text-primary"><?php echo $owner_name ? htmlspecialchars($owner_name) : "Your Premium Dashboard"; ?></h1>
-            <p class="lead text-muted"><?php echo $owner_name && $owner_id ? "Browse cars managed by this owner." : "Browse our available fleet and explore each vehicle in detail."; ?></p>
-            <?php if($owner_id): ?>
-                <a href="<?php echo BASE_URL; ?>dashboard.php" class="btn btn-outline-secondary rounded-pill mt-3 shadow-sm">
-                    <i class="bi bi-arrow-left me-2"></i>Back to Owners
-                </a>
-            <?php endif; ?>
+    <div class="row align-items-center mb-4">
+        <div class="col-md-6">
+            <h2 class="fw-bold mb-0">Fleet Overview</h2>
+        </div>
+        <div class="col-md-6 text-md-end">
+            <span class="badge bg-light text-dark border px-3 py-2 rounded-pill fw-semibold">
+                <?php echo ($cars_result && $cars_result->num_rows > 0) ? $cars_result->num_rows : 0; ?> vehicles
+            </span>
         </div>
     </div>
 
     <div class="row row-cols-1 row-cols-md-2 row-cols-xl-3 g-4">
-        <?php if(!$owner_id && isset($_SESSION['user_id'])): ?>
-            <!-- Owners Grid -->
-            <?php if($owners && $owners->num_rows > 0): ?>
-                <?php while($owner = $owners->fetch_assoc()): ?>
-                    <?php 
-                        $oid = $owner['id'];
-                        $car_count = $carModel->getAvailableStockCountByOwner($oid);
-                    ?>
-                    <div class="col">
-                        <a href="<?php echo BASE_URL; ?>dashboard.php?owner_id=<?php echo $oid; ?>" class="text-decoration-none">
-                            <div class="card h-100 border-0 shadow-lg rounded-4 overflow-hidden card-hover-effect">
-                                <div class="card-body p-4 text-center">
-                                    <div class="avatar-lg bg-primary bg-opacity-10 text-primary rounded-circle d-flex align-items-center justify-content-center mx-auto mb-4" style="width: 80px; height: 80px;">
-                                        <i class="bi bi-person-workspace fs-1"></i>
-                                    </div>
-                                    <h3 class="fw-bold text-dark mb-2"><?php echo htmlspecialchars($owner['name']); ?></h3>
-                                    <p class="text-muted mb-4"><?php echo htmlspecialchars($owner['email']); ?></p>
-                                    <div class="d-inline-block bg-light rounded-pill px-4 py-2 border">
-                                        <span class="fw-bold text-primary"><?php echo $car_count; ?></span>
-                                        <span class="text-muted small">Available Cars</span>
-                                    </div>
-                                </div>
-                                <div class="card-footer bg-primary border-0 text-center py-3">
-                                    <span class="text-white fw-bold">View Collection <i class="bi bi-chevron-right ms-2"></i></span>
-                                </div>
-                            </div>
-                        </a>
-                    </div>
-                <?php endwhile; ?>
-            <?php else: ?>
-                <div class="col-12 text-center py-5">
-                    <i class="bi bi-people display-1 text-muted mb-3"></i>
-                    <h3>No car owners found.</h3>
-                    <p class="text-muted">Check back later for new fleet additions.</p>
-                </div>
-            <?php endif; ?>
-        <?php else: ?>
-            <!-- Cars Grid -->
-            <?php if($cars_result && $cars_result->num_rows > 0): ?>
+        <?php if($cars_result && $cars_result->num_rows > 0): ?>
                 <?php while($row = $cars_result->fetch_assoc()): ?>
                 <?php
                     $car_id = $row['id'];
@@ -227,11 +224,10 @@ require_once __DIR__ . '/../includes/navbar.php';
         <?php else: ?>
             <div class="col-12 text-center py-5">
                 <i class="bi bi-car-front display-1 text-muted mb-3"></i>
-                <h3>No cars available for this owner.</h3>
-                <p class="text-muted">Please check other owners.</p>
+                <h3>No cars available right now.</h3>
+                <p class="text-muted">Please check back soon for new arrivals.</p>
             </div>
         <?php endif; ?>
-    <?php endif; ?>
     </div>
 </div>
 

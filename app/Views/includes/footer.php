@@ -1,6 +1,26 @@
-<footer class="mt-auto">
+<footer class="site-footer mt-auto">
     <div class="container">
-        <p class="mb-0 text-muted">&copy; <?php echo date('Y'); ?> CAR RENTAL. All rights reserved.</p>
+        <div class="row gy-4 align-items-center">
+            <div class="col-lg-4">
+                <a href="<?php echo BASE_URL; ?>index.php" class="site-footer-brand">
+                    <i class="bi bi-car-front-fill"></i>
+                    CAR RENTAL
+                </a>
+            </div>
+            <div class="col-lg-4">
+                <div class="site-footer-links">
+                    <a href="<?php echo BASE_URL; ?>dashboard.php">Browse Cars</a>
+                    <a href="<?php echo BASE_URL; ?>my_rentals.php">My Rentals</a>
+                    <a href="<?php echo BASE_URL; ?>login.php">Sign In</a>
+                </div>
+            </div>
+            <div class="col-lg-4 text-lg-end">
+                <div class="site-footer-meta">
+                    <span><i class="bi bi-envelope me-1"></i>support@carrental.com</span>
+                </div>
+            </div>
+        </div>
+        <div class="site-footer-bottom">&copy; <?php echo date('Y'); ?> CAR RENTAL. All rights reserved.</div>
     </div>
 </footer>
 

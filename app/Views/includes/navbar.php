@@ -30,9 +30,6 @@ $current_page = basename($_SERVER['PHP_SELF']);
                 <!-- Customer Links -->
                 <?php elseif(isset($_SESSION['role']) && $_SESSION['role'] == 'customer'): ?>
                     <li class="nav-item">
-                        <a class="nav-link px-3 fw-semibold <?php echo ($current_page == 'index.php') ? 'active text-primary' : ''; ?>" href="<?php echo BASE_URL; ?>index.php">Home</a>
-                    </li>
-                    <li class="nav-item">
                         <a class="nav-link px-3 fw-semibold <?php echo ($current_page == 'dashboard.php') ? 'active text-primary' : ''; ?>" href="<?php echo BASE_URL; ?>dashboard.php">Browse Cars</a>
                     </li>
                     <li class="nav-item">

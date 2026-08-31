@@ -31,6 +31,7 @@ class DashboardController {
         }
 
         $owner_id = $_GET['owner_id'] ?? null;
+        $selected_type = isset($_GET['type']) ? strtolower(trim((string) $_GET['type'])) : '';
         $owner_name = "";
         $cars_result = null;
         $owners = null;
@@ -40,10 +41,12 @@ class DashboardController {
             if ($owner) $owner_name = $owner['name'];
             $cars_result = $this->carModel->getAvailableByOwner($owner_id);
         } elseif (isset($_SESSION['user_id'])) {
-            $owners = $this->userModel->getOwnersWithCars();
+            $owner_name = "Available Cars";
+            $cars_result = $this->carModel->getAvailableCars($selected_type);
+            $owners = null;
         } else {
             $owner_name = "Available Cars";
-            $cars_result = $this->carModel->getAvailableCars();
+            $cars_result = $this->carModel->getAvailableCars($selected_type);
         }
 
         $mysqli = $this->db;

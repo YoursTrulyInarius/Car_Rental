@@ -283,6 +283,19 @@ class Car {
     }
 
     /**
+     * Get available stock count by owner.
+     * Kept for compatibility with older dashboard views.
+     */
+    public function getAvailableStockCountByOwner($owner_id) {
+        $owner_id = (int)$owner_id;
+        $stmt = $this->db->prepare("SELECT COUNT(*) as count FROM cars WHERE owner_id = ? AND status = ?");
+        $status = self::STATUS_AVAILABLE;
+        $stmt->bind_param("is", $owner_id, $status);
+        $stmt->execute();
+        return $stmt->get_result()->fetch_assoc()['count'] ?? 0;
+    }
+
+    /**
      * Get stock count by owner (alias)
      */
     public function getStockCountByOwner($owner_id) {
