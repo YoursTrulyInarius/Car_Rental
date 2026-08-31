@@ -792,8 +792,8 @@ body {
 .hero-wrapper {
     background: var(--secondary);
     color: #ffffff;
-    padding: 5rem 0 6.5rem;
-    border-radius: 0 0 28px 28px;
+    padding: 4.25rem 0 5.5rem;
+    border-radius: 0 0 24px 24px;
 }
 
 .hero-badge {
@@ -873,13 +873,13 @@ body {
 }
 
 .fleet-title {
-    font-size: clamp(2.3rem, 3vw, 4rem);
+    font-size: clamp(2.1rem, 2.8vw, 3.2rem);
     font-weight: 900;
-    letter-spacing: -0.06em;
+    letter-spacing: -0.05em;
     color: #0f172a;
     margin: 0;
     text-transform: none;
-    line-height: 0.96;
+    line-height: 1;
 }
 
 .fleet-toolbar {
@@ -943,7 +943,7 @@ body {
 .fleet-card {
     background: #fff;
     border: 1px solid rgba(148, 163, 184, 0.22);
-    border-radius: 1.6rem;
+    border-radius: 1.2rem;
     overflow: hidden;
     box-shadow: 0 14px 28px rgba(15, 23, 42, 0.06);
     transition: transform 0.2s ease, box-shadow 0.2s ease;
@@ -981,10 +981,11 @@ body {
 
 .fleet-card-topline h3 {
     margin: 0;
-    font-size: 2rem;
+    font-size: 1.55rem;
     font-weight: 800;
     color: #0f172a;
-    letter-spacing: -0.05em;
+    letter-spacing: -0.04em;
+    line-height: 1.2;
 }
 
 .fleet-type {
@@ -1027,9 +1028,9 @@ body {
 }
 
 .fleet-price-row strong {
-    font-size: 2rem;
+    font-size: 1.55rem;
     color: #2563eb;
-    letter-spacing: -0.05em;
+    letter-spacing: -0.04em;
     line-height: 1;
 }
 
@@ -1052,12 +1053,13 @@ body {
     background: transparent;
     color: #2563eb;
     border: 2px solid #2563eb;
-    border-radius: 0.8rem;
+    border-radius: 0.75rem;
     font-weight: 700;
     text-align: center;
     padding: 0.9rem 1rem;
     text-decoration: none;
     transition: all 0.2s ease;
+    box-shadow: 0 8px 18px rgba(37, 99, 235, 0.08);
 }
 
 .fleet-details-btn:hover {
