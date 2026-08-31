@@ -1,269 +1,303 @@
 <?php
 require_once __DIR__ . '/../includes/header.php';
 require_once __DIR__ . '/../includes/navbar.php';
+
+$allCars = $carModel->getAll();
+$inventorySummary = [
+    'available' => 0,
+    'reserved' => 0,
+    'rented' => 0,
+    'maintenance' => 0,
+];
+$carRows = [];
+
+if ($allCars && $allCars->num_rows > 0) {
+    while ($car = $allCars->fetch_assoc()) {
+        $status = $car['status'] ?? 'available';
+        if (!isset($inventorySummary[$status])) {
+            $inventorySummary[$status] = 0;
+        }
+        $inventorySummary[$status]++;
+        $carRows[] = $car;
+    }
+}
+
+$availableCars = $inventorySummary['available'];
+$unavailableCars = max((count($carRows) - $availableCars), 0);
+$recentFleet = array_slice($carRows, 0, 6);
 ?>
 
-<div class="container py-5">
-    <?php if(isset($_GET['success'])): ?>
-        <div class="alert alert-success border-0 shadow-sm rounded-4 mb-4" role="alert">
-            <i class="bi bi-check-circle-fill me-2"></i>New owner (admin) account created successfully!
-        </div>
-    <?php endif; ?>
-    <?php if(!empty($error_msg)): ?>
-        <div class="alert alert-danger border-0 shadow-sm rounded-4 mb-4" role="alert">
-            <?php echo htmlspecialchars($error_msg); ?>
-        </div>
-    <?php endif; ?>
-
-    <!-- Header -->
-    <div class="d-flex justify-content-between align-items-center mb-5">
-        <div>
-            <h2 class="fw-bold mb-1">Dashboard</h2>
-            <p class="text-muted mb-0">Overview of your rental business performance.</p>
-        </div>
-        <div class="d-flex gap-2">
-            <button class="btn btn-outline-primary d-flex align-items-center rounded-pill px-4" data-bs-toggle="modal" data-bs-target="#ownerModal">
-                <i class="bi bi-person-plus me-2"></i>Add New Owner
-            </button>
-        </div>
-    </div>
-
-    <!-- Stats Grid -->
-    <div class="row g-4 mb-5">
-        <!-- Total Cars -->
-        <div class="col-md-3">
-            <div class="card h-100 border-0 shadow-sm rounded-4 border-start border-4 border-primary align-items-center">
-                <div class="card-body p-4 w-100 d-flex justify-content-between align-items-center">
-                    <div>
-                        <h6 class="text-muted text-uppercase small fw-bold mb-1 tracking-wide">Total Cars</h6>
-                        <h2 class="mb-0 fw-bolder text-dark display-6"><?php echo $total_cars; ?></h2>
-                    </div>
-                    <div class="icon-box bg-primary bg-opacity-10 text-primary rounded-circle p-3 d-flex align-items-center justify-content-center" style="width: 56px; height: 56px;">
-                        <i class="bi bi-car-front-fill fs-4"></i>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <!-- Pending Requests -->
-        <div class="col-md-3">
-            <div class="card h-100 border-0 shadow-sm rounded-4 border-start border-4 border-warning align-items-center">
-                <div class="card-body p-4 w-100 d-flex justify-content-between align-items-center">
-                    <div>
-                        <h6 class="text-muted text-uppercase small fw-bold mb-1 tracking-wide">Pending</h6>
-                        <h2 class="mb-0 fw-bolder text-dark display-6"><?php echo $pending_rentals; ?></h2>
-                    </div>
-                    <div class="icon-box bg-warning bg-opacity-10 text-warning rounded-circle p-3 d-flex align-items-center justify-content-center" style="width: 56px; height: 56px;">
-                        <i class="bi bi-hourglass-split fs-4"></i>
-                    </div>
-                </div>
+<div class="admin-shell">
+    <aside class="admin-sidebar">
+        <div class="admin-brand">
+            <span class="admin-brand-mark">CR</span>
+            <div>
+                <strong>CAR RENTAL</strong>
+                <small>Admin Panel</small>
             </div>
         </div>
 
-        <!-- Active Rentals -->
-        <div class="col-md-3">
-            <div class="card h-100 border-0 shadow-sm rounded-4 border-start border-4 border-success align-items-center">
-                <div class="card-body p-4 w-100 d-flex justify-content-between align-items-center">
+        <nav class="admin-nav">
+            <a class="active" href="<?php echo BASE_URL; ?>admin/dashboard.php">
+                <i class="bi bi-speedometer2"></i>
+                <span>Overview</span>
+            </a>
+            <a href="<?php echo BASE_URL; ?>admin/cars.php">
+                <i class="bi bi-car-front"></i>
+                <span>Cars</span>
+            </a>
+            <a href="<?php echo BASE_URL; ?>admin/rentals.php">
+                <i class="bi bi-calendar3"></i>
+                <span>Rentals</span>
+            </a>
+        </nav>
+
+        <div class="admin-sidebar-card">
+            <span class="d-block text-uppercase small text-muted mb-2">Quick Stats</span>
+            <h3 class="mb-0 fw-bold"><?php echo count($carRows); ?></h3>
+            <small class="text-muted">Fleet units</small>
+        </div>
+    </aside>
+
+    <main class="admin-main">
+        <header class="admin-topbar">
+            <div>
+                <p class="admin-kicker">Operations</p>
+                <h1 class="mb-0">Admin Dashboard</h1>
+            </div>
+
+            <div class="admin-topbar-actions">
+                <a class="btn btn-primary rounded-pill" href="<?php echo BASE_URL; ?>admin/cars.php">
+                    <i class="bi bi-plus-circle me-2"></i>Add Car
+                </a>
+            </div>
+        </header>
+
+        <?php if(!empty($error_msg)): ?>
+            <div class="alert alert-danger border-0 shadow-sm rounded-4 mb-4" role="alert">
+                <?php echo htmlspecialchars($error_msg); ?>
+            </div>
+        <?php endif; ?>
+
+        <section class="row g-4 mb-4">
+            <div class="col-md-6 col-xl-3">
+                <div class="admin-stat-card stat-blue">
                     <div>
-                        <h6 class="text-muted text-uppercase small fw-bold mb-1 tracking-wide">Active</h6>
-                        <h2 class="mb-0 fw-bolder text-dark display-6"><?php echo $active_rentals; ?></h2>
+                        <p>Total Cars</p>
+                        <h3><?php echo $total_cars; ?></h3>
                     </div>
-                    <div class="icon-box bg-success bg-opacity-10 text-success rounded-circle p-3 d-flex align-items-center justify-content-center" style="width: 56px; height: 56px;">
-                        <i class="bi bi-check-circle-fill fs-4"></i>
+                    <span class="admin-icon"><i class="bi bi-car-front-fill"></i></span>
+                </div>
+            </div>
+
+            <div class="col-md-6 col-xl-3">
+                <div class="admin-stat-card stat-green">
+                    <div>
+                        <p>Available</p>
+                        <h3><?php echo $availableCars; ?></h3>
+                    </div>
+                    <span class="admin-icon"><i class="bi bi-check-circle-fill"></i></span>
+                </div>
+            </div>
+
+            <div class="col-md-6 col-xl-3">
+                <div class="admin-stat-card stat-warning">
+                    <div>
+                        <p>Unavailable</p>
+                        <h3><?php echo $unavailableCars; ?></h3>
+                    </div>
+                    <span class="admin-icon"><i class="bi bi-slash-circle"></i></span>
+                </div>
+            </div>
+
+            <div class="col-md-6 col-xl-3">
+                <div class="admin-stat-card stat-purple">
+                    <div>
+                        <p>Pending Rentals</p>
+                        <h3><?php echo $pending_rentals; ?></h3>
+                    </div>
+                    <span class="admin-icon"><i class="bi bi-hourglass-split"></i></span>
+                </div>
+            </div>
+        </section>
+
+        <section class="row g-4 mb-4">
+            <div class="col-xl-8">
+                <div class="admin-panel">
+                    <div class="admin-panel-header">
+                        <div>
+                            <p class="admin-panel-label">Fleet</p>
+                            <h4>Vehicle availability</h4>
+                        </div>
+                        <a href="<?php echo BASE_URL; ?>admin/cars.php" class="btn btn-sm btn-light">Manage cars</a>
+                    </div>
+
+                    <div class="table-responsive">
+                        <table class="table admin-table align-middle mb-0">
+                            <thead>
+                                <tr>
+                                    <th>Car</th>
+                                    <th>Status</th>
+                                    <th>Price</th>
+                                    <th>Owner</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <?php if (!empty($recentFleet)): ?>
+                                    <?php foreach ($recentFleet as $car): ?>
+                                        <?php
+                                            $status = $car['status'] ?? 'available';
+                                            $statusClass = 'success';
+                                            if ($status === 'rented' || $status === 'reserved') $statusClass = 'warning';
+                                            if ($status === 'maintenance') $statusClass = 'secondary';
+                                        ?>
+                                        <tr>
+                                            <td>
+                                                <div class="d-flex align-items-center gap-3">
+                                                    <div class="mini-car-thumb">
+                                                        <i class="bi bi-car-front-fill"></i>
+                                                    </div>
+                                                    <div>
+                                                        <div class="fw-semibold"><?php echo htmlspecialchars($car['brand'] ?? 'Vehicle'); ?> <?php echo htmlspecialchars($car['model'] ?? ''); ?></div>
+                                                        <small class="text-muted"><?php echo htmlspecialchars($car['plate_number'] ?? ''); ?></small>
+                                                    </div>
+                                                </div>
+                                            </td>
+                                            <td>
+                                                <span class="status-badge status-<?php echo $statusClass; ?>"><?php echo ucfirst($status); ?></span>
+                                            </td>
+                                            <td class="fw-semibold text-primary">₱<?php echo number_format((float)($car['price_per_day'] ?? 0), 2); ?></td>
+                                            <td>
+                                                <?php $ownerName = $car['owner_id'] ? ($carModel->getById($car['owner_id'])['name'] ?? 'Owner') : 'N/A'; ?>
+                                                <?php echo htmlspecialchars($ownerName); ?>
+                                            </td>
+                                        </tr>
+                                    <?php endforeach; ?>
+                                <?php else: ?>
+                                    <tr>
+                                        <td colspan="4" class="text-center text-muted py-4">No cars found in the fleet.</td>
+                                    </tr>
+                                <?php endif; ?>
+                            </tbody>
+                        </table>
                     </div>
                 </div>
             </div>
-        </div>
 
-        <!-- Total Revenue -->
-        <div class="col-md-3">
-            <div class="card h-100 border-0 shadow-sm rounded-4 border-start border-4 border-info align-items-center">
-                <div class="card-body p-4 w-100 d-flex justify-content-between align-items-center">
-                    <div>
-                        <h6 class="text-muted text-uppercase small fw-bold mb-1 tracking-wide">Revenue</h6>
-                        <h2 class="mb-0 fw-bolder text-dark display-6">₱<?php echo number_format($total_revenue); ?></h2>
+            <div class="col-xl-4">
+                <div class="admin-panel">
+                    <div class="admin-panel-header">
+                        <div>
+                            <p class="admin-panel-label">Actions</p>
+                            <h4>Quick tools</h4>
+                        </div>
                     </div>
-                    <div class="icon-box bg-info bg-opacity-10 text-info rounded-circle p-3 d-flex align-items-center justify-content-center" style="width: 56px; height: 56px;">
-                        <i class="bi bi-cash-stack fs-4"></i>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
 
-    <!-- Owners Grid -->
-    <div class="mb-5">
-        <div class="d-flex justify-content-between align-items-center mb-4">
-            <h4 class="fw-bold mb-0">Car Owners</h4>
-        </div>
-        <div class="row g-4">
-            <?php if($owners && $owners->num_rows > 0): ?>
-                <?php while($owner = $owners->fetch_assoc()): ?>
-                    <?php 
-                        $owner_id = $owner['id'];
-                        $car_count = $carModel->getStockCountByOwner($owner_id);
-                    ?>
-                    <div class="col-md-3">
-                        <a href="<?php echo BASE_URL; ?>admin/owner_dashboard.php?id=<?php echo $owner_id; ?>" class="text-decoration-none">
-                            <div class="card h-100 border-0 shadow-sm rounded-4 hover-lift transition-all">
-                                <div class="card-body p-4 text-center">
-                                    <div class="avatar-lg bg-primary bg-opacity-10 text-primary rounded-circle d-flex align-items-center justify-content-center mx-auto mb-3" style="width: 64px; height: 64px;">
-                                        <i class="bi bi-person-badge fs-2"></i>
-                                    </div>
-                                    <h5 class="fw-bold text-dark mb-1"><?php echo htmlspecialchars($owner['name']); ?></h5>
-                                    <p class="text-muted small mb-3"><?php echo htmlspecialchars($owner['email']); ?></p>
-                                    <div class="d-flex justify-content-center align-items-center gap-2">
-                                        <span class="badge bg-light text-dark border rounded-pill px-3 py-2">
-                                            <i class="bi bi-car-front-fill me-1 text-primary"></i>
-                                            <?php echo $car_count; ?> Cars
-                                        </span>
-                                    </div>
-                                </div>
+                    <div class="quick-action-list">
+                        <a href="<?php echo BASE_URL; ?>admin/cars.php" class="quick-action-item">
+                            <span class="quick-icon blue"><i class="bi bi-plus-circle"></i></span>
+                            <div>
+                                <strong>Add new car</strong>
+                                <small>Manage fleet inventory</small>
                             </div>
                         </a>
-                    </div>
-                <?php endwhile; ?>
-            <?php else: ?>
-                <div class="col-12">
-                    <div class="alert alert-light border-0 shadow-sm rounded-4 p-4 text-center">
-                        <i class="bi bi-people-fill display-4 text-muted mb-3 d-block"></i>
-                        <p class="text-muted mb-0">No car owners registered yet.</p>
-                    </div>
-                </div>
-            <?php endif; ?>
-        </div>
-    </div>
 
-<!-- Add Owner Modal -->
-<div class="modal fade" id="ownerModal" tabindex="-1">
-    <div class="modal-dialog">
-        <div class="modal-content border-0 shadow-lg rounded-4">
-            <form method="POST" action="<?php echo BASE_URL; ?>admin/dashboard.php">
-                <div class="modal-header border-0 pb-0">
-                    <h5 class="modal-title fw-bold">Add New Car Owner</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-                </div>
-                <div class="modal-body p-4">
-                    <input type="hidden" name="add_admin" value="1">
-                    <div class="mb-3">
-                        <label class="form-label small fw-bold text-muted text-uppercase">Full Name</label>
-                        <input type="text" name="name" class="form-control rounded-3" required>
-                    </div>
-                    <div class="mb-3">
-                        <label class="form-label small fw-bold text-muted text-uppercase">Email Address</label>
-                        <input type="email" name="email" class="form-control rounded-3" required>
-                    </div>
-                    <div class="mb-0">
-                        <label class="form-label small fw-bold text-muted text-uppercase">Initial Password</label>
-                        <input type="password" name="password" class="form-control rounded-3" required>
-                    </div>
-                </div>
-                <div class="modal-footer border-0 pt-0 p-4">
-                    <button type="button" class="btn btn-light rounded-pill px-4" data-bs-dismiss="modal">Cancel</button>
-                    <button type="submit" class="btn btn-primary rounded-pill px-4">Create Owner</button>
-                </div>
-            </form>
-        </div>
-    </div>
-</div>
+                        <a href="<?php echo BASE_URL; ?>admin/rentals.php" class="quick-action-item">
+                            <span class="quick-icon green"><i class="bi bi-card-list"></i></span>
+                            <div>
+                                <strong>Review rentals</strong>
+                                <small>Approve or reject requests</small>
+                            </div>
+                        </a>
 
-    <!-- Recent Activity -->
-    <div class="card border-0 shadow-sm rounded-4 overflow-hidden">
-        <div class="card-header bg-white border-bottom border-light p-4 d-flex justify-content-between align-items-center">
-            <h5 class="fw-bold mb-0">Recent Rentals</h5>
-            <a href="<?php echo BASE_URL; ?>admin/rentals.php" class="btn btn-sm btn-light text-muted">View All</a>
-        </div>
-        <div class="table-responsive">
-            <table class="table table-hover align-middle mb-0">
-                <thead class="bg-light">
-                    <tr class="text-muted small text-uppercase">
-                        <th class="ps-4">Car</th>
-                        <th>Customer</th>
-                        <th>Dates</th>
-                        <th>Total</th>
-                        <th>Status</th>
-                        <th>Requested</th>
-                    </tr>
-                </thead>
-                <tbody class="border-top-0">
-                    <?php if($recent_rentals && $recent_rentals->num_rows > 0): ?>
-                        <?php while($rental = $recent_rentals->fetch_assoc()): ?>
-                            <?php
-                                    $time_ago = strtotime($rental['created_at']);
-                                    $current_time = time();
-                                    $time_difference = $current_time - $time_ago;
-                                    $seconds = $time_difference;
-                                    $minutes      = round($seconds / 60);           
-                                    $hours        = round($seconds / 3600);         
-                                    $days         = round($seconds / 86400);        
-                                    $weeks        = round($seconds / 604800);       
-                                    $months       = round($seconds / 2629440);      
-                                    $years        = round($seconds / 31553280);     
+                    </div>
+                </div>
 
-                                    if($seconds <= 60) {
-                                        $time_string = "Just now";
-                                    } else if($minutes <=60) {
-                                        $time_string = ($minutes==1) ? "one minute ago" : "$minutes mins ago";
-                                    } else if($hours <=24) {
-                                        $time_string = ($hours==1) ? "an hour ago" : "$hours hours ago";
-                                    } else if($days <= 7) {
-                                        $time_string = ($days==1) ? "yesterday" : "$days days ago";
-                                    } else if($weeks <= 4.3) {
-                                        $time_string = ($weeks==1) ? "a week ago" : "$weeks weeks ago";
-                                    } else if($months <=12) {
-                                        $time_string = ($months==1) ? "a month ago" : "$months months ago";
-                                    } else {
-                                        $time_string = ($years==1) ? "one year ago" : "$years years ago";
-                                    }
-                                    ?>
-                                    <tr>
-                                        <td class="ps-4">
-                                            <div class="d-flex align-items-center">
-                                                <?php $img = $rental['image'] ? BASE_URL . 'uploads/' . $rental['image'] : 'https://via.placeholder.com/60'; ?>
-                                                <img src="<?php echo $img; ?>" class="rounded-3 me-3 object-fit-cover shadow-sm" width="50" height="50" alt="Car">
-                                                <div class="d-flex flex-column">
-                                                    <span class="fw-bold text-dark"><?php echo htmlspecialchars($rental['model']); ?></span>
-                                                    <small class="text-muted"><?php echo $rental['year']; ?></small>
-                                                </div>
+                <div class="admin-panel mt-4">
+                    <div class="admin-panel-header">
+                        <div>
+                            <p class="admin-panel-label">Summary</p>
+                            <h4>Availability</h4>
+                        </div>
+                    </div>
+
+                    <div class="summary-stack">
+                        <div class="summary-item">
+                            <span>Available</span>
+                            <strong><?php echo $availableCars; ?></strong>
+                        </div>
+                        <div class="summary-item">
+                            <span>Reserved</span>
+                            <strong><?php echo $inventorySummary['reserved']; ?></strong>
+                        </div>
+                        <div class="summary-item">
+                            <span>Rented</span>
+                            <strong><?php echo $inventorySummary['rented']; ?></strong>
+                        </div>
+                        <div class="summary-item">
+                            <span>Maintenance</span>
+                            <strong><?php echo $inventorySummary['maintenance']; ?></strong>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="admin-panel">
+            <div class="admin-panel-header">
+                <div>
+                    <p class="admin-panel-label">Renters</p>
+                    <h4>Who is renting</h4>
+                </div>
+                <a href="<?php echo BASE_URL; ?>admin/rentals.php" class="btn btn-sm btn-light">View all</a>
+            </div>
+
+            <div class="table-responsive">
+                <table class="table admin-table align-middle mb-0">
+                    <thead>
+                        <tr>
+                            <th>Customer</th>
+                            <th>Car</th>
+                            <th>Dates</th>
+                            <th>Total</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <?php if($recent_rentals && $recent_rentals->num_rows > 0): ?>
+                            <?php while($rental = $recent_rentals->fetch_assoc()): ?>
+                                <?php
+                                    $badge = 'secondary';
+                                    if ($rental['status'] === 'approved') $badge = 'success';
+                                    if ($rental['status'] === 'rejected') $badge = 'danger';
+                                    if ($rental['status'] === 'pending') $badge = 'warning';
+                                ?>
+                                <tr>
+                                    <td>
+                                        <div class="d-flex align-items-center gap-3">
+                                            <div class="customer-avatar"><?php echo strtoupper(substr($rental['user_name'] ?? 'U', 0, 1)); ?></div>
+                                            <div>
+                                                <div class="fw-semibold"><?php echo htmlspecialchars($rental['user_name'] ?? 'Customer'); ?></div>
+                                                <small class="text-muted"><?php echo htmlspecialchars($rental['status'] ?? 'pending'); ?></small>
                                             </div>
-                                        </td>
-                                        <td>
-                                            <div class="d-flex align-items-center">
-                                                <div class="avatar-circle bg-primary bg-opacity-10 text-primary me-2 rounded-circle d-flex align-items-center justify-content-center" style="width: 32px; height: 32px; font-size: 0.8rem;">
-                                                    <?php echo strtoupper(substr($rental['user_name'], 0, 1)); ?>
-                                                </div>
-                                                <span class="fw-semibold text-dark"><?php echo htmlspecialchars($rental['user_name']); ?></span>
-                                            </div>
-                                        </td>
-                                        <td>
-                                            <div class="d-flex flex-column">
-                                                <span class="fw-semibold text-dark small">
-                                                    <?php echo date('M d', strtotime($rental['start_date'])); ?> - <?php echo date('M d', strtotime($rental['end_date'])); ?>
-                                                </span>
-                                            </div>
-                                        </td>
-                                        <td class="fw-bold text-primary">₱<?php echo number_format($rental['total_price'], 2); ?></td>
-                                        <td>
-                                            <?php 
-                                            $badge = 'secondary';
-                                            if($rental['status'] == 'approved') $badge = 'success';
-                                            if($rental['status'] == 'rejected') $badge = 'danger';
-                                            if($rental['status'] == 'pending') $badge = 'warning';
-                                            ?>
-                                            <span class="badge bg-<?php echo $badge; ?> bg-opacity-10 text-<?php echo $badge; ?> px-2 py-1 rounded-pill" style="font-size: 0.75rem;"><?php echo ucfirst($rental['status']); ?></span>
-                                        </td>
-                                        <td class="text-end pe-4 text-muted small fw-bold">
-                                            <?php echo $time_string; ?>
-                                        </td>
-                                    </tr>
-                                <?php endwhile; ?>
-                    <?php else: ?>
-                        <tr><td colspan="6" class="text-center py-4 text-muted">No recent rentals found.</td></tr>
-                    <?php endif; ?>
-                </tbody>
-            </table>
-        </div>
-    </div>
+                                        </div>
+                                    </td>
+                                    <td><?php echo htmlspecialchars($rental['model'] ?? 'Vehicle'); ?></td>
+                                    <td><?php echo date('M d', strtotime($rental['start_date'])); ?> - <?php echo date('M d', strtotime($rental['end_date'])); ?></td>
+                                    <td class="fw-semibold text-primary">₱<?php echo number_format((float)($rental['total_price'] ?? 0), 2); ?></td>
+                                    <td><span class="status-badge status-<?php echo $badge; ?>"><?php echo ucfirst($rental['status'] ?? 'pending'); ?></span></td>
+                                </tr>
+                            <?php endwhile; ?>
+                        <?php else: ?>
+                            <tr>
+                                <td colspan="5" class="text-center text-muted py-4">No rental activity yet.</td>
+                            </tr>
+                        <?php endif; ?>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+    </main>
 </div>
 
 <?php require_once __DIR__ . '/../includes/footer.php'; ?>

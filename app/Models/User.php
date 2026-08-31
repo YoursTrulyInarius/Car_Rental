@@ -45,13 +45,13 @@ class User {
      * Register new user
      */
     public function register($name, $email, $password, $role = self::ROLE_CUSTOMER, $phone = '', $address = '') {
-        // Backward compatibility: older code may still pass 'admin'
-        if ($role === 'admin') {
+        // Backward compatibility for older code and legacy records
+        if ($role === 'admin' || $role === 'staff') {
             $role = self::ROLE_OWNER;
         }
 
-        // Validate role
-        $validRoles = [self::ROLE_OWNER, self::ROLE_STAFF, self::ROLE_CUSTOMER];
+        // Canonical roles for this app: owner and customer only
+        $validRoles = [self::ROLE_OWNER, self::ROLE_CUSTOMER];
         if (!in_array($role, $validRoles)) {
             $role = self::ROLE_CUSTOMER;
         }
@@ -154,7 +154,11 @@ class User {
      * Update user role
      */
     public function updateRole($id, $role) {
-        $validRoles = [self::ROLE_OWNER, self::ROLE_STAFF, self::ROLE_CUSTOMER];
+        if ($role === 'admin' || $role === 'staff') {
+            $role = self::ROLE_OWNER;
+        }
+
+        $validRoles = [self::ROLE_OWNER, self::ROLE_CUSTOMER];
         if (!in_array($role, $validRoles)) {
             return false;
         }

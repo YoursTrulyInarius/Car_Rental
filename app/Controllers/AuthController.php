@@ -31,7 +31,7 @@ class AuthController {
                     $_SESSION['role'] = $user['role'];
 
                     // Redirect based on role
-                    if ($user['role'] == User::ROLE_OWNER || $user['role'] == User::ROLE_STAFF) {
+                    if ($user['role'] == User::ROLE_OWNER) {
                         header("Location: " . BASE_URL . "admin/dashboard.php");
                     } else {
                         header("Location: " . BASE_URL . "dashboard.php");
@@ -75,7 +75,7 @@ class AuthController {
                     $error = "This email is already registered.";
                 } else {
                     // Validate role
-                    $allowed_roles = [User::ROLE_CUSTOMER, User::ROLE_OWNER, User::ROLE_STAFF];
+                    $allowed_roles = [User::ROLE_CUSTOMER, User::ROLE_OWNER];
                     if (!in_array($role, $allowed_roles)) {
                         $role = User::ROLE_CUSTOMER;
                     }
@@ -120,8 +120,8 @@ class AuthController {
      * Check if user is owner or staff
      */
     public static function isAdmin() {
-        return self::isAuthenticated() && isset($_SESSION['role']) && 
-               in_array($_SESSION['role'], [User::ROLE_OWNER, User::ROLE_STAFF]);
+        return self::isAuthenticated() && isset($_SESSION['role']) &&
+               in_array($_SESSION['role'], [User::ROLE_OWNER]);
     }
 
     /**

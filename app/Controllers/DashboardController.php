@@ -28,7 +28,7 @@ class DashboardController {
             exit;
         }
 
-        if (isset($_SESSION['role']) && ($_SESSION['role'] === 'owner' || $_SESSION['role'] === 'staff')) {
+        if (isset($_SESSION['role']) && $_SESSION['role'] === 'owner') {
             header("Location: " . BASE_URL . "admin/dashboard.php");
             exit;
         }
@@ -52,24 +52,12 @@ class DashboardController {
     }
 
     public function adminDashboard() {
-        if (!isset($_SESSION['user_id']) || ($_SESSION['role'] !== 'owner' && $_SESSION['role'] !== 'staff')) {
+        if (!isset($_SESSION['user_id']) || $_SESSION['role'] !== 'owner') {
             header("Location: " . BASE_URL . "login.php");
             exit;
         }
 
         $error_msg = '';
-        if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['add_admin'])) {
-            $name = trim($_POST['name'] ?? '');
-            $email = trim($_POST['email'] ?? '');
-            $password = trim($_POST['password'] ?? '');
-
-            if ($this->userModel->register($name, $email, $password, 'admin')) {
-                header("Location: " . BASE_URL . "admin/dashboard.php?success=1");
-                exit;
-            } else {
-                $error_msg = "Error creating owner account.";
-            }
-        }
 
         $total_cars = $this->carModel->getTotalCarsCount();
         $pending_rentals = $this->rentalModel->getPendingCount();
@@ -84,7 +72,7 @@ class DashboardController {
     }
 
     public function ownerDashboard() {
-        if (!isset($_SESSION['user_id']) || ($_SESSION['role'] !== 'owner' && $_SESSION['role'] !== 'staff')) {
+        if (!isset($_SESSION['user_id']) || $_SESSION['role'] !== 'owner') {
             header("Location: " . BASE_URL . "login.php");
             exit;
         }

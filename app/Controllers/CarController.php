@@ -38,7 +38,7 @@ class CarController {
     }
 
     public function adminManageCars() {
-        if (!isset($_SESSION['user_id']) || ($_SESSION['role'] !== 'owner' && $_SESSION['role'] !== 'staff')) {
+        if (!isset($_SESSION['user_id']) || $_SESSION['role'] !== 'owner') {
             header("Location: " . BASE_URL . "login.php");
             exit;
         }

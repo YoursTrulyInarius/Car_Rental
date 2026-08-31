@@ -13,7 +13,7 @@ $current_page = basename($_SERVER['PHP_SELF']);
             <ul class="navbar-nav ms-auto align-items-center gap-1">
                 
                 <!-- Admin Links -->
-                <?php if(isset($_SESSION['role']) && ($_SESSION['role'] == 'owner' || $_SESSION['role'] == 'staff')): ?>
+                <?php if(isset($_SESSION['role']) && $_SESSION['role'] == 'owner'): ?>
                     <li class="nav-item">
                         <a class="nav-link px-3 fw-semibold <?php echo ($current_page == 'dashboard.php') ? 'active text-primary' : ''; ?>" href="<?php echo BASE_URL; ?>admin/dashboard.php">Dashboard</a>
                     </li>

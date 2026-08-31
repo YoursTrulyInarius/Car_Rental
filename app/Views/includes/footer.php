@@ -24,7 +24,7 @@
         }
     }
 
-    <?php if(isset($_SESSION['role']) && ($_SESSION['role'] === 'owner' || $_SESSION['role'] === 'staff')): ?>
+    <?php if(isset($_SESSION['role']) && $_SESSION['role'] === 'owner'): ?>
     // Real-time Notification for Admins
     let lastPendingCount = null;
 

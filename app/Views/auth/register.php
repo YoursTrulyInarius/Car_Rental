@@ -90,8 +90,7 @@ require_once __DIR__ . '/../includes/header.php';
                     <div class="form-floating mb-4">
                         <select name="role" class="form-select" id="floatingRole">
                             <option value="customer">Customer (Renter)</option>
-                            <option value="owner">Owner (Car Owner)</option>
-                            <option value="staff">Staff</option>
+                            <option value="owner">Owner (Admin / Car Owner)</option>
                         </select>
                         <label for="floatingRole">Select Role</label>
                     </div>
