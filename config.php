@@ -13,6 +13,26 @@ if ($mysqli->connect_error) {
     die("ERROR: Could not connect. " . $mysqli->connect_error);
 }
 
+// Auto Schema Migration Check for cars table
+try {
+    $colsRes = $mysqli->query("SHOW COLUMNS FROM cars");
+    if ($colsRes) {
+        $existingCols = [];
+        while ($colRow = $colsRes->fetch_assoc()) {
+            $existingCols[] = $colRow['Field'];
+        }
+        if (!in_array('quantity', $existingCols)) {
+            $mysqli->query("ALTER TABLE cars ADD COLUMN quantity INT DEFAULT 1");
+        }
+        if (!in_array('type', $existingCols)) {
+            $mysqli->query("ALTER TABLE cars ADD COLUMN type VARCHAR(50) DEFAULT 'sedan'");
+        }
+        $mysqli->query("ALTER TABLE cars MODIFY COLUMN image TEXT");
+    }
+} catch (\Throwable $e) {
+    // Ignore migration exception
+}
+
 // SMTP Configuration
 define('SMTP_HOST', 'smtp.gmail.com');
 define('SMTP_PORT', 587);
