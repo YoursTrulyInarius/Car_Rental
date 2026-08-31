@@ -1,46 +1,83 @@
-# 🚗 CAR RENTAL
+# 🚗 Car Rental System
 
-A multi-role vehicle rental management system built with PHP, MySQL, and Bootstrap. The app supports owners, staff, and customers with a role-based dashboard flow, fleet management, rental processing, and seeded admin access.
+A PHP-based car rental web application for managing vehicle listings, customer rentals, and admin approval workflows. The system is designed for a multi-role setup with customers, owners, and staff using a simple MVC structure with Bootstrap styling.
 
-## Project status
+## Overview
 
-The system has been updated and stabilized with:
+This project allows:
 
-- role normalization to owner, staff, and customer
-- fixed login redirect logic for admin/owner/staff access
-- seeded default owner account for system access
-- dashboard and navigation checks aligned to actual role values
-- DB connection and password handling fixes
-- rebranding to CAR RENTAL across the app
+- customers to browse available vehicles and view car details
+- guests or users to register and sign in
+- renters to request a booking for a specific vehicle
+- owners/admins to review pending rental requests
+- admins to approve, reject, or manage rental operations
 
 ## Default login
 
-Use the seeded owner account to access the admin dashboard:
+Use the seeded admin account to access the dashboard:
 
 - Email: admin@carental.com
 - Password: admin123
 
-## Role model
+## Roles
 
 | Role | Access |
 |---|---|
-| owner | full admin/dashboard access |
-| staff | admin/dashboard access |
-| customer | customer dashboard and rental flow |
+| owner | full system and fleet access |
+| staff | dashboard and operational access |
+| customer | browse cars, request bookings, and view rentals |
 
 ## Features
 
-- secure login and registration flow
-- role-based routing and dashboard access
-- vehicle listing and owner-based fleet management
-- rental request workflow with pending/approved/rejected/completed states
-- payment, reservation, and audit tracking tables
-- Bootstrap interface with modern dashboard layout
-- PHPMailer integration for transactional notifications
+- user registration and login flow
+- role-based dashboard system
+- car catalog with filters and details modal
+- vehicle availability and booking request handling
+- admin approval workflow for rentals
+- rental status tracking
+- responsive Bootstrap UI
+- PHPMailer based notifications
+
+## How the system works
+
+```mermaid
+flowchart TD
+    A[Visitor opens homepage] --> B[Register or Sign In]
+    B --> C{User role}
+
+    C -->|Customer| D[Browse available cars]
+    D --> E[View car details modal]
+    E --> F[Select vehicle and book now]
+    F --> G[Create rental request]
+    G --> H[Admin/Owner reviews request]
+
+    H --> I{Request approved?}
+    I -->|No| J[Rental rejected]
+    I -->|Yes| K[Payment / confirmation step]
+    K --> L[Rental becomes active]
+    L --> M[Customer completes rental period]
+    M --> N[Rental marked completed]
+
+    C -->|Owner/Staff| O[Access dashboard]
+    O --> P[Manage cars and rental requests]
+    P --> Q[Approve or reject bookings]
+    Q --> R[Monitor operations and activity]
+```
+
+## Typical user flow
+
+1. A user visits the public site.
+2. The user signs up or logs in.
+3. A customer browses available cars, applies filters, and opens car details.
+4. The customer clicks Book Now or proceeds with the rental request.
+5. The owner/staff receives the request in the admin dashboard.
+6. The request is approved or rejected.
+7. If approved, the rental moves into the payment/active stage.
+8. The customer can then track the rental in their account area.
 
 ## Tech stack
 
-- PHP 8.x
+- PHP
 - MySQL
 - Bootstrap 5
 - PHPMailer
@@ -49,17 +86,11 @@ Use the seeded owner account to access the admin dashboard:
 ## Setup
 
 1. Start Apache and MySQL in XAMPP.
-2. Create the database using the schema in database.sql.
-3. Update the credentials in config.php if needed.
-4. Open the project in the browser at http://localhost/Car_Rental/
+2. Import the database schema from database.sql.
+3. Update database credentials in config.php if needed.
+4. Open the project in your browser at http://localhost/Car_Rental/
 
-## Important notes
-
-- The seeded admin account is created from database.sql.
-- Legacy admin role values are accepted only as backward compatibility during registration; the canonical role set in the app is owner, staff, and customer.
-- The default owner account should be changed after initial setup in a real production environment.
-
-## Main folders
+## Project structure
 
 ```text
 Car_Rental/
@@ -79,16 +110,16 @@ Car_Rental/
 ├── my_rentals.php
 ├── rent_process.php
 ├── README.md
-└── LICENSE
+├── LICENSE
+└── other project docs
 ```
 
-## Recent fixes included
+## Notes
 
-- fixed invalid legacy admin checks across controllers and views
-- corrected database connection validation in config.php
-- added compatibility for older admin values when registering users
-- ensured the admin dashboard receives the required variables and model data
-- aligned navigation and footer behavior to valid owner/staff roles
-- updated the default seeded admin hash so it matches admin123
+- The seeded admin account is created from database.sql.
+- Roles are normalized to owner, staff, and customer.
+- In production, the default admin credentials should be changed after setup.
 
-This project is now aligned to the current role-based app logic and ready for use in the local XAMPP environment.
+## Status
+
+The project is currently structured for local deployment and supports a working customer-to-admin rental workflow with a modern web interface.
