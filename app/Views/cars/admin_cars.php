@@ -140,11 +140,22 @@ require_once __DIR__ . '/../includes/header.php';
                     <input type="hidden" name="current_image" id="current_image">
                     
                     <div class="row g-3 mb-3">
-                        <div class="col-md-8">
-                            <label class="form-label fw-bold">Car Model / Brand</label>
-                            <input type="text" name="model" id="model" class="form-control rounded-3" placeholder="e.g. Toyota Camry 2.5V" required>
+                        <div class="col-md-5">
+                            <label class="form-label fw-bold">Brand</label>
+                            <input type="text" name="brand" id="brand" class="form-control rounded-3" placeholder="e.g. Toyota" required>
                         </div>
                         <div class="col-md-4">
+                            <label class="form-label fw-bold">Car Model</label>
+                            <input type="text" name="model" id="model" class="form-control rounded-3" placeholder="e.g. Camry 2.5V" required>
+                        </div>
+                        <div class="col-md-3">
+                            <label class="form-label fw-bold">Plate Number</label>
+                            <input type="text" name="plate_number" id="plate_number" class="form-control rounded-3" placeholder="ABC-1234" required>
+                        </div>
+                    </div>
+
+                    <div class="row g-3 mb-3">
+                        <div class="col-md-8">
                             <label class="form-label fw-bold">Vehicle Type</label>
                             <select name="type" id="type" class="form-select rounded-3">
                                 <option value="sedan">Sedan</option>
@@ -155,6 +166,14 @@ require_once __DIR__ . '/../includes/header.php';
                                 <option value="convertible">Convertible</option>
                                 <option value="luxury">Luxury</option>
                                 <option value="other">Other</option>
+                            </select>
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label fw-bold">Status</label>
+                            <select name="status" id="status" class="form-select rounded-3">
+                                <option value="available">Available</option>
+                                <option value="rented">Rented (Fully Booked)</option>
+                                <option value="maintenance">Maintenance</option>
                             </select>
                         </div>
                     </div>
@@ -173,15 +192,6 @@ require_once __DIR__ . '/../includes/header.php';
                             <input type="number" name="quantity" id="quantity" class="form-control rounded-3" min="1" value="1" required>
                             <small class="text-muted">Total units of this car model in fleet</small>
                         </div>
-                    </div>
-
-                    <div class="mb-3">
-                        <label class="form-label fw-bold">Status</label>
-                        <select name="status" id="status" class="form-select rounded-3">
-                            <option value="available">Available</option>
-                            <option value="rented">Rented (Fully Booked)</option>
-                            <option value="maintenance">Maintenance</option>
-                        </select>
                     </div>
 
                     <div class="mb-3">
@@ -349,6 +359,8 @@ function renderExistingImagePreviews(imgJsonOrString) {
 function editCar(car){
     document.getElementById('modalTitle').innerText = 'Edit Car';
     document.getElementById('car_id').value = car.id;
+    document.getElementById('brand').value = car.brand || '';
+    document.getElementById('plate_number').value = car.plate_number || '';
     document.getElementById('model').value = car.model || '';
     document.getElementById('year').value = car.year || '';
     document.getElementById('price').value = car.price_per_day || '';
@@ -370,6 +382,8 @@ function editCar(car){
 function resetForm(){
     document.getElementById('modalTitle').innerText = 'Add New Car';
     document.getElementById('car_id').value = '';
+    document.getElementById('brand').value = '';
+    document.getElementById('plate_number').value = '';
     document.getElementById('quantity').value = '1';
     document.getElementById('type').value = 'sedan';
     document.querySelector('#carModal form').reset();

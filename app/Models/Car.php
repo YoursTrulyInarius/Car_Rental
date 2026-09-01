@@ -65,9 +65,17 @@ class Car {
      */
     public function create($plate_number, $brand, $model, $year, $type, $price_per_day, $owner_id, $description = '', $image = '') {
         $status = self::STATUS_AVAILABLE;
-        
+        $plate_number = trim((string)$plate_number);
+        $brand = trim((string)$brand);
+        if ($plate_number === '') {
+            $plate_number = 'TEMP-' . time() . '-' . (int)$owner_id;
+        }
+        if ($brand === '') {
+            $brand = $model ?: 'Unknown Brand';
+        }
+
         $stmt = $this->db->prepare("INSERT INTO cars (plate_number, brand, model, year, type, price_per_day, owner_id, status, description, image) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
-        $stmt->bind_param("sssisisss", $plate_number, $brand, $model, $year, $type, $price_per_day, $owner_id, $status, $description, $image);
+        $stmt->bind_param("sssisdisss", $plate_number, $brand, $model, $year, $type, $price_per_day, $owner_id, $status, $description, $image);
         return $stmt->execute();
     }
 
@@ -75,8 +83,17 @@ class Car {
      * Update vehicle information
      */
     public function update($id, $plate_number, $brand, $model, $year, $type, $price_per_day, $description = '', $image = '') {
+        $plate_number = trim((string)$plate_number);
+        $brand = trim((string)$brand);
+        if ($plate_number === '') {
+            $plate_number = 'TEMP-' . time() . '-' . (int)$id;
+        }
+        if ($brand === '') {
+            $brand = $model ?: 'Unknown Brand';
+        }
+
         $stmt = $this->db->prepare("UPDATE cars SET plate_number = ?, brand = ?, model = ?, year = ?, type = ?, price_per_day = ?, description = ?, image = ? WHERE id = ?");
-        $stmt->bind_param("ssssisissi", $plate_number, $brand, $model, $year, $type, $price_per_day, $description, $image, $id);
+        $stmt->bind_param("sssisdsisi", $plate_number, $brand, $model, $year, $type, $price_per_day, $description, $image, $id);
         return $stmt->execute();
     }
 
@@ -327,26 +344,53 @@ class Car {
         return $row['avg_price'] ?? 0;
     }
 
-    public function addCar($model, $year, $price, $desc, $image, $status, $quantity, $owner_id, $type = 'sedan') {
-        $stmt = $this->db->prepare("INSERT INTO cars (model, year, price_per_day, description, image, status, quantity, owner_id, type) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)");
-        $stmt->bind_param("sidsssiis", $model, $year, $price, $desc, $image, $status, $quantity, $owner_id, $type);
+    public function addCar($model, $year, $price, $desc, $image, $status, $quantity, $owner_id, $type = 'sedan', $brand = '', $plate_number = '') {
+        $brand = trim((string)$brand);
+        $plate_number = trim((string)$plate_number);
+        if ($brand === '') {
+            $brand = $model ?: 'Unknown Brand';
+        }
+        if ($plate_number === '') {
+            $plate_number = 'TEMP-' . time() . '-' . (int)$owner_id;
+        }
+
+        $stmt = $this->db->prepare("INSERT INTO cars (brand, plate_number, model, year, price_per_day, description, image, status, quantity, owner_id, type) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
+        $stmt->bind_param("sssidsssiis", $brand, $plate_number, $model, $year, $price, $desc, $image, $status, $quantity, $owner_id, $type);
         return $stmt->execute();
     }
 
-    public function updateCar($id, $model, $year, $price, $desc, $image, $status, $quantity, $owner_id, $type = 'sedan') {
+    public function updateCar($id, $model, $year, $price, $desc, $image, $status, $quantity, $owner_id, $type = 'sedan', $brand = '', $plate_number = '') {
+        $brand = trim((string)$brand);
+        $plate_number = trim((string)$plate_number);
+        if ($brand === '') {
+            $brand = $model ?: 'Unknown Brand';
+        }
+        if ($plate_number === '') {
+            $plate_number = 'TEMP-' . time() . '-' . (int)$id;
+        }
+
         if ($owner_id !== null) {
-            $stmt = $this->db->prepare("UPDATE cars SET model=?, year=?, price_per_day=?, description=?, image=?, status=?, quantity=?, owner_id=?, type=? WHERE id=?");
-            $stmt->bind_param("sidsssiisi", $model, $year, $price, $desc, $image, $status, $quantity, $owner_id, $type, $id);
+            $stmt = $this->db->prepare("UPDATE cars SET brand=?, plate_number=?, model=?, year=?, price_per_day=?, description=?, image=?, status=?, quantity=?, owner_id=?, type=? WHERE id=?");
+            $stmt->bind_param("sssidsssiisi", $brand, $plate_number, $model, $year, $price, $desc, $image, $status, $quantity, $owner_id, $type, $id);
         } else {
-            $stmt = $this->db->prepare("UPDATE cars SET model=?, year=?, price_per_day=?, description=?, image=?, status=?, quantity=?, type=? WHERE id=?");
-            $stmt->bind_param("sidsssiis", $model, $year, $price, $desc, $image, $status, $quantity, $type, $id);
+            $stmt = $this->db->prepare("UPDATE cars SET brand=?, plate_number=?, model=?, year=?, price_per_day=?, description=?, image=?, status=?, quantity=?, type=? WHERE id=?");
+            $stmt->bind_param("sssidsssiisi", $brand, $plate_number, $model, $year, $price, $desc, $image, $status, $quantity, $type, $id);
         }
         return $stmt->execute();
     }
 
-    public function updateCarForOwner($id, $owner_id, $model, $year, $price, $desc, $image, $status, $quantity, $type = 'sedan') {
-        $stmt = $this->db->prepare("UPDATE cars SET model=?, year=?, price_per_day=?, description=?, image=?, status=?, quantity=?, type=? WHERE id=? AND owner_id=?");
-        $stmt->bind_param("sidsssisii", $model, $year, $price, $desc, $image, $status, $quantity, $type, $id, $owner_id);
+    public function updateCarForOwner($id, $owner_id, $model, $year, $price, $desc, $image, $status, $quantity, $type = 'sedan', $brand = '', $plate_number = '') {
+        $brand = trim((string)$brand);
+        $plate_number = trim((string)$plate_number);
+        if ($brand === '') {
+            $brand = $model ?: 'Unknown Brand';
+        }
+        if ($plate_number === '') {
+            $plate_number = 'TEMP-' . time() . '-' . (int)$id;
+        }
+
+        $stmt = $this->db->prepare("UPDATE cars SET brand=?, plate_number=?, model=?, year=?, price_per_day=?, description=?, image=?, status=?, quantity=?, type=? WHERE id=? AND owner_id=?");
+        $stmt->bind_param("sssidsssiisi", $brand, $plate_number, $model, $year, $price, $desc, $image, $status, $quantity, $type, $id, $owner_id);
         return $stmt->execute();
     }
 

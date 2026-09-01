@@ -89,9 +89,19 @@ require_once __DIR__ . '/../includes/header.php';
                     <input type="hidden" name="car_id" id="car_id">
                     <input type="hidden" name="current_image" id="current_image">
                     
-                    <div class="mb-3">
-                        <label class="form-label">Car Model</label>
-                        <input type="text" name="model" id="model" class="form-control" required>
+                    <div class="row g-2 mb-3">
+                        <div class="col-md-5">
+                            <label class="form-label">Brand</label>
+                            <input type="text" name="brand" id="brand" class="form-control" required>
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label">Car Model</label>
+                            <input type="text" name="model" id="model" class="form-control" required>
+                        </div>
+                        <div class="col-md-3">
+                            <label class="form-label">Plate Number</label>
+                            <input type="text" name="plate_number" id="plate_number" class="form-control" required>
+                        </div>
                     </div>
                     <div class="row g-2 mb-3">
                         <div class="col">
@@ -137,6 +147,8 @@ require_once __DIR__ . '/../includes/header.php';
 function editCar(car){
     document.getElementById('modalTitle').innerText = 'Edit Car';
     document.getElementById('car_id').value = car.id;
+    document.getElementById('brand').value = car.brand || '';
+    document.getElementById('plate_number').value = car.plate_number || '';
     document.getElementById('model').value = car.model;
     document.getElementById('year').value = car.year;
     document.getElementById('price').value = car.price_per_day;
@@ -152,6 +164,8 @@ function editCar(car){
 function resetForm(){
     document.getElementById('modalTitle').innerText = 'Add New Car';
     document.getElementById('car_id').value = '';
+    document.getElementById('brand').value = '';
+    document.getElementById('plate_number').value = '';
     document.getElementById('quantity').value = '1';
     document.querySelector('form').reset();
 }

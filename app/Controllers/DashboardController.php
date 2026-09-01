@@ -104,7 +104,9 @@ class DashboardController {
 
         // Handle Add/Edit
         if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-            $model = $_POST['model'] ?? '';
+            $brand = trim((string)($_POST['brand'] ?? ''));
+            $plate_number = trim((string)($_POST['plate_number'] ?? ''));
+            $model = trim((string)($_POST['model'] ?? ''));
             $year = $_POST['year'] ?? 0;
             $price = $_POST['price'] ?? 0;
             $desc = $_POST['description'] ?? '';
@@ -123,9 +125,9 @@ class DashboardController {
             }
 
             if ($car_id) {
-                $success = $this->carModel->updateCarForOwner($car_id, $owner_id, $model, $year, $price, $desc, $image, $status, $quantity);
+                $success = $this->carModel->updateCarForOwner($car_id, $owner_id, $model, $year, $price, $desc, $image, $status, $quantity, 'sedan', $brand, $plate_number);
             } else {
-                $success = $this->carModel->addCar($model, $year, $price, $desc, $image, $status, $quantity, $owner_id);
+                $success = $this->carModel->addCar($model, $year, $price, $desc, $image, $status, $quantity, $owner_id, 'sedan', $brand, $plate_number);
             }
 
             if ($success) {

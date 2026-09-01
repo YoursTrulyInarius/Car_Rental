@@ -5,22 +5,21 @@ define('DB_USERNAME', 'root');
 define('DB_PASSWORD', '');
 define('DB_NAME', 'car_rental');
 
-// Attempt to connect to MySQL server and ensure the app database exists.
-$mysqli = new mysqli(DB_SERVER, DB_USERNAME, DB_PASSWORD);
+// Create the application database if it does not already exist.
+$installer = new mysqli(DB_SERVER, DB_USERNAME, DB_PASSWORD);
+if ($installer->connect_error) {
+    die("ERROR: Could not connect. " . $installer->connect_error);
+}
 
-// Check connection
+$createDbQuery = "CREATE DATABASE IF NOT EXISTS `" . DB_NAME . "` CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci";
+if (!$installer->query($createDbQuery)) {
+    die("ERROR: Could not create database " . DB_NAME . ". " . $installer->error);
+}
+$installer->close();
+
+$mysqli = new mysqli(DB_SERVER, DB_USERNAME, DB_PASSWORD, DB_NAME);
 if ($mysqli->connect_error) {
     die("ERROR: Could not connect to MySQL server. " . $mysqli->connect_error);
-}
-
-// Create the application database if it does not already exist.
-$createDbQuery = "CREATE DATABASE IF NOT EXISTS `" . DB_NAME . "` CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci";
-if (!$mysqli->query($createDbQuery)) {
-    die("ERROR: Could not create database " . DB_NAME . ". " . $mysqli->error);
-}
-
-if (!$mysqli->select_db(DB_NAME)) {
-    die("ERROR: Could not select database " . DB_NAME . ". " . $mysqli->error);
 }
 
 // Ensure the required application schema exists.
@@ -144,6 +143,21 @@ try {
         INDEX (created_at)
     ) ENGINE=InnoDB");
 
+    $schemaFile = __DIR__ . '/database.sql';
+    if (file_exists($schemaFile)) {
+        $schemaSql = file_get_contents($schemaFile);
+        if ($schemaSql !== false && trim($schemaSql) !== '') {
+            $schemaSql = str_replace('CREATE DATABASE IF NOT EXISTS car_rental;', 'CREATE DATABASE IF NOT EXISTS `' . DB_NAME . '`;', $schemaSql);
+            $schemaSql = str_replace('USE car_rental;', 'USE `' . DB_NAME . '`;', $schemaSql);
+            $mysqli->multi_query($schemaSql);
+            do {
+                if ($result = $mysqli->store_result()) {
+                    $result->free();
+                }
+            } while ($mysqli->more_results() && $mysqli->next_result());
+        }
+    }
+
     $colsRes = $mysqli->query("SHOW COLUMNS FROM cars");
     if ($colsRes) {
         $existingCols = [];
@@ -151,6 +165,12 @@ try {
             $existingCols[] = $colRow['Field'];
         }
 
+        if (!in_array('brand', $existingCols)) {
+            $mysqli->query("ALTER TABLE cars ADD COLUMN brand VARCHAR(50) NOT NULL DEFAULT 'Unknown Brand'");
+        }
+        if (!in_array('plate_number', $existingCols)) {
+            $mysqli->query("ALTER TABLE cars ADD COLUMN plate_number VARCHAR(50) NOT NULL DEFAULT 'TEMP-DEFAULT'");
+        }
         if (!in_array('price_per_day', $existingCols)) {
             $mysqli->query("ALTER TABLE cars ADD COLUMN price_per_day DECIMAL(10,2) NOT NULL DEFAULT 0.00");
         }

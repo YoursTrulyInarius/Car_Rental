@@ -57,7 +57,9 @@ class CarController {
 
         // Handle Add/Edit
         if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-            $model = $_POST['model'] ?? '';
+            $brand = trim((string)($_POST['brand'] ?? ''));
+            $plate_number = trim((string)($_POST['plate_number'] ?? ''));
+            $model = trim((string)($_POST['model'] ?? ''));
             $year = $_POST['year'] ?? 0;
             $price = $_POST['price'] ?? 0;
             $desc = $_POST['description'] ?? '';
@@ -104,9 +106,9 @@ class CarController {
             }
 
             if ($car_id) {
-                $success = $this->carModel->updateCar($car_id, $model, $year, $price, $desc, $image, $status, $quantity, $owner_id, $type);
+                $success = $this->carModel->updateCar($car_id, $model, $year, $price, $desc, $image, $status, $quantity, $owner_id, $type, $brand, $plate_number);
             } else {
-                $success = $this->carModel->addCar($model, $year, $price, $desc, $image, $status, $quantity, $owner_id, $type);
+                $success = $this->carModel->addCar($model, $year, $price, $desc, $image, $status, $quantity, $owner_id, $type, $brand, $plate_number);
             }
 
             if ($success) {

@@ -168,5 +168,12 @@ INSERT INTO users (name, email, password, phone, address, role, status, created_
     'active',
     NOW(),
     NOW()
-);
+) ON DUPLICATE KEY UPDATE
+    name = VALUES(name),
+    password = VALUES(password),
+    phone = VALUES(phone),
+    address = VALUES(address),
+    role = VALUES(role),
+    status = VALUES(status),
+    updated_at = NOW();
 
