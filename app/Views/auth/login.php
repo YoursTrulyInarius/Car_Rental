@@ -3,27 +3,37 @@ require_once __DIR__ . '/../includes/header.php';
 ?>
 
 <style>
-    body {
-        overflow: hidden; /* Force no scroll for auth pages */
-    }
-    .auth-container {
-        position: fixed;
-        top: 0;
-        left: 0;
-        width: 100%;
+    html, body {
+        min-height: 100%;
         height: 100%;
-        z-index: 5;
-        background-color: #fff;
+        overflow: auto;
+        padding-top: 0 !important;
     }
-    footer {
-        position: fixed;
-        bottom: 0;
+
+    body {
+        display: flex;
+        flex-direction: column;
+        margin: 0;
+    }
+
+    .auth-container {
+        position: relative;
         width: 100%;
-        background: transparent;
-        color: rgba(108, 117, 125, 0.8);
-        border: none;
-        z-index: 10;
-        pointer-events: none;
+        min-height: calc(100vh - 150px);
+        background-color: #fff;
+        z-index: 1;
+        flex: 1 0 auto;
+    }
+
+    footer {
+        position: static !important;
+        width: 100%;
+        background: #0f172a;
+        color: rgba(255, 255, 255, 0.8);
+        border: 1px solid rgba(148, 163, 184, 0.15);
+        z-index: 1;
+        pointer-events: auto;
+        margin-top: 0 !important;
     }
 </style>
 <div class="container-fluid auth-container p-0">
