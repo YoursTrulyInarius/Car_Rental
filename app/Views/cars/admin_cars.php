@@ -39,7 +39,7 @@ require_once __DIR__ . '/../includes/header.php';
                             </tr>
                         </thead>
                         <tbody>
-                            <?php if($cars && $cars->num_rows > 0): ?>
+                            <?php if(isset($cars) && $cars && $cars->num_rows > 0): ?>
                                 <?php while($row = $cars->fetch_assoc()): ?>
                                     <?php 
                                         $imgs = getCarImagesList($row['image']); 
@@ -138,76 +138,83 @@ require_once __DIR__ . '/../includes/header.php';
                 <div class="modal-body p-4">
                     <input type="hidden" name="car_id" id="car_id">
                     <input type="hidden" name="current_image" id="current_image">
-                    
-                    <div class="row g-3 mb-3">
-                        <div class="col-md-5">
-                            <label class="form-label fw-bold">Brand</label>
-                            <input type="text" name="brand" id="brand" class="form-control rounded-3" placeholder="e.g. Toyota" required>
-                        </div>
-                        <div class="col-md-4">
-                            <label class="form-label fw-bold">Car Model</label>
-                            <input type="text" name="model" id="model" class="form-control rounded-3" placeholder="e.g. Camry 2.5V" required>
-                        </div>
-                        <div class="col-md-3">
-                            <label class="form-label fw-bold">Plate Number</label>
-                            <input type="text" name="plate_number" id="plate_number" class="form-control rounded-3" placeholder="ABC-1234" required>
+
+                    <div id="carEntryContainer">
+                        <div class="car-entry border rounded-4 p-3 mb-3 bg-light-subtle">
+                            <div class="d-flex justify-content-between align-items-center mb-3">
+                                <strong class="text-primary">Car 1</strong>
+                                <button type="button" class="btn btn-sm btn-outline-secondary rounded-pill remove-car-entry" style="display:none;">Remove</button>
+                            </div>
+                            <div class="row g-3 mb-3">
+                                <div class="col-md-5">
+                                    <label class="form-label fw-bold">Brand</label>
+                                    <input type="text" name="cars[0][brand]" class="form-control rounded-3" placeholder="e.g. Toyota" required>
+                                </div>
+                                <div class="col-md-4">
+                                    <label class="form-label fw-bold">Car Model</label>
+                                    <input type="text" name="cars[0][model]" class="form-control rounded-3" placeholder="e.g. Camry 2.5V" required>
+                                </div>
+                                <div class="col-md-3">
+                                    <label class="form-label fw-bold">Plate Number</label>
+                                    <input type="text" name="cars[0][plate_number]" class="form-control rounded-3" placeholder="ABC-1234" required>
+                                </div>
+                            </div>
+
+                            <div class="row g-3 mb-3">
+                                <div class="col-md-8">
+                                    <label class="form-label fw-bold">Vehicle Type</label>
+                                    <select name="cars[0][type]" class="form-select rounded-3">
+                                        <option value="sedan">Sedan</option>
+                                        <option value="suv">SUV</option>
+                                        <option value="truck">Truck / Pickup</option>
+                                        <option value="van">Van / Minivan</option>
+                                        <option value="sports">Sports Car</option>
+                                        <option value="convertible">Convertible</option>
+                                        <option value="luxury">Luxury</option>
+                                        <option value="other">Other</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-4">
+                                    <label class="form-label fw-bold">Status</label>
+                                    <select name="cars[0][status]" class="form-select rounded-3">
+                                        <option value="available">Available</option>
+                                        <option value="rented">Rented (Fully Booked)</option>
+                                        <option value="maintenance">Maintenance</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div class="row g-3 mb-3">
+                                <div class="col-md-4">
+                                    <label class="form-label fw-bold">Year</label>
+                                    <input type="number" name="cars[0][year]" class="form-control rounded-3" placeholder="2024" required>
+                                </div>
+                                <div class="col-md-4">
+                                    <label class="form-label fw-bold">Price per Day (₱)</label>
+                                    <input type="number" step="0.01" name="cars[0][price]" class="form-control rounded-3" placeholder="2500.00" required>
+                                </div>
+                                <div class="col-md-4">
+                                    <label class="form-label fw-bold">Total Fleet Stock</label>
+                                    <input type="number" name="cars[0][quantity]" class="form-control rounded-3" min="1" value="1" required>
+                                </div>
+                            </div>
+
+                            <div class="mb-3">
+                                <label class="form-label fw-bold">Description</label>
+                                <textarea name="cars[0][description]" class="form-control rounded-3" rows="2" placeholder="Provide vehicle details, features, transmission type, fuel policy, etc."></textarea>
+                            </div>
                         </div>
                     </div>
 
-                    <div class="row g-3 mb-3">
-                        <div class="col-md-8">
-                            <label class="form-label fw-bold">Vehicle Type</label>
-                            <select name="type" id="type" class="form-select rounded-3">
-                                <option value="sedan">Sedan</option>
-                                <option value="suv">SUV</option>
-                                <option value="truck">Truck / Pickup</option>
-                                <option value="van">Van / Minivan</option>
-                                <option value="sports">Sports Car</option>
-                                <option value="convertible">Convertible</option>
-                                <option value="luxury">Luxury</option>
-                                <option value="other">Other</option>
-                            </select>
-                        </div>
-                        <div class="col-md-4">
-                            <label class="form-label fw-bold">Status</label>
-                            <select name="status" id="status" class="form-select rounded-3">
-                                <option value="available">Available</option>
-                                <option value="rented">Rented (Fully Booked)</option>
-                                <option value="maintenance">Maintenance</option>
-                            </select>
-                        </div>
+                    <div class="d-flex justify-content-end mb-3">
+                        <button type="button" id="addCarRowBtn" class="btn btn-outline-primary rounded-pill px-3">+ Add Another Car</button>
                     </div>
 
-                    <div class="row g-3 mb-3">
-                        <div class="col-md-4">
-                            <label class="form-label fw-bold">Year</label>
-                            <input type="number" name="year" id="year" class="form-control rounded-3" placeholder="2024" required>
-                        </div>
-                        <div class="col-md-4">
-                            <label class="form-label fw-bold">Price per Day (₱)</label>
-                            <input type="number" step="0.01" name="price" id="price" class="form-control rounded-3" placeholder="2500.00" required>
-                        </div>
-                        <div class="col-md-4">
-                            <label class="form-label fw-bold">Total Fleet Stock</label>
-                            <input type="number" name="quantity" id="quantity" class="form-control rounded-3" min="1" value="1" required>
-                            <small class="text-muted">Total units of this car model in fleet</small>
-                        </div>
-                    </div>
-
-                    <div class="mb-3">
-                        <label class="form-label fw-bold">Description</label>
-                        <textarea name="description" id="description" class="form-control rounded-3" rows="3" placeholder="Provide vehicle details, features, transmission type, fuel policy, etc."></textarea>
-                    </div>
-
-                    <!-- Multi-Image Upload & Preview Section -->
                     <div class="border rounded-3 p-3 bg-light mb-3">
                         <label class="form-label fw-bold d-block mb-2">
                             <i class="bi bi-images me-2 text-primary"></i>Vehicle Gallery Photos (Select up to 4 photos max)
                         </label>
-
-                        <!-- Image Preview Thumbnails Container -->
                         <div id="imagePreviewContainer" class="d-flex flex-wrap gap-2 mb-3" style="display: none;"></div>
-
                         <div>
                             <input type="file" name="images[]" id="carImagesInput" multiple class="form-control rounded-3" accept="image/*" onchange="handleImageSelection(this)">
                         </div>
@@ -216,7 +223,7 @@ require_once __DIR__ . '/../includes/header.php';
                 </div>
                 <div class="modal-footer border-top bg-light rounded-bottom-4">
                     <button type="button" class="btn btn-light border rounded-pill px-4" data-bs-dismiss="modal">Cancel</button>
-                    <button type="submit" class="btn btn-primary rounded-pill px-4 fw-bold">Save Car to Fleet</button>
+                    <button type="submit" class="btn btn-primary rounded-pill px-4 fw-bold">Save Cars to Fleet</button>
                 </div>
             </form>
         </div>
@@ -356,6 +363,96 @@ function renderExistingImagePreviews(imgJsonOrString) {
     }
 }
 
+function addCarEntryRow() {
+    const container = document.getElementById('carEntryContainer');
+    if (!container) return;
+
+    const index = container.querySelectorAll('.car-entry').length;
+    const row = document.createElement('div');
+    row.className = 'car-entry border rounded-4 p-3 mb-3 bg-light-subtle';
+    row.innerHTML = `
+        <div class="d-flex justify-content-between align-items-center mb-3">
+            <strong class="text-primary">Car ${index + 1}</strong>
+            <button type="button" class="btn btn-sm btn-outline-secondary rounded-pill remove-car-entry">Remove</button>
+        </div>
+        <div class="row g-3 mb-3">
+            <div class="col-md-5">
+                <label class="form-label fw-bold">Brand</label>
+                <input type="text" name="cars[${index}][brand]" class="form-control rounded-3" placeholder="e.g. Toyota" required>
+            </div>
+            <div class="col-md-4">
+                <label class="form-label fw-bold">Car Model</label>
+                <input type="text" name="cars[${index}][model]" class="form-control rounded-3" placeholder="e.g. Camry 2.5V" required>
+            </div>
+            <div class="col-md-3">
+                <label class="form-label fw-bold">Plate Number</label>
+                <input type="text" name="cars[${index}][plate_number]" class="form-control rounded-3" placeholder="ABC-1234" required>
+            </div>
+        </div>
+        <div class="row g-3 mb-3">
+            <div class="col-md-8">
+                <label class="form-label fw-bold">Vehicle Type</label>
+                <select name="cars[${index}][type]" class="form-select rounded-3">
+                    <option value="sedan">Sedan</option>
+                    <option value="suv">SUV</option>
+                    <option value="truck">Truck / Pickup</option>
+                    <option value="van">Van / Minivan</option>
+                    <option value="sports">Sports Car</option>
+                    <option value="convertible">Convertible</option>
+                    <option value="luxury">Luxury</option>
+                    <option value="other">Other</option>
+                </select>
+            </div>
+            <div class="col-md-4">
+                <label class="form-label fw-bold">Status</label>
+                <select name="cars[${index}][status]" class="form-select rounded-3">
+                    <option value="available">Available</option>
+                    <option value="rented">Rented (Fully Booked)</option>
+                    <option value="maintenance">Maintenance</option>
+                </select>
+            </div>
+        </div>
+        <div class="row g-3 mb-3">
+            <div class="col-md-4">
+                <label class="form-label fw-bold">Year</label>
+                <input type="number" name="cars[${index}][year]" class="form-control rounded-3" placeholder="2024" required>
+            </div>
+            <div class="col-md-4">
+                <label class="form-label fw-bold">Price per Day (₱)</label>
+                <input type="number" step="0.01" name="cars[${index}][price]" class="form-control rounded-3" placeholder="2500.00" required>
+            </div>
+            <div class="col-md-4">
+                <label class="form-label fw-bold">Total Fleet Stock</label>
+                <input type="number" name="cars[${index}][quantity]" class="form-control rounded-3" min="1" value="1" required>
+            </div>
+        </div>
+        <div class="mb-3">
+            <label class="form-label fw-bold">Description</label>
+            <textarea name="cars[${index}][description]" class="form-control rounded-3" rows="2" placeholder="Provide vehicle details, features, transmission type, fuel policy, etc."></textarea>
+        </div>
+    `;
+    container.appendChild(row);
+
+    row.querySelector('.remove-car-entry').addEventListener('click', function() {
+        row.remove();
+        renumberCarEntries();
+    });
+}
+
+function renumberCarEntries() {
+    const entries = document.querySelectorAll('.car-entry');
+    entries.forEach((entry, index) => {
+        entry.querySelector('strong').textContent = 'Car ' + (index + 1);
+        const fields = entry.querySelectorAll('input, select, textarea');
+        fields.forEach(field => {
+            const oldName = field.getAttribute('name');
+            if (oldName) {
+                field.setAttribute('name', oldName.replace(/cars\[\d+\]/, 'cars[' + index + ']'));
+            }
+        });
+    });
+}
+
 function editCar(car){
     document.getElementById('modalTitle').innerText = 'Edit Car';
     document.getElementById('car_id').value = car.id;
@@ -388,15 +485,59 @@ function resetForm(){
     document.getElementById('type').value = 'sedan';
     document.querySelector('#carModal form').reset();
 
+    const container = document.getElementById('carEntryContainer');
+    if (container) {
+        container.innerHTML = `
+            <div class="car-entry border rounded-4 p-3 mb-3 bg-light-subtle">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <strong class="text-primary">Car 1</strong>
+                    <button type="button" class="btn btn-sm btn-outline-secondary rounded-pill remove-car-entry" style="display:none;">Remove</button>
+                </div>
+                <div class="row g-3 mb-3">
+                    <div class="col-md-5"><label class="form-label fw-bold">Brand</label><input type="text" name="cars[0][brand]" class="form-control rounded-3" placeholder="e.g. Toyota" required></div>
+                    <div class="col-md-4"><label class="form-label fw-bold">Car Model</label><input type="text" name="cars[0][model]" class="form-control rounded-3" placeholder="e.g. Camry 2.5V" required></div>
+                    <div class="col-md-3"><label class="form-label fw-bold">Plate Number</label><input type="text" name="cars[0][plate_number]" class="form-control rounded-3" placeholder="ABC-1234" required></div>
+                </div>
+                <div class="row g-3 mb-3">
+                    <div class="col-md-8"><label class="form-label fw-bold">Vehicle Type</label><select name="cars[0][type]" class="form-select rounded-3"><option value="sedan">Sedan</option><option value="suv">SUV</option><option value="truck">Truck / Pickup</option><option value="van">Van / Minivan</option><option value="sports">Sports Car</option><option value="convertible">Convertible</option><option value="luxury">Luxury</option><option value="other">Other</option></select></div>
+                    <div class="col-md-4"><label class="form-label fw-bold">Status</label><select name="cars[0][status]" class="form-select rounded-3"><option value="available">Available</option><option value="rented">Rented (Fully Booked)</option><option value="maintenance">Maintenance</option></select></div>
+                </div>
+                <div class="row g-3 mb-3">
+                    <div class="col-md-4"><label class="form-label fw-bold">Year</label><input type="number" name="cars[0][year]" class="form-control rounded-3" placeholder="2024" required></div>
+                    <div class="col-md-4"><label class="form-label fw-bold">Price per Day (₱)</label><input type="number" step="0.01" name="cars[0][price]" class="form-control rounded-3" placeholder="2500.00" required></div>
+                    <div class="col-md-4"><label class="form-label fw-bold">Total Fleet Stock</label><input type="number" name="cars[0][quantity]" class="form-control rounded-3" min="1" value="1" required></div>
+                </div>
+                <div class="mb-3"><label class="form-label fw-bold">Description</label><textarea name="cars[0][description]" class="form-control rounded-3" rows="2" placeholder="Provide vehicle details, features, transmission type, fuel policy, etc."></textarea></div>
+            </div>
+        `;
+    }
+
     const badge = document.getElementById('imageCountBadge');
     if (badge) badge.style.display = 'none';
 
-    const container = document.getElementById('imagePreviewContainer');
-    if (container) {
-        container.innerHTML = '';
-        container.style.display = 'none';
+    const imageContainer = document.getElementById('imagePreviewContainer');
+    if (imageContainer) {
+        imageContainer.innerHTML = '';
+        imageContainer.style.display = 'none';
     }
 }
+
+document.addEventListener('DOMContentLoaded', function() {
+    const addButton = document.getElementById('addCarRowBtn');
+    if (addButton) {
+        addButton.addEventListener('click', addCarEntryRow);
+    }
+    const removeButtons = document.querySelectorAll('.remove-car-entry');
+    removeButtons.forEach(function(btn) {
+        btn.addEventListener('click', function() {
+            const row = btn.closest('.car-entry');
+            if (row) {
+                row.remove();
+                renumberCarEntries();
+            }
+        });
+    });
+});
 </script>
 
 <?php require_once __DIR__ . '/../includes/footer.php'; ?>

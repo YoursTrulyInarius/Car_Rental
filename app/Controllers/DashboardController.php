@@ -104,33 +104,59 @@ class DashboardController {
 
         // Handle Add/Edit
         if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-            $brand = trim((string)($_POST['brand'] ?? ''));
-            $plate_number = trim((string)($_POST['plate_number'] ?? ''));
-            $model = trim((string)($_POST['model'] ?? ''));
-            $year = $_POST['year'] ?? 0;
-            $price = $_POST['price'] ?? 0;
-            $desc = $_POST['description'] ?? '';
-            $status = $_POST['status'] ?? 'available';
-            $car_id = $_POST['car_id'] ?? null;
-            $quantity = $_POST['quantity'] ?? 1;
+            $carRows = [];
+            if (isset($_POST['cars']) && is_array($_POST['cars']) && !empty($_POST['cars'])) {
+                $carRows = $_POST['cars'];
+            } else {
+                $carRows[] = [
+                    'brand' => trim((string)($_POST['brand'] ?? '')),
+                    'plate_number' => trim((string)($_POST['plate_number'] ?? '')),
+                    'model' => trim((string)($_POST['model'] ?? '')),
+                    'year' => $_POST['year'] ?? 0,
+                    'price' => $_POST['price'] ?? 0,
+                    'description' => $_POST['description'] ?? '',
+                    'status' => $_POST['status'] ?? 'available',
+                    'car_id' => $_POST['car_id'] ?? null,
+                    'quantity' => $_POST['quantity'] ?? 1,
+                    'type' => 'sedan',
+                    'current_image' => $_POST['current_image'] ?? '',
+                ];
+            }
 
-            $image = $_POST['current_image'] ?? '';
-            if (isset($_FILES['image']) && $_FILES['image']['error'] == 0) {
-                $target_dir = __DIR__ . "/../../uploads/";
-                $filename = time() . "_" . basename($_FILES["image"]["name"]);
-                $target_file = $target_dir . $filename;
-                if (move_uploaded_file($_FILES["image"]["tmp_name"], $target_file)) {
-                    $image = $filename;
+            $allSaved = true;
+            foreach ($carRows as $index => $entry) {
+                $brand = trim((string)($entry['brand'] ?? ''));
+                $plate_number = trim((string)($entry['plate_number'] ?? ''));
+                $model = trim((string)($entry['model'] ?? ''));
+                $year = $entry['year'] ?? 0;
+                $price = $entry['price'] ?? 0;
+                $desc = $entry['description'] ?? '';
+                $status = $entry['status'] ?? 'available';
+                $quantity = $entry['quantity'] ?? 1;
+                $car_id = $entry['car_id'] ?? null;
+                $image = $entry['current_image'] ?? '';
+
+                if (isset($_FILES['image']) && $_FILES['image']['error'] == 0 && !empty($_FILES['image']['name'])) {
+                    $target_dir = __DIR__ . "/../../uploads/";
+                    $filename = time() . "_" . $index . "_" . basename($_FILES["image"]["name"]);
+                    $target_file = $target_dir . $filename;
+                    if (move_uploaded_file($_FILES["image"]["tmp_name"], $target_file)) {
+                        $image = $filename;
+                    }
+                }
+
+                if ($car_id) {
+                    $saved = $this->carModel->updateCarForOwner($car_id, $owner_id, $model, $year, $price, $desc, $image, $status, $quantity, 'sedan', $brand, $plate_number);
+                } else {
+                    $saved = $this->carModel->addCar($model, $year, $price, $desc, $image, $status, $quantity, $owner_id, 'sedan', $brand, $plate_number);
+                }
+
+                if (!$saved) {
+                    $allSaved = false;
                 }
             }
 
-            if ($car_id) {
-                $success = $this->carModel->updateCarForOwner($car_id, $owner_id, $model, $year, $price, $desc, $image, $status, $quantity, 'sedan', $brand, $plate_number);
-            } else {
-                $success = $this->carModel->addCar($model, $year, $price, $desc, $image, $status, $quantity, $owner_id, 'sedan', $brand, $plate_number);
-            }
-
-            if ($success) {
+            if ($allSaved) {
                 header("Location: " . BASE_URL . "admin/owner_dashboard.php?id=$owner_id");
                 exit;
             } else {

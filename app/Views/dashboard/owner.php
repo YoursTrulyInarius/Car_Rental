@@ -37,7 +37,7 @@ require_once __DIR__ . '/../includes/header.php';
                         </tr>
                     </thead>
                     <tbody>
-                        <?php if($cars && $cars->num_rows > 0): ?>
+                        <?php if(isset($cars) && $cars && $cars->num_rows > 0): ?>
                             <?php while($row = $cars->fetch_assoc()): ?>
                                 <tr>
                                     <td class="ps-4">
@@ -88,55 +88,67 @@ require_once __DIR__ . '/../includes/header.php';
                 <div class="modal-body p-4">
                     <input type="hidden" name="car_id" id="car_id">
                     <input type="hidden" name="current_image" id="current_image">
-                    
-                    <div class="row g-2 mb-3">
-                        <div class="col-md-5">
-                            <label class="form-label">Brand</label>
-                            <input type="text" name="brand" id="brand" class="form-control" required>
-                        </div>
-                        <div class="col-md-4">
-                            <label class="form-label">Car Model</label>
-                            <input type="text" name="model" id="model" class="form-control" required>
-                        </div>
-                        <div class="col-md-3">
-                            <label class="form-label">Plate Number</label>
-                            <input type="text" name="plate_number" id="plate_number" class="form-control" required>
+
+                    <div id="ownerCarEntryContainer">
+                        <div class="car-entry border rounded-4 p-3 mb-3 bg-light-subtle">
+                            <div class="d-flex justify-content-between align-items-center mb-3">
+                                <strong class="text-primary">Car 1</strong>
+                                <button type="button" class="btn btn-sm btn-outline-secondary rounded-pill remove-car-entry" style="display:none;">Remove</button>
+                            </div>
+                            <div class="row g-2 mb-3">
+                                <div class="col-md-5">
+                                    <label class="form-label">Brand</label>
+                                    <input type="text" name="cars[0][brand]" class="form-control" required>
+                                </div>
+                                <div class="col-md-4">
+                                    <label class="form-label">Car Model</label>
+                                    <input type="text" name="cars[0][model]" class="form-control" required>
+                                </div>
+                                <div class="col-md-3">
+                                    <label class="form-label">Plate Number</label>
+                                    <input type="text" name="cars[0][plate_number]" class="form-control" required>
+                                </div>
+                            </div>
+                            <div class="row g-2 mb-3">
+                                <div class="col">
+                                    <label class="form-label">Year</label>
+                                    <input type="number" name="cars[0][year]" class="form-control" required>
+                                </div>
+                                <div class="col">
+                                    <label class="form-label">Price per Day (₱)</label>
+                                    <input type="number" step="0.01" name="cars[0][price]" class="form-control" required>
+                                </div>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Total Stock (Quantity)</label>
+                                <input type="number" name="cars[0][quantity]" class="form-control" min="1" value="1" required>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Description</label>
+                                <textarea name="cars[0][description]" class="form-control" rows="3"></textarea>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Status</label>
+                                <select name="cars[0][status]" class="form-select">
+                                    <option value="available">Available</option>
+                                    <option value="rented">Rented</option>
+                                    <option value="maintenance">Maintenance</option>
+                                </select>
+                            </div>
+                            <div class="mb-0">
+                                <label class="form-label">Image</label>
+                                <input type="file" name="image" class="form-control">
+                            </div>
                         </div>
                     </div>
-                    <div class="row g-2 mb-3">
-                        <div class="col">
-                            <label class="form-label">Year</label>
-                            <input type="number" name="year" id="year" class="form-control" required>
-                        </div>
-                        <div class="col">
-                            <label class="form-label">Price per Day (₱)</label>
-                            <input type="number" step="0.01" name="price" id="price" class="form-control" required>
-                        </div>
-                    </div>
-                    <div class="mb-3">
-                        <label class="form-label">Total Stock (Quantity)</label>
-                        <input type="number" name="quantity" id="quantity" class="form-control" min="1" value="1" required>
-                    </div>
-                    <div class="mb-3">
-                        <label class="form-label">Description</label>
-                        <textarea name="description" id="description" class="form-control" rows="3"></textarea>
-                    </div>
-                    <div class="mb-3">
-                        <label class="form-label">Status</label>
-                        <select name="status" id="status" class="form-select">
-                            <option value="available">Available</option>
-                            <option value="rented">Rented</option>
-                            <option value="maintenance">Maintenance</option>
-                        </select>
-                    </div>
-                    <div class="mb-0">
-                        <label class="form-label">Image</label>
-                        <input type="file" name="image" class="form-control">
+
+                    <div class="d-flex justify-content-end mb-3">
+                        <button type="button" id="addOwnerCarRowBtn" class="btn btn-outline-primary rounded-pill px-3">+ Add Another Car</button>
                     </div>
                 </div>
                 <div class="modal-footer border-0">
                     <button type="button" class="btn btn-light rounded-pill px-4" data-bs-dismiss="modal">Close</button>
-                    <button type="submit" class="btn btn-primary rounded-pill px-4">Save Car</button>
+                    <button type="submit" class="btn btn-primary rounded-pill px-4">Save Cars</button>
                 </div>
             </form>
         </div>
@@ -144,6 +156,54 @@ require_once __DIR__ . '/../includes/header.php';
 </div>
 
 <script>
+function addOwnerCarEntryRow() {
+    const container = document.getElementById('ownerCarEntryContainer');
+    if (!container) return;
+
+    const index = container.querySelectorAll('.car-entry').length;
+    const row = document.createElement('div');
+    row.className = 'car-entry border rounded-4 p-3 mb-3 bg-light-subtle';
+    row.innerHTML = `
+        <div class="d-flex justify-content-between align-items-center mb-3">
+            <strong class="text-primary">Car ${index + 1}</strong>
+            <button type="button" class="btn btn-sm btn-outline-secondary rounded-pill remove-car-entry">Remove</button>
+        </div>
+        <div class="row g-2 mb-3">
+            <div class="col-md-5"><label class="form-label">Brand</label><input type="text" name="cars[${index}][brand]" class="form-control" required></div>
+            <div class="col-md-4"><label class="form-label">Car Model</label><input type="text" name="cars[${index}][model]" class="form-control" required></div>
+            <div class="col-md-3"><label class="form-label">Plate Number</label><input type="text" name="cars[${index}][plate_number]" class="form-control" required></div>
+        </div>
+        <div class="row g-2 mb-3">
+            <div class="col"><label class="form-label">Year</label><input type="number" name="cars[${index}][year]" class="form-control" required></div>
+            <div class="col"><label class="form-label">Price per Day (₱)</label><input type="number" step="0.01" name="cars[${index}][price]" class="form-control" required></div>
+        </div>
+        <div class="mb-3"><label class="form-label">Total Stock (Quantity)</label><input type="number" name="cars[${index}][quantity]" class="form-control" min="1" value="1" required></div>
+        <div class="mb-3"><label class="form-label">Description</label><textarea name="cars[${index}][description]" class="form-control" rows="3"></textarea></div>
+        <div class="mb-3"><label class="form-label">Status</label><select name="cars[${index}][status]" class="form-select"><option value="available">Available</option><option value="rented">Rented</option><option value="maintenance">Maintenance</option></select></div>
+        <div class="mb-0"><label class="form-label">Image</label><input type="file" name="image" class="form-control"></div>
+    `;
+    container.appendChild(row);
+
+    row.querySelector('.remove-car-entry').addEventListener('click', function() {
+        row.remove();
+        renumberOwnerCarEntries();
+    });
+}
+
+function renumberOwnerCarEntries() {
+    const entries = document.querySelectorAll('#ownerCarEntryContainer .car-entry');
+    entries.forEach((entry, index) => {
+        entry.querySelector('strong').textContent = 'Car ' + (index + 1);
+        const fields = entry.querySelectorAll('input, select, textarea');
+        fields.forEach(field => {
+            const oldName = field.getAttribute('name');
+            if (oldName) {
+                field.setAttribute('name', oldName.replace(/cars\[\d+\]/, 'cars[' + index + ']'));
+            }
+        });
+    });
+}
+
 function editCar(car){
     document.getElementById('modalTitle').innerText = 'Edit Car';
     document.getElementById('car_id').value = car.id;
@@ -164,11 +224,48 @@ function editCar(car){
 function resetForm(){
     document.getElementById('modalTitle').innerText = 'Add New Car';
     document.getElementById('car_id').value = '';
-    document.getElementById('brand').value = '';
-    document.getElementById('plate_number').value = '';
-    document.getElementById('quantity').value = '1';
-    document.querySelector('form').reset();
+    const container = document.getElementById('ownerCarEntryContainer');
+    if (container) {
+        container.innerHTML = `
+            <div class="car-entry border rounded-4 p-3 mb-3 bg-light-subtle">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <strong class="text-primary">Car 1</strong>
+                    <button type="button" class="btn btn-sm btn-outline-secondary rounded-pill remove-car-entry" style="display:none;">Remove</button>
+                </div>
+                <div class="row g-2 mb-3">
+                    <div class="col-md-5"><label class="form-label">Brand</label><input type="text" name="cars[0][brand]" class="form-control" required></div>
+                    <div class="col-md-4"><label class="form-label">Car Model</label><input type="text" name="cars[0][model]" class="form-control" required></div>
+                    <div class="col-md-3"><label class="form-label">Plate Number</label><input type="text" name="cars[0][plate_number]" class="form-control" required></div>
+                </div>
+                <div class="row g-2 mb-3">
+                    <div class="col"><label class="form-label">Year</label><input type="number" name="cars[0][year]" class="form-control" required></div>
+                    <div class="col"><label class="form-label">Price per Day (₱)</label><input type="number" step="0.01" name="cars[0][price]" class="form-control" required></div>
+                </div>
+                <div class="mb-3"><label class="form-label">Total Stock (Quantity)</label><input type="number" name="cars[0][quantity]" class="form-control" min="1" value="1" required></div>
+                <div class="mb-3"><label class="form-label">Description</label><textarea name="cars[0][description]" class="form-control" rows="3"></textarea></div>
+                <div class="mb-3"><label class="form-label">Status</label><select name="cars[0][status]" class="form-select"><option value="available">Available</option><option value="rented">Rented</option><option value="maintenance">Maintenance</option></select></div>
+                <div class="mb-0"><label class="form-label">Image</label><input type="file" name="image" class="form-control"></div>
+            </div>
+        `;
+    }
+    document.querySelector('#carModal form').reset();
 }
+
+document.addEventListener('DOMContentLoaded', function() {
+    const addButton = document.getElementById('addOwnerCarRowBtn');
+    if (addButton) {
+        addButton.addEventListener('click', addOwnerCarEntryRow);
+    }
+    document.querySelectorAll('.remove-car-entry').forEach(function(btn) {
+        btn.addEventListener('click', function() {
+            const row = btn.closest('.car-entry');
+            if (row) {
+                row.remove();
+                renumberOwnerCarEntries();
+            }
+        });
+    });
+});
 </script>
 
     </main>
