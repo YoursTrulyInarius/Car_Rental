@@ -17,6 +17,7 @@ This project allows:
 - renters to request a booking for a selected vehicle
 - admins to review pending rental requests
 - admins to approve, reject, or manage rental operations
+- admins to add multiple cars in a single fleet submission
 
 ## Roles
 
@@ -42,6 +43,9 @@ Use the seeded admin account to access the dashboard:
 - rental status tracking
 - responsive Bootstrap UI
 - PHPMailer-based notifications
+- multi-car fleet entry with add/remove rows
+- clone-friendly database bootstrap that creates the database and repairs required schema columns
+- compatibility fallbacks for missing vehicle brand and plate number values
 
 ## How the system works
 
@@ -102,11 +106,14 @@ Use XAMPP and make sure:
 - Apache is running
 - MySQL is running
 
-### 2) Import the database
-1. Open phpMyAdmin.
-2. Create a database named `car_rental` or match the name configured in your project.
-3. Import the SQL file from:
-   - `database.sql`
+### 2) Initialize the database
+The application automatically creates the configured database and required tables when it starts. For a clean installation, simply open the application after starting Apache and MySQL.
+
+You can also initialize the schema manually through phpMyAdmin by importing:
+
+- `database.sql`
+
+The bootstrap in `config.php` also checks for required vehicle columns and adds them when an older local database is missing them. This helps the project continue working after cloning it to another device.
 
 ### 3) Configure database connection
 Edit the database settings in:
@@ -153,9 +160,11 @@ Car_Rental/
 
 - The seeded admin account is created from `database.sql`.
 - The system uses two main roles: admin and renter.
+- From the admin fleet page, use `Add Another Car` to submit multiple distinct vehicles together. Each row is saved as its own car record.
+- Existing single-car form submissions remain supported for compatibility.
 - For a real production system, you should change default credentials and harden security.
 - This project is meant for learning, prototyping, demo presentations, and early-stage project work.
 
 ## Status
 
-This project is currently structured for local prototype deployment and supports a working renter-to-admin rental workflow in a demo environment.
+This project is currently structured for local prototype deployment and supports a working renter-to-admin rental workflow, clone-safe database initialization, and multi-car fleet management in a demo environment.
